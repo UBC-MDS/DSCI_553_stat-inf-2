@@ -3,17 +3,17 @@ Bayesian reasoning for data science. How to formulate and implement inference us
 
 **Rendered lecture slides:** [available here](https://www.stat.ubc.ca/~bouchard/courses/dsi553-sp2018-19/)
 
-## Teaching Team
+## Learning Objectives
 
-| Position | Name  | Slack Handle | GHE Handle | Office hour
-| :------: | :---: | :----------: | :--------: | :--------: |
-| Lecturer | Alexandre Bouchard | | `@alexandrebouchard` | Tuesdays 12:30~1:30 ESB 3124/3125
-| Lab Instructor | Rodolfo Lourenzutti | `@lourenzutti` | `@lourenzu` | N/A
-| Teaching Assistant | Flora (Qiuyan) Liu | `@Flora Liu` | `@floraliu` | Tuesdays 1:30pm~2:30pm ESB 1045
-| Teaching Assistant | Elijah Willie  | `@Elijah` | | Thursdays 12:30pm~1:30pm ESB1046
-| Teaching Assistant | Arun Rajendran | || Fridays 1:30pm~2:30om ESB1045
+By the end of the course, students will be able to:
 
-## Lecture
+1. Use Bayesian reasoning when modeling data.
+2. Apply Bayesian statistics to regression models.
+3. Compare and contrast Bayesian and frequentist methods, and evaluate their relative strengths.
+4. Use appropriate statistical libraries and packages for performing Bayesian inference
+
+
+## Lecture Schedule
 
 
 | # |  Date | Day | Topic | Reading
@@ -26,23 +26,6 @@ Bayesian reasoning for data science. How to formulate and implement inference us
 | 6 | 2019-02-28 | Thurs |  |
 | 7 | 2019-03-05 | Tues | Looking under the hood of PPLs (if time permits)  |
 | 8 | 2019-03-07 | Thurs | Computation, continued | 
-
-### Quizzes
-
-|     |      Time     |     Date   | Location |
-|-----|---------------|------------|----------|
-| 1   | 13:30 - 14:00 | 2019-02-28 | In your lab section.
-| 2   | 11:00 - 11:30 | 2019-03-13 | DPM-301
-
-
-## Learning Objectives
-
-By the end of the course, students will be able to:
-
-1. Use Bayesian reasoning when modeling data.
-2. Apply Bayesian statistics to regression models.
-3. Compare and contrast Bayesian and frequentist methods, and evaluate their relative strengths.
-4. Use appropriate statistical libraries and packages for performing Bayesian inference
 
 
 ## Reference Material
