@@ -1,0 +1,1057 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and Stan &#8212; DSCI 553 - Statistical Inference and Computation II</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/lecture1_intro_and_stan';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation" href="lecture2_Bayes_MAP.html" />
+    <link rel="prev" title="Lecture Learning Objectives" href="../lecture-learning-objectives.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/UBC_MDS_logo.png" class="logo__image only-light" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>
+    <script>document.write(`<img src="../_static/UBC_MDS_logo.png" class="logo__image only-dark" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    Welcome to DSCI 553: Statistical Inference and Computation II
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Lectures</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../lecture-learning-objectives.html">Lecture Learning Objectives</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture2_Bayes_MAP.html">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture6_binary_logistic_regression.html">Lecture 6 - Bayesian Binary Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture7_hierarchical_models.html">Lecture 7 - Bayesian Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture8_model_diagnostics.html">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="MCMC_tutorial.html">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="appendix-dist-cheatsheet.html">Distribution Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-greek-alphabet.html">Greek Alphabet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-bayesian-workflow.html">The Bayesian Workflow</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2/issues/new?title=Issue%20on%20page%20%2Fnotes/lecture1_intro_and_stan.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/lecture1_intro_and_stan.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and Stan</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-goals-of-this-course">High-Level Goals of this Course</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#course-overview">Course Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#textbook">Textbook</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-libraries">Loading Libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-frequentist-statistical-inference">1. Review of Frequentist Statistical Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#latent-variables">1.1. Latent Variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-care-about-uncertainty">1.2. Why Care About Uncertainty?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-confidence-interval-ci">1.3. What is a Confidence Interval (CI)?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-statistics">2. Bayesian Statistics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generative-models">3. Generative Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-example">3.1. First Example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#second-example">3.2. Second Example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#probabilistic-generative-models">3.3. Probabilistic Generative Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-probabilistic-generative-model-with-a-bottle-cap-flip">3.4. A Probabilistic Generative Model with a Bottle Cap Flip</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stan-and-rstan-basics">4. <code class="docutils literal notranslate"><span class="pre">Stan</span></code> and <code class="docutils literal notranslate"><span class="pre">rstan</span></code> Basics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-the-model-and-running-your-simulation">4.1. Coding the Model and Running your Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-we-theoretically-estimate-pi">4.2. Can We Theoretically Estimate <span class="math notranslate nohighlight">\(\pi\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-in-pi">4.3. Uncertainty in <span class="math notranslate nohighlight">\(\pi\)</span></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#difference-between-probability-and-likelihood">5. Difference between Probability and Likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up-with-frequentist-drawbacks">6. Wrapping Up with Frequentist Drawbacks</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lecture-1-frequentist-and-bayesian-overview-probabilistic-generative-models-and-stan">
+<h1>Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code><a class="headerlink" href="#lecture-1-frequentist-and-bayesian-overview-probabilistic-generative-models-and-stan" title="Permalink to this heading">#</a></h1>
+<section id="high-level-goals-of-this-course">
+<h2>High-Level Goals of this Course<a class="headerlink" href="#high-level-goals-of-this-course" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Use Bayesian reasoning when modeling data.</p></li>
+<li><p>Apply Bayesian statistics to regression models.</p></li>
+<li><p>Compare and contrast Bayesian and frequentist methods, and evaluate their relative strengths.</p></li>
+<li><p>Use appropriate statistical libraries and packages for performing Bayesian inference.</p></li>
+</ul>
+</section>
+<section id="course-overview">
+<h2>Course Overview<a class="headerlink" href="#course-overview" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Non-project MDS course:</strong> eight lectures and four labs.</p></li>
+<li><p>Our focus is <strong>model-building</strong>, <strong>computation</strong>, and <strong>interpretation of results</strong>.</p></li>
+<li><p>We will build models in <a class="reference external" href="https://mc-stan.org/"><code class="docutils literal notranslate"><span class="pre">Stan</span></code></a> along with <a class="reference external" href="https://mc-stan.org/users/interfaces/rstan"><code class="docutils literal notranslate"><span class="pre">rstan</span></code></a>.</p></li>
+<li><p>Knowing how and when to use different statistical distributions is a <strong>great asset</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R</span></code> + <code class="docutils literal notranslate"><span class="pre">Stan</span></code> for lectures and labs.</p></li>
+</ul>
+</section>
+<section id="textbook">
+<h2>Textbook<a class="headerlink" href="#textbook" title="Permalink to this heading">#</a></h2>
+<p>We will use a textbook in this course. Its name is <a class="reference external" href="https://www.bayesrulesbook.com/"><strong>Bayes Rules! An Introduction to Applied Bayesian Modeling</strong></a>). <strong>We will be posting suggested and optional readings of this book before our lecture time.</strong></p>
+</section>
+<section id="today-s-learning-objectives">
+<h2>Today’s Learning Objectives<a class="headerlink" href="#today-s-learning-objectives" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Review statistical inference (frequentist so far!).</p></li>
+<li><p>Pave the way to Bayesian statistics.</p></li>
+<li><p>Introduce probabilistic generative models.</p></li>
+<li><p>Illustrate the basic use of <code class="docutils literal notranslate"><span class="pre">Stan</span></code> and <code class="docutils literal notranslate"><span class="pre">rstan</span></code> via Monte Carlo simulations.</p></li>
+<li><p>Differentiate probability and likelihood in Statistics.</p></li>
+</ol>
+</section>
+<section id="loading-libraries">
+<h2>Loading Libraries<a class="headerlink" href="#loading-libraries" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">infer</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">datateachr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesrules</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="review-of-frequentist-statistical-inference">
+<h2>1. Review of Frequentist Statistical Inference<a class="headerlink" href="#review-of-frequentist-statistical-inference" title="Permalink to this heading">#</a></h2>
+<p>In the frequentist courses, we have used <strong>observed data</strong> (coming from a random sample) to <strong>estimate</strong> and <strong>characterize uncertainty</strong> in <strong>unknown</strong> (or <strong>latent</strong>) <strong>population</strong> quantities of interest. For instance:</p>
+<ul class="simple">
+<li><p>An <strong>unknown</strong> population mean <span class="math notranslate nohighlight">\(\mu\)</span>.</p></li>
+<li><p>An <strong>unknown</strong> population variance <span class="math notranslate nohighlight">\(\sigma^2\)</span>.</p></li>
+<li><p>An <strong>unknown</strong> population median <span class="math notranslate nohighlight">\(\text{M}\)</span>.</p></li>
+</ul>
+<p>However, what do we mean when we say <strong>latent population</strong> quantities? Let us find it out.</p>
+<section id="latent-variables">
+<h3>1.1. Latent Variables<a class="headerlink" href="#latent-variables" title="Permalink to this heading">#</a></h3>
+<p>These <font color='red'>latent quantities</font> may be real <strong>but not directly observable</strong>. Hence, they are linked to other <font color='blue'>observable variables</font>. For example:</p>
+<ul class="simple">
+<li><p>Using <font color='blue'>online ad click data</font> to estimate <font color='red'>the total lifetime revenue</font>.</p></li>
+<li><p>Using <font color='blue'>genome sequencing</font> to infer <font color='red'>the origin of a virus during an outbreak</font>.</p></li>
+<li><p>Using <font color='blue'>robotic Light Detection and Ranging (LiDAR) sensors</font> to estimate <font color='red'>the robot’s position</font>.</p></li>
+</ul>
+<p>Or <strong>completely hypothetical</strong>:</p>
+<ul class="simple">
+<li><p>Using <font color='blue'>tennis game win/loss data</font> to infer a <font color='red'>ranking of players</font>.</p></li>
+<li><p>Using <font color='blue'>text data</font> to learn <font color='red'>the underlying hierarchy of topics</font>.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>For these inquiries, the frequentist statistician’s usual hammers are <strong>point estimates</strong> and <strong>confidence intervals</strong>.</p>
+</div>
+</section>
+<section id="why-care-about-uncertainty">
+<h3>1.2. Why Care About Uncertainty?<a class="headerlink" href="#why-care-about-uncertainty" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p><em>Cannot we just collect more data?</em></p>
+</div></blockquote>
+<p>Not if it is <strong>expensive</strong> (e.g., rocket telemetry), <strong>fundamentally limited</strong> (e.g., robot odometry), or <strong>outright impossible</strong> (e.g., ancestral species).</p>
+<br>
+<center>
+    <table><tr>
+        <td><img width="800" src="https://i.ytimg.com/vi/1yBwWLunlOM/maxresdefault.jpg"/></td><td><img width="500" src="https://a.pololu-files.com/picture/0J5749.1200.jpg?01310609b6b36b53709bd5b0e302a69b"/></td>
+        <td><img width="500" src="https://i.pinimg.com/originals/38/83/ae/3883ae59ddeba67b85aa1734fa58c233.jpg"/></td>
+        </tr></table>
+</center>
+<br></section>
+<section id="what-is-a-confidence-interval-ci">
+<h3>1.3. What is a Confidence Interval (CI)?<a class="headerlink" href="#what-is-a-confidence-interval-ci" title="Permalink to this heading">#</a></h3>
+<p>If we care about uncertainty in a <strong>frequentist</strong> inferential approach, what is a confidence interval?</p>
+<br>
+<center><img width="550" src="https://online.stat.psu.edu/statprogram/sites/statprogram/files/inline-images/statprogtdist.png"/></center>
+<br><p>Let us start with the first <strong>in-class question</strong>.</p>
+<div class="exercise admonition" id="lecture1-q1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 1 </span></p>
+<section id="exercise-content">
+<p><strong>Answer TRUE or FALSE:</strong></p>
+<p><strong>Assuming a random sample of size <span class="math notranslate nohighlight">\(n\)</span> composed of the random variables <span class="math notranslate nohighlight">\(X_1, X_2, \dots, X_n\)</span></strong> (not observed sampled values!), a frequentist 90%-confidence interval (CI) is a random interval that contains an unknown fixed population parameter of interest with probability 90% before observing the random data.</p>
+<p><strong>A.</strong> TRUE</p>
+<p><strong>B.</strong> FALSE</p>
+</section>
+</div>
+<div class="exercise admonition" id="lecture1-q2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 2 </span></p>
+<section id="exercise-content">
+<p><strong>A CI Example with Heights</strong></p>
+<p>Suppose I measure the height <span class="math notranslate nohighlight">\(X_i\)</span> (<span class="math notranslate nohighlight">\(i=1, 2, \dots, n\)</span>) of a <strong>simple randomly selected</strong> (i.e., all subjects have the same probability of being selected) subset of students in this room. My <strong>population of interest</strong> is the current MDS cohort.</p>
+<p>Assume I know our true population standard deviation <span class="math notranslate nohighlight">\(\sigma\)</span>, and I want to estimate our unknown mean <span class="math notranslate nohighlight">\(\mu\)</span> with the sample mean</p>
+<div class="math notranslate nohighlight">
+\[\bar X = \frac{1}{n}\sum_{i=1}^n X_i.\]</div>
+<p>I design my 95% confidence interval using the Central Limit Theorem (CLT) formula:</p>
+<div class="math notranslate nohighlight">
+\[\bar X - 1.96 \frac{\sigma}{\sqrt{n}} \leq \mu \leq \bar X + 1.96 \frac{\sigma }{\sqrt{n}},\]</div>
+<p>where <span class="math notranslate nohighlight">\(1.96\)</span> is the <span class="math notranslate nohighlight">\(0.975\)</span>-quantile of the Standard Normal distribution.</p>
+<p><strong>Is this a valid confidence interval for <span class="math notranslate nohighlight">\(\mu\)</span>?</strong></p>
+<p><strong>A.</strong> Yes.</p>
+<p><strong>B.</strong> No.</p>
+</section>
+</div>
+<p>Now, let us proceed with an open-ended question.</p>
+<div class="exercise admonition" id="lecture1-q3">
+
+<p class="admonition-title"><span class="caption-number">Exercise 3 </span></p>
+<section id="exercise-content">
+<p><strong>A Financial CI Example</strong></p>
+<br>
+<center><img width="450" src="https://miro.medium.com/max/2924/1*cF57WKAdzfYrPyZ8buaYAw.jpeg"/></center>
+<br>
+<p>Say you collect some yearly <strong>log returns</strong> <span class="math notranslate nohighlight">\(X_1, \dots, X_n\)</span> for a financial asset, and use <span class="math notranslate nohighlight">\(\bar X = \frac{1}{n}\sum_{i=1}^n X_i\)</span> to estimate the population mean.</p>
+<p>But real <strong>log returns</strong> exhibit “very large/small values” much more frequently than a Normal distribution would predict. Your boss knows this and says:</p>
+<blockquote>
+<div><p>“I know what we’ll do! We’ll model each <span class="math notranslate nohighlight">\(X_i\)</span> with a Cauchy distribution.”</p>
+</div></blockquote>
+<p>Therefore, you <strong>might</strong> (<em>well…</em>) be able to compute a more suitable CI.</p>
+<p>Nevertheless, you realize that <a class="reference external" href="https://en.wikipedia.org/wiki/Cauchy_distribution">Cauchy distributions</a> have an undefined variance!</p>
+<p><strong>How do you compute a confidence interval?</strong></p>
+</section>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>As a final thought now, before getting into our Bayesian introduction:</p>
+<blockquote>
+<div><p><strong>Even a minor change to a simple problem makes things significantly harder for frequentist methods!!!!!</strong></p>
+</div></blockquote>
+</div>
+</section>
+</section>
+<section id="bayesian-statistics">
+<h2>2. Bayesian Statistics<a class="headerlink" href="#bayesian-statistics" title="Permalink to this heading">#</a></h2>
+<p>The <strong>Bayesian statistical approach</strong> addresses these challenges.</p>
+<ul class="simple">
+<li><p>Very flexible, handles most analysis settings.</p>
+<ul>
+<li><p>Missing data, non-standard data types, non-iid, weird loss functions, adding expert knowledge.</p></li>
+<li><p><em>Every problem is the same, but your computer might disagree…</em></p></li>
+</ul>
+</li>
+<li><p>Valid inference for any (finite) amount of data.</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>Now the population parameters of interest are random variables!</strong> They have prior and posterior distributions.</p></li>
+<li><p>Easy to interpret uncertainty for the population parameters.</p></li>
+<li><p>Posterior distribution is a “one-stop-shop” for <strong>prediction</strong>, <strong>inference</strong>, <strong>decision-making</strong>, etc.</p></li>
+<li><p>Recursive updating.</p></li>
+</ul>
+<p><strong>What is recursive updating?</strong></p>
+<br>
+<center><img width="700" src="https://www.bayesrulesbook.com/chapters/figs/chapter_1/bayes_diagram.png"/></center>
+<p><em>Source: <a class="reference external" href="https://www.bayesrulesbook.com/chapter-1.html">Johnson et al. (2021)</a></em></p>
+<p>Let us put this concept with an example of an Italian restaurant:</p>
+<center><img width="800" src="https://www.bayesrulesbook.com/chapters/figs/chapter_1/restaurant_diagram.png"/></center>
+<p><em>Source: <a class="reference external" href="https://www.bayesrulesbook.com/chapter-1.html">Johnson et al. (2021)</a></em></p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><strong>Nonetheless, there is no free lunch…</strong></p>
+<ul class="simple">
+<li><p>We would often need to be much more careful about computation.</p></li>
+<li><p>It requires slightly more model design work (prior).</p></li>
+<li><p>Less widely used in some areas of practice, e.g., medicine.</p>
+<ul>
+<li><p>This is changing over time!</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="generative-models">
+<h2>3. Generative Models<a class="headerlink" href="#generative-models" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>For both frequentist and Bayesian statistics</strong>, a generative model is a simplified mathematical model for some reality: a “story about how your data were created.”</p></li>
+<li><p>The term <strong>generative</strong> means the model can be used to make <em>synthetic</em> data (i.e., running computational simulations!)</p></li>
+</ul>
+<section id="first-example">
+<h3>3.1. First Example<a class="headerlink" href="#first-example" title="Permalink to this heading">#</a></h3>
+<br>
+<center><img width="450" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Simple_gravity_pendulum.svg/1200px-Simple_gravity_pendulum.svg.png"/></center>
+<p>Newton’s laws of dynamics <span class="math notranslate nohighlight">\(F = m \times a\)</span> can be used to simulate position versus time given forces.</p>
+<ul class="simple">
+<li><p><strong>What if I had noisy measurements of <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(m\)</span>, <em>and</em> <span class="math notranslate nohighlight">\(a\)</span> and wanted to infer their true values?</strong></p></li>
+</ul>
+</section>
+<section id="second-example">
+<h3>3.2. Second Example<a class="headerlink" href="#second-example" title="Permalink to this heading">#</a></h3>
+<p>We can model <span class="math notranslate nohighlight">\(f(\cdot)\)</span> for whether it will rain today given a vector of <strong>conditions/features</strong> <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>, <span class="math notranslate nohighlight">\(f(\mathbf{X}) \to \{\text{yes}, \text{no}\}\)</span>. What class of response is <span class="math notranslate nohighlight">\(f(\mathbf{X})\)</span>?</p>
+<p><span class="math notranslate nohighlight">\(f(\mathbf{X})\)</span> is Bernoulli type!</p>
+<p>Nonetheless, we cannot account for <strong>everything</strong>. Maybe only temperature, pressure, cloud cover, etc. Then, how do we deal with uncertainty in rain even under same measured conditions?</p>
+<p><strong>We can incorporate randomness into this model!</strong> This is analogous to <span class="math notranslate nohighlight">\(\varepsilon\)</span> on the right-hand side of a Ordinary Least-Squares (OLS) regression equation.</p>
+</section>
+<section id="probabilistic-generative-models">
+<h3>3.3. Probabilistic Generative Models<a class="headerlink" href="#probabilistic-generative-models" title="Permalink to this heading">#</a></h3>
+<p>These models incorporate randomness into the system of interest. We design them using <strong>probability theory</strong> to add <strong>wiggle room</strong> to everything:</p>
+<ul class="simple">
+<li><p>We can incorporate <strong>noise in measurements</strong> (e.g., outputs coming from the <span class="math notranslate nohighlight">\(F = m \times a\)</span> model).</p></li>
+<li><p>They can be <strong>overly simplified models with incomplete measurements</strong> (e.g., rainy day model).</p></li>
+<li><p>They can even incorporate <strong>unobservable latent variables</strong> (e.g., hypothetical tennis rankings).</p></li>
+</ul>
+</section>
+<section id="a-probabilistic-generative-model-with-a-bottle-cap-flip">
+<h3>3.4. A Probabilistic Generative Model with a Bottle Cap Flip<a class="headerlink" href="#a-probabilistic-generative-model-with-a-bottle-cap-flip" title="Permalink to this heading">#</a></h3>
+<p>You have arrived early to a movie with a friend, and have great seats. However, both of you need to use the washroom. Initially, you decide to flip a coin to see who gets to go first and who will watch the seats.</p>
+<p><strong>But it is 2025 and nobody carries coins any more!</strong> All you have is a bottle cap from your drink:</p>
+<br>
+<center><img width="400" src="https://img1.cgtrader.com/items/730507/8a23f572f4/plastic-pet-bottle-cap-3d-model-obj-mtl-fbx-stl-blend.png"/></center><p><strong>Let us start with a FREQUENTIST inferential problem:</strong></p>
+<p>What is the probability <span class="math notranslate nohighlight">\(\pi\)</span> the bottle cap will land right side up? We can use <span class="math notranslate nohighlight">\(n\)</span> trial tosses as data.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Let us reflect about the implications of using <span class="math notranslate nohighlight">\(n\)</span> trial tosses as data. We will obtain an estimate <span class="math notranslate nohighlight">\(\hat{\pi}\)</span> as a relative <strong>frequency</strong> coming from this data. Hence, the name <strong>frequentist</strong>.</p>
+</div>
+<p><strong>The Math of Generative Model for a Bottle Cap Flip</strong></p>
+<p>Any probabilistic generative model involves setting up your <strong>random variable</strong> of interest along with your assumed distribution.</p>
+<p>Thus, we have the following:</p>
+<div class="math notranslate nohighlight">
+\[X_i \sim \mathrm{Bernoulli}(\pi) \quad \text{for} \quad i = 1, \dots, n.\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\pi \in [0, 1]\)</span> is the <strong>unknown parameter</strong> we want to estimate: <strong>the probability the bottle cap will land right side up</strong>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_i\)</span> are the results of each bottle cap toss (<span class="math notranslate nohighlight">\(1 = \text{right side up}\)</span> or <span class="math notranslate nohighlight">\(0 = \text{upside down}\)</span>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_i = 1\)</span> is the success with probability <span class="math notranslate nohighlight">\(\pi\)</span>.</p></li>
+</ul>
+<p>The <strong>Bernoulli approach</strong> is a <strong>basic model</strong> for this case; we could design another more complex probabilistic model that considers initial conditions, wind, and collisions!</p>
+</section>
+</section>
+<section id="stan-and-rstan-basics">
+<h2>4. <code class="docutils literal notranslate"><span class="pre">Stan</span></code> and <code class="docutils literal notranslate"><span class="pre">rstan</span></code> Basics<a class="headerlink" href="#stan-and-rstan-basics" title="Permalink to this heading">#</a></h2>
+<p>The bottle cap example was set up as a <strong>FREQUENTIST</strong> inferential problem (<em>an unknown <strong>FIXED</strong> parameter <span class="math notranslate nohighlight">\(\pi\)</span> we aim to estimate</em>). This probabilistic generative model is a Bernoulli trial.</p>
+<p>Since the frequentist approach relies on repeating this bottle cap toss many times to estimate <span class="math notranslate nohighlight">\(\pi\)</span>, i.e., <span class="math notranslate nohighlight">\(n \rightarrow \infty\)</span> (<strong>not feasible to do it during our lecture time!</strong>), we will computationally simulate this system with a Monte Carlo simulation in a worksheet (not for marks) during <code class="docutils literal notranslate"><span class="pre">lab1</span></code>.</p>
+<p>By definition, a Monte Carlo simulation will computationally repeat the event of interest <span class="math notranslate nohighlight">\(n\)</span> times with random inputs to obtain our <span class="math notranslate nohighlight">\(n\)</span> outputs of interest (a binary outcome in this case).</p>
+<center><img width="900" src="https://m-clark.github.io/easy-bayes/img/bayes_doc/r_stan.png"/></center>
+<br>
+<p>We can easily do this via the base <code class="docutils literal notranslate"><span class="pre">R</span></code> function <code class="docutils literal notranslate"><span class="pre">rbernoulli()</span></code> from <code class="docutils literal notranslate"><span class="pre">purrr</span></code>. But we will use this example to introduce <code class="docutils literal notranslate"><span class="pre">Stan</span></code> and <code class="docutils literal notranslate"><span class="pre">rstan</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Stan</span></code> is a probabilistic <code class="docutils literal notranslate"><span class="pre">C++</span></code>-based programming language for Bayesian statistical inference (<strong>but it can also perform simple Monte Carlo simulations</strong>). The <code class="docutils literal notranslate"><span class="pre">R</span></code> package <code class="docutils literal notranslate"><span class="pre">rstan</span></code> will allow pulling the simulation outputs from <code class="docutils literal notranslate"><span class="pre">Stan</span></code>.</p>
+<section id="coding-the-model-and-running-your-simulation">
+<h3>4.1. Coding the Model and Running your Simulation<a class="headerlink" href="#coding-the-model-and-running-your-simulation" title="Permalink to this heading">#</a></h3>
+<p>In general, we will follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Code up our generative model in <code class="docutils literal notranslate"><span class="pre">Stan</span></code>.</p></li>
+<li><p>Specify observed values of data to estimate using <code class="docutils literal notranslate"><span class="pre">rstan</span></code> (<strong>not necessary for Monte Carlo simulations</strong>).</p></li>
+<li><p>Generate <strong>synthetic data</strong>.</p></li>
+<li><p>Perform inference with your simulation outputs.</p></li>
+</ol>
+<p><strong>The generative model is all you need (and all you get!)</strong></p>
+<ul class="simple">
+<li><p>Once you have a generative model, you can derive <strong>everything</strong>: tests, inference, etc.</p></li>
+<li><p>If your model <strong>can</strong> generate it, it will be handled in inference:</p>
+<ul>
+<li><p>missing data, dependence, complex data types, etc.</p></li>
+</ul>
+</li>
+<li><p>If your model <strong>cannot</strong> generate it, it <strong>will not be handled</strong>.</p></li>
+</ul>
+</section>
+<section id="can-we-theoretically-estimate-pi">
+<h3>4.2. Can We Theoretically Estimate <span class="math notranslate nohighlight">\(\pi\)</span>?<a class="headerlink" href="#can-we-theoretically-estimate-pi" title="Permalink to this heading">#</a></h3>
+<p>Yes, we can! <strong>Maximum likelihood estimation</strong> (MLE) is the standard frequentist approach. Recall the procedure from <a class="reference external" href="https://ubc-mds.github.io/DSCI_551_stat-prob-dsci/notes/07_lecture-maximum-likelihood-estimation.html"><strong>DSCI 551’s <code class="docutils literal notranslate"><span class="pre">lecture7</span></code></strong></a>.</p>
+<p>How do we find the maximum likelihood estimate for <span class="math notranslate nohighlight">\(\pi\)</span> between 0 and 1?</p>
+<ul class="simple">
+<li><p>We set up the Bernoulli trial for one toss:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\mathscr{l}(\pi \mid x_i) = P(X_i = x_i \mid \pi) = \pi^{x_i}(1 - \pi)^{1 - x_i} \quad \text{for} \quad x_i = 0, 1.\]</div>
+<ul class="simple">
+<li><p>We obtain the joint likelihood function with <span class="math notranslate nohighlight">\(n\)</span> iid tosses:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\mathscr{l}(\pi \mid x_1, \dots, x_n) &amp;= \prod_{i=1}^n \pi^{x_i}(1 - \pi)^{1 - x_i} \\
+&amp;= \pi^{\sum_{i = 1}^n x_i}(1 - \pi)^{n - \sum_{i = 1}^n x_i}.
+\end{align*}\end{split}\]</div>
+<ul class="simple">
+<li><p>Then, the log-likelihood function:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+\log \mathscr{l}(\pi \mid x_1, \dots, x_n) = \sum_{i = 1}^n x_i \log(\pi) + \bigg(n - \sum_{i = 1}^n x_i \bigg) \log(1 - \pi).
+\]</div>
+<ul class="simple">
+<li><p>We take the first partial derivative of the log-likelihood function with respect to <span class="math notranslate nohighlight">\(\pi\)</span>, set it to 0, and solve for <span class="math notranslate nohighlight">\(\pi\)</span>:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\hat \pi = \frac{1}{n}\sum_{i=1}^n X_i.\]</div>
+</section>
+<section id="uncertainty-in-pi">
+<h3>4.3. Uncertainty in <span class="math notranslate nohighlight">\(\pi\)</span><a class="headerlink" href="#uncertainty-in-pi" title="Permalink to this heading">#</a></h3>
+<p><strong>How can we characterize the uncertainty in <span class="math notranslate nohighlight">\(\pi\)</span> (without doing boatloads of math)?</strong></p>
+<p>A bootstrap CI might be the answer, but what if we only have <span class="math notranslate nohighlight">\(n = 10\)</span> replicates?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">infer</span><span class="p">)</span>
+
+<span class="c1"># Obtaining sample of size n = 10</span>
+<span class="nf">set.seed</span><span class="p">(</span><span class="m">553</span><span class="p">)</span>
+<span class="n">sample_n10</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span><span class="n">flip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="nf">rbernoulli</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)))</span>
+<span class="n">sample_n10</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Warning message:
+“`rbernoulli()` was deprecated in purrr 1.0.0.”
+</pre></div>
+</div>
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 10 × 1</caption>
+<thead>
+	<tr><th scope=col>flip</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>TRUE </td></tr>
+	<tr><td>FALSE</td></tr>
+	<tr><td>TRUE </td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtaining bootstrap distribution via infer</span>
+<span class="nf">set.seed</span><span class="p">(</span><span class="m">553</span><span class="p">)</span>
+<span class="n">bootstrap_distribution</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample_n10</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">specify</span><span class="p">(</span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flip</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;TRUE&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">generate</span><span class="p">(</span><span class="n">reps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bootstrap&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">calculate</span><span class="p">(</span><span class="n">stat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;prop&quot;</span><span class="p">)</span>
+<span class="n">mean_stat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">bootstrap_distribution</span><span class="o">$</span><span class="n">stat</span><span class="p">)</span>
+<span class="n">mean_stat</span>
+
+<span class="c1"># Obtainig percentile 95% CI</span>
+<span class="n">percentile_CI</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bootstrap_distribution</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">get_confidence_interval</span><span class="p">(</span><span class="n">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;percentile&quot;</span><span class="p">)</span>
+<span class="n">percentile_CI</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.8967</div><div class="output text_html"><table class="dataframe">
+<caption>A tibble: 1 × 2</caption>
+<thead>
+	<tr><th scope=col>lower_ci</th><th scope=col>upper_ci</th></tr>
+	<tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>0.7</td><td>1</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">bootstrap_plot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bootstrap_distribution</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">visualize</span><span class="p">(</span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">shade_confidence_interval</span><span class="p">(</span><span class="n">endpoints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">percentile_CI</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean_stat</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Statistic&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Count&quot;</span><span class="p">)</span>
+
+<span class="n">bootstrap_plot</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/851ef9b5b427a81ba95d9fbb0f62f5721663bc8c7e9a77bb2c7e01a3b49039b5.png"><img alt="../_images/851ef9b5b427a81ba95d9fbb0f62f5721663bc8c7e9a77bb2c7e01a3b49039b5.png" src="../_images/851ef9b5b427a81ba95d9fbb0f62f5721663bc8c7e9a77bb2c7e01a3b49039b5.png" style="width: 720px; height: 420px;" /></a>
+</div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Our 95% bootstrap CI shows <strong>biased results</strong>; the lower bound is 0.7! This is not good from an inferential perspective. An easy solution would be increasing the sample size <span class="math notranslate nohighlight">\(n\)</span>, but what if this is not possible?</p>
+<p><strong>Bayesian inference will open up our set of possible solutions to this matter.</strong></p>
+</div>
+</section>
+</section>
+<section id="difference-between-probability-and-likelihood">
+<h2>5. Difference between Probability and Likelihood<a class="headerlink" href="#difference-between-probability-and-likelihood" title="Permalink to this heading">#</a></h2>
+<p>It is important to emphasize that in Statistics, <strong>probability</strong> and <strong>likelihood</strong> are <strong>NOT</strong> the same. In general, <strong>probability</strong> refers to the chance that some outcome of interest will happen for a particular random variable. Note a probability is always bounded between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span>. Conversely, <strong>given some observed data</strong>, a <strong>likelihood</strong> refers to how <strong>plausible</strong> a given <strong>distributional parameter</strong> is. Furthermore, a likelihood is not bounded between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span>.</p>
+<p>Let us explore this concept via the Binomial distribution. Let <span class="math notranslate nohighlight">\(X\)</span> be the number of succcesses after <span class="math notranslate nohighlight">\(n\)</span> independent Bernoulli trials with probability of success <span class="math notranslate nohighlight">\(0 \leq \pi \leq 1\)</span>. Then, <span class="math notranslate nohighlight">\(X\)</span> is said to have a Binomial distribution:</p>
+<div class="math notranslate nohighlight">
+\[X \sim \text{Binomial} \left( n, \pi \right).\]</div>
+<p>A Binomial distribution is characterized by the probability mass function (PMF)</p>
+<div class="math notranslate nohighlight" id="equation-binomial-pmf">
+<span class="eqno">(1)<a class="headerlink" href="#equation-binomial-pmf" title="Permalink to this equation">#</a></span>\[P \left(X = x \mid n, \pi \right) = {n \choose x} \pi^x (1 - \pi)^{n - x} \quad \text{for} \quad x = 0, 1, \dots, n.\]</div>
+<p>Term <span class="math notranslate nohighlight">\({n \choose x}\)</span> indicates the total number of combinations for <span class="math notranslate nohighlight">\(x\)</span> successes out of <span class="math notranslate nohighlight">\(n\)</span> trials:</p>
+<div class="math notranslate nohighlight">
+\[{n \choose x} = \frac{n!}{x!(n - x)!}.\]</div>
+<p>Let us plot the PMFs of six Binomial random variables. Note these plots indicate a <strong>probability</strong> <span class="math notranslate nohighlight">\(P \left( X = x \mid n, \pi \right)\)</span> on their <span class="math notranslate nohighlight">\(y\)</span>-axes and they have the same number of trials <span class="math notranslate nohighlight">\(n = 10\)</span>:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(\pi = 0.3\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(\pi = 0.4\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(\pi = 0.5\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(\pi = 0.6\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(\pi = 0.7\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(\pi = 0.8\)</span>.</p></li>
+</ul>
+<p>Suppose we are specifically interested in the outcome <span class="math notranslate nohighlight">\(Y = 5\)</span>, highlighted as a red bar in the six PMFs. We also indicate the <strong>probabilities</strong> associated to each outcome on top of each bar.</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/c65b6b36d1545edeae37ebd66f9dc6675e6b0c4c769b2f7deb43bea298421334.png"><img alt="../_images/c65b6b36d1545edeae37ebd66f9dc6675e6b0c4c769b2f7deb43bea298421334.png" src="../_images/c65b6b36d1545edeae37ebd66f9dc6675e6b0c4c769b2f7deb43bea298421334.png" style="width: 720px; height: 960px;" /></a>
+</div>
+</div>
+<p>Suppose we sample data from a given Binomial population of interest, and this sample is composed of <span class="math notranslate nohighlight">\(n = 10\)</span> trials and <span class="math notranslate nohighlight">\(x = 5\)</span> successes. Under a frequentist paradigm, we are interested in inferring that value of <span class="math notranslate nohighlight">\(\pi\)</span>, which is the <strong>most likely</strong> for these values of <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(x\)</span>. Then, this is what we can do:</p>
+<ul class="simple">
+<li><p>Our PMF <a class="reference internal" href="#equation-binomial-pmf">(1)</a> will become a likelihood function <strong>given</strong> <span class="math notranslate nohighlight">\(n = 10\)</span> and <strong>our observed</strong> <span class="math notranslate nohighlight">\(x = 5\)</span> successes (note the lowercase <span class="math notranslate nohighlight">\(x\)</span>):</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-binomial-likelihood-example">
+<span class="eqno">(2)<a class="headerlink" href="#equation-binomial-likelihood-example" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align*}
+\mathscr{l}(\pi \mid x = 5, n = 10) &amp;= P \left(X = 5 \mid n = 10, \pi \right) \\
+&amp;= {10 \choose 5} \pi^5 (1 - \pi)^{10 - 5}.
+\end{align*}\end{split}\]</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The likelihood <a class="reference internal" href="#equation-binomial-likelihood-example">(2)</a> is <strong>mathematically</strong> equal to the Binomial PMF with <span class="math notranslate nohighlight">\(n = 10\)</span> and <span class="math notranslate nohighlight">\(X = 5\)</span>. Nevertheless, this likelihood is now <strong>in function</strong> of the parameter <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+</div>
+<ul class="simple">
+<li><p>That said, the below plot shows the likelihood function <a class="reference internal" href="#equation-binomial-likelihood-example">(2)</a> with the plausible range of <span class="math notranslate nohighlight">\(\pi\)</span> on the <span class="math notranslate nohighlight">\(x\)</span>-axis (which is bounded between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span> since it is the probability of success in the Binomial distribution). Moreover, the likelihood values are indicated in the <span class="math notranslate nohighlight">\(y\)</span>-axis.</p></li>
+</ul>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/a9004e4f01b53e3f656a8529cfa37cc5786dfadc3aab081e2f47989ee330af2a.png"><img alt="../_images/a9004e4f01b53e3f656a8529cfa37cc5786dfadc3aab081e2f47989ee330af2a.png" src="../_images/a9004e4f01b53e3f656a8529cfa37cc5786dfadc3aab081e2f47989ee330af2a.png" style="width: 720px; height: 420px;" /></a>
+</div>
+</div>
+<p>In the above likelihood plot, we highlighted as red vertical dashed lines those values corresponding to the red bars in the previous six Binomial PMFs (<strong>since a probability is MATHEMATICALLY equal to a likelihood, but not STATISTICALLY</strong>).</p>
+<p>The plot shows that the likelihood function <a class="reference internal" href="#equation-binomial-likelihood-example">(2)</a> gets maximized when <span class="math notranslate nohighlight">\(\pi = 0.5\)</span>. That said, given our observed collected sample with <span class="math notranslate nohighlight">\(x = 5\)</span> successes with <span class="math notranslate nohighlight">\(n = 10\)</span>, a value of <span class="math notranslate nohighlight">\(\pi = 0.5\)</span> is <strong>the most plausible (or likely!)</strong> in this Binomial population.</p>
+</section>
+<section id="wrapping-up-with-frequentist-drawbacks">
+<h2>6. Wrapping Up with Frequentist Drawbacks<a class="headerlink" href="#wrapping-up-with-frequentist-drawbacks" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>We cannot incorporate our “expert” intuition, probabilistically speaking.</p></li>
+<li><p>How do we use side information, e.g., results of flips from other bottle caps?</p></li>
+<li><p>Asymptotic tools tend not to work well with small amounts of data.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../lecture-learning-objectives.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Lecture Learning Objectives</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lecture2_Bayes_MAP.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-goals-of-this-course">High-Level Goals of this Course</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#course-overview">Course Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#textbook">Textbook</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-libraries">Loading Libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-frequentist-statistical-inference">1. Review of Frequentist Statistical Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#latent-variables">1.1. Latent Variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-care-about-uncertainty">1.2. Why Care About Uncertainty?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-confidence-interval-ci">1.3. What is a Confidence Interval (CI)?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-statistics">2. Bayesian Statistics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generative-models">3. Generative Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-example">3.1. First Example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#second-example">3.2. Second Example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#probabilistic-generative-models">3.3. Probabilistic Generative Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-probabilistic-generative-model-with-a-bottle-cap-flip">3.4. A Probabilistic Generative Model with a Bottle Cap Flip</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stan-and-rstan-basics">4. <code class="docutils literal notranslate"><span class="pre">Stan</span></code> and <code class="docutils literal notranslate"><span class="pre">rstan</span></code> Basics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-the-model-and-running-your-simulation">4.1. Coding the Model and Running your Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-we-theoretically-estimate-pi">4.2. Can We Theoretically Estimate <span class="math notranslate nohighlight">\(\pi\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-in-pi">4.3. Uncertainty in <span class="math notranslate nohighlight">\(\pi\)</span></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#difference-between-probability-and-likelihood">5. Difference between Probability and Likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up-with-frequentist-drawbacks">6. Wrapping Up with Frequentist Drawbacks</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By G. Alexi Rodríguez-Arelis, Hedayat Zarkoob, Michael Gelbart, and Trevor Campbell
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

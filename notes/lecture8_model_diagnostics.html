@@ -1,0 +1,1492 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics &#8212; DSCI 553 - Statistical Inference and Computation II</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/lecture8_model_diagnostics';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model" href="MCMC_tutorial.html" />
+    <link rel="prev" title="Lecture 7 - Bayesian Hierarchical Models" href="lecture7_hierarchical_models.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/UBC_MDS_logo.png" class="logo__image only-light" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>
+    <script>document.write(`<img src="../_static/UBC_MDS_logo.png" class="logo__image only-dark" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    Welcome to DSCI 553: Statistical Inference and Computation II
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Lectures</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../lecture-learning-objectives.html">Lecture Learning Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture1_intro_and_stan.html">Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture2_Bayes_MAP.html">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture6_binary_logistic_regression.html">Lecture 6 - Bayesian Binary Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture7_hierarchical_models.html">Lecture 7 - Bayesian Hierarchical Models</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="MCMC_tutorial.html">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="appendix-dist-cheatsheet.html">Distribution Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-greek-alphabet.html">Greek Alphabet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-bayesian-workflow.html">The Bayesian Workflow</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2/issues/new?title=Issue%20on%20page%20%2Fnotes/lecture8_model_diagnostics.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/lecture8_model_diagnostics.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-spotify-dataset">1. The Spotify Dataset</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#if-you-like-dancing-you-might-wonder-how-danceable-spotify-s-songs-are">If you like dancing, you might wonder: how danceable Spotify’s songs are?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-statistical-inquiries">1.1. Main Statistical Inquiries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-wrangling">1.2. Data Wrangling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exploratory-data-analysis">1.3. Exploratory Data Analysis</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-hierarchical-model">2. The Bayesian Hierarchical Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-likelihood">2.1. The Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-priors">2.2. The Priors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-the-model">2.3. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-mcmc-simulation">2.4. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-summary">2.5. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mcmc-diagnostics">3. MCMC Diagnostics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trace-plots">3.1. Trace Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-density-plots">3.2. Empirical Density Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-sample-size">3.3. Effective Sample Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation">3.4. Autocorrelation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-gelman-rubin-diagnostic">3.5. The Gelman-Rubin Diagnostic</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">4. Wrapping Up</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lecture-8-more-hierarchical-modelling-and-mcmc-diagnostics">
+<h1>Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics<a class="headerlink" href="#lecture-8-more-hierarchical-modelling-and-mcmc-diagnostics" title="Permalink to this heading">#</a></h1>
+<section id="today-s-learning-objectives">
+<h2>Today’s Learning Objectives<a class="headerlink" href="#today-s-learning-objectives" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Apply Bayesian hierarchical modelling in a more complex case.</p></li>
+<li><p>Formulate the Bayesian modelling setup in this complex case.</p></li>
+<li><p>Interpret the simulation results in function of the initial statistical inquiries.</p></li>
+<li><p>Evaluate Markov Chain Monte Carlo (MCMC) posterior sampling via model diagnostics.</p></li>
+</ol>
+</section>
+<section id="loading-r-packages">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages<a class="headerlink" href="#loading-r-packages" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesrules</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">rstan</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-spotify-dataset">
+<h2>1. The Spotify Dataset<a class="headerlink" href="#the-spotify-dataset" title="Permalink to this heading">#</a></h2>
+<p>We will explore the <code class="docutils literal notranslate"><span class="pre">spotify</span></code> dataset from the <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code> package. This dataset is a sample of <span class="math notranslate nohighlight">\(n = 350\)</span> songs with different variables by column. <strong>The songs belong to 44 different artists.</strong> The package’s description is the following:</p>
+<blockquote>
+<div><p><em>A sub-sample of the Spotify song data originally collected by Kaylin Pavlik (kaylinquest) and distributed through the <code class="docutils literal notranslate"><span class="pre">R</span></code> for Data Science TidyTuesday project.</em></p>
+</div></blockquote>
+<center>        
+<img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" width="600" height="180"/>
+</center><section id="if-you-like-dancing-you-might-wonder-how-danceable-spotify-s-songs-are">
+<h3>If you like dancing, you might wonder: how danceable Spotify’s songs are?<a class="headerlink" href="#if-you-like-dancing-you-might-wonder-how-danceable-spotify-s-songs-are" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="main-statistical-inquiries">
+<h3>1.1. Main Statistical Inquiries<a class="headerlink" href="#main-statistical-inquiries" title="Permalink to this heading">#</a></h3>
+<p>Firstly, let us formally define our main statistical inquiries:</p>
+<ol class="arabic simple">
+<li><p><strong>Assuming the <code class="docutils literal notranslate"><span class="pre">spotify</span></code> sample is representative enough</strong>, what is the overall <strong>mean danceability</strong> for the songs on the platform?</p></li>
+<li><p><strong>Assuming the <code class="docutils literal notranslate"><span class="pre">spotify</span></code> sample is representative enough of the 44 artists’ discography</strong>, how danceable is their music compared to the <strong>overall mean danceability</strong> of the songs in the platform?</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This exercise is based on <a class="reference external" href="https://www.bayesrulesbook.com/chapter-16.html">Chapter 16 from Bayes Rules!</a> textbook. However, they play around with a popularity index. Hence, let us make everything more danceable.</p>
+</div>
+</section>
+<section id="data-wrangling">
+<h3>1.2. Data Wrangling<a class="headerlink" href="#data-wrangling" title="Permalink to this heading">#</a></h3>
+<p>The raw dataset has 23 columns, but our Bayesian model will be restricted to two of the them:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">artist</span></code>: song artist (a factor-type variable with 44 levels).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">danceability</span></code>: a continuous score from 0 (not danceable) to 100 (danceable) based on features such as tempo, rhythm, etc.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating training set.</span>
+<span class="n">spotify_training</span><span class="w"> </span><span class="o">&lt;-</span><span class="n">spotify</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">select</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">danceability</span><span class="p">)</span>
+<span class="n">spotify_training</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 350 × 2</caption>
+<thead>
+	<tr><th scope=col>artist</th><th scope=col>danceability</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>Alok</td><td>74.7</td></tr>
+	<tr><td>Alok</td><td>70.7</td></tr>
+	<tr><td>Alok</td><td>77.8</td></tr>
+	<tr><td>Alok</td><td>68.2</td></tr>
+	<tr><td>⋮</td><td>⋮</td></tr>
+	<tr><td>Zeds Dead</td><td>65.9</td></tr>
+	<tr><td>Zeds Dead</td><td>60.4</td></tr>
+	<tr><td>Zeds Dead</td><td>50.1</td></tr>
+	<tr><td>Zeds Dead</td><td>67.5</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>As in the baseball problem from <code class="docutils literal notranslate"><span class="pre">lab2</span></code>, we will have an <strong>ID catalogue for artists</strong>. Hence, we create a catalogue of artist names and assign numerical codes from <code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">44</span></code> by alphabetical order. We will use this catalogue in our Bayesian results later on.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">artist_catalogue</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span>
+<span class="w">  </span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">levels</span><span class="p">(</span><span class="n">spotify_training</span><span class="o">$</span><span class="n">artist</span><span class="p">),</span>
+<span class="w">  </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">44</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exploratory-data-analysis">
+<h3>1.3. Exploratory Data Analysis<a class="headerlink" href="#exploratory-data-analysis" title="Permalink to this heading">#</a></h3>
+<p>Let us make a quick exploratory data analysis (EDA) via side-by-side boxplots for <code class="docutils literal notranslate"><span class="pre">artist</span></code> versus <code class="docutils literal notranslate"><span class="pre">danceability</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">danceability_boxplots</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">spotify_training</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="nf">reorder</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">danceability</span><span class="p">),</span><span class="w"> </span><span class="n">danceability</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_boxplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">artist</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Danceability Score&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Artist&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Side-by-Side Boxplots&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">90</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;none&quot;</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">danceability_boxplots</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/b3f9f2ad9b6750987b430d9b822ba2f7a79eaeafb6bc3ec53f026ae938c48dc8.png"><img alt="../_images/b3f9f2ad9b6750987b430d9b822ba2f7a79eaeafb6bc3ec53f026ae938c48dc8.png" src="../_images/b3f9f2ad9b6750987b430d9b822ba2f7a79eaeafb6bc3ec53f026ae938c48dc8.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>The EDA gives us graphical insights into what artists are the most danceable. Nonetheless, <strong>this is only a sample!</strong> We need to set up a proper inferential model for our population of interest.</p>
+<p>Moreover, <strong>keep in mind the variability from artist to artist</strong>. Our Bayesian model needs to take this matter into account.</p>
+</section>
+</section>
+<section id="the-bayesian-hierarchical-model">
+<h2>2. The Bayesian Hierarchical Model<a class="headerlink" href="#the-bayesian-hierarchical-model" title="Permalink to this heading">#</a></h2>
+<p>According to our main statistical inquiries, let us start with hierarchical modelling.</p>
+<section id="the-likelihood">
+<h3>2.1. The Likelihood<a class="headerlink" href="#the-likelihood" title="Permalink to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(Y_{i,j}\)</span> be <code class="docutils literal notranslate"><span class="pre">danceability</span></code> score for the <span class="math notranslate nohighlight">\(i\)</span>th song in <code class="docutils literal notranslate"><span class="pre">spotify_training</span></code> (i.e., a row <span class="math notranslate nohighlight">\(i = 1, \dots, 350\)</span>) for the <span class="math notranslate nohighlight">\(j\)</span>th artist (a level in <code class="docutils literal notranslate"><span class="pre">artist</span></code> <span class="math notranslate nohighlight">\(j = 1, \dots, 44\)</span>). We will use a <strong>Normal</strong> likelihood:</p>
+<div class="math notranslate nohighlight">
+\[Y_{i,j} \mid \mu_j, \sigma_w \sim \mathcal{N}(\mu_j, \sigma^2_w);\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu_j\)</span> is the mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> score for the <span class="math notranslate nohighlight">\(j\)</span>th artist and <span class="math notranslate nohighlight">\(\sigma_w\)</span> is the standard deviation representing the <strong>within-artist variability IN GENERAL</strong>. Their <strong>observations</strong> correspond to <strong>songs</strong>.</p>
+<div class="exercise admonition" id="lecture8-q1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 23 </span></p>
+<section id="exercise-content">
+<p>Since <code class="docutils literal notranslate"><span class="pre">danceability</span></code> is bounded between 0 and 100, what other ideal distribution can we use aside from an unbounded Normal likelihood?</p>
+<p><strong>A.</strong> A Negative Binomial distribution.</p>
+<p><strong>B.</strong> A Gamma distribution.</p>
+<p><strong>C.</strong> A Beta distribution.</p>
+<p><strong>D.</strong> A Poisson distribution.</p>
+</section>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">How can we set up the overall mean <span class="math notranslate nohighlight">\(\mu\)</span>?</p>
+<p>This can be done by decomposing the mean <span class="math notranslate nohighlight">\(\mu_j\)</span> for the <span class="math notranslate nohighlight">\(j\)</span>th artist as follows:</p>
+<div class="math notranslate nohighlight">
+\[\mu_j = \mu + b_j;\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is the <strong>overall mean</strong> <code class="docutils literal notranslate"><span class="pre">danceability</span></code> for all the songs in the platform <strong>(i.e., our first inquiry!)</strong>, and <span class="math notranslate nohighlight">\(b_j\)</span> is the mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> deviation of the <span class="math notranslate nohighlight">\(j\)</span>th artist <strong>to the overall mean <span class="math notranslate nohighlight">\(\mu\)</span></strong> <strong>(i.e., our second inquiry!)</strong>. Note we will have 44 different <span class="math notranslate nohighlight">\(b_j\)</span>s since we have 44 artists. Furthermore, these deviations can be <strong>either positive or negative</strong>.</p>
+</div>
+<p>So far we have these <code class="docutils literal notranslate"><span class="pre">parameters</span></code> of interest:</p>
+<ul class="simple">
+<li><p>Overall mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> <span class="math notranslate nohighlight">\(\mu\)</span>.</p></li>
+<li><p>44 mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> devations <span class="math notranslate nohighlight">\(b_j\)</span>.</p></li>
+<li><p>Within-group (i.e., within artist) variability via the standard deviation <span class="math notranslate nohighlight">\(\sigma_w\)</span>.</p></li>
+</ul>
+</section>
+<section id="the-priors">
+<h3>2.2. The Priors<a class="headerlink" href="#the-priors" title="Permalink to this heading">#</a></h3>
+<p>Now, let us set the priors as a hierarchical model. For our 44 deviations <span class="math notranslate nohighlight">\(b_j\)</span>, we will have:</p>
+<div class="math notranslate nohighlight">
+\[b_j \mid \sigma_\mu \sim \mathcal{N}(0, \sigma_\mu^2);\]</div>
+<p>we assume a mean zero since we do not know whether the <span class="math notranslate nohighlight">\(j\)</span>th artist <code class="docutils literal notranslate"><span class="pre">danceability</span></code> will differ in average from the overall mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> <span class="math notranslate nohighlight">\(\mu\)</span>.</p>
+<p>Note we have another <strong>parameter of interest</strong>: the <strong>between-artist variability</strong> represented by the standard deviation <span class="math notranslate nohighlight">\(\sigma_\mu\)</span>. Therefore, we are basically decomposing the variance for the <span class="math notranslate nohighlight">\(i\)</span>th song and <span class="math notranslate nohighlight">\(j\)</span>th artist as:</p>
+<div class="math notranslate nohighlight">
+\[\text{Var}\big(Y_{i,j}\big) = \sigma_\mu^2 + \sigma^2_w.\]</div>
+<p><strong>Here comes the hierarchical twist…</strong></p>
+<p>The <strong>between-artist variability</strong> represented by the standard deviation <span class="math notranslate nohighlight">\(\sigma_\mu\)</span> will also have a prior. We are doing this to make our model flexible enough to apply the <strong>“borrowing strength”</strong> idea. Hence, the prior will be an Exponential distribution (non-negative continuous) since <span class="math notranslate nohighlight">\(\sigma_\mu\)</span> is a standard deviation:</p>
+<div class="math notranslate nohighlight">
+\[\sigma_\mu \sim \text{Exponential}(0.048),\]</div>
+<p>which assigns higher probabilities to large values (i.e, <strong>we believe there is a huge variability in <code class="docutils literal notranslate"><span class="pre">danceability</span></code> between artists in our prior</strong>).</p>
+<p>Finally, we need to set up priors for the overall mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> <span class="math notranslate nohighlight">\(\mu\)</span> and within-artist variability via the standard deviation <span class="math notranslate nohighlight">\(\sigma_w\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\mu \sim \mathcal{N}(50, 52^2)\]</div>
+<div class="math notranslate nohighlight">
+\[\sigma_w \sim \text{Exponential}(1).\]</div>
+<p>The prior for the <strong>overall mean</strong> <code class="docutils literal notranslate"><span class="pre">danceability</span></code> <span class="math notranslate nohighlight">\(\mu\)</span> assigns a middle ground with high variability, while <span class="math notranslate nohighlight">\(\sigma_w\)</span> has a prior assigning higher probabilities to values between 0 and 2. (compared to the prior of <span class="math notranslate nohighlight">\(\sigma_{\mu}\)</span>). <strong>This prior belief denotes a moderate variability in danceability in the artist’s catalogue.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_normal_50_52</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">-200</span><span class="p">,</span><span class="w"> </span><span class="m">300</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.01</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dnorm</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">52</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">mu</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Prior Normal(50, &quot;</span><span class="p">,</span><span class="w"> </span><span class="m">52</span><span class="o">^</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)))</span>
+
+<span class="n">prior_exp_0.048</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">140</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.05</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dexp</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.048</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">sigma</span><span class="p">[</span><span class="n">mu</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Prior Exponential(0.048)&quot;</span><span class="p">))</span>
+
+<span class="n">prior_exp_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dexp</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">sigma</span><span class="p">[</span><span class="s">&quot;w&quot;</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Prior Exponential(1)&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="nf">plot_grid</span><span class="p">(</span><span class="n">prior_normal_50_52</span><span class="p">,</span><span class="w"> </span><span class="n">prior_exp_0.048</span><span class="p">,</span><span class="w"> </span><span class="n">prior_exp_1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/29be9e5a4eac816e55914e455be2e37d3ac119892e6896f1cdfb9d448ae10fb9.png"><img alt="../_images/29be9e5a4eac816e55914e455be2e37d3ac119892e6896f1cdfb9d448ae10fb9.png" src="../_images/29be9e5a4eac816e55914e455be2e37d3ac119892e6896f1cdfb9d448ae10fb9.png" style="width: 720px; height: 720px;" /></a>
+</div>
+</div>
+<p>The formal Bayesian hierarchical model is set up as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad Y_{i,j} \mid \mu_j, \sigma_w \sim \mathcal{N}(\mu_j, \sigma^2_w) \\ 
+\text{where} \quad \mu_j = \mu + b_j \\
+\text{priors:} \quad b_j \mid \sigma_\mu \sim \mathcal{N}(0, \sigma_\mu^2) \\
+\qquad \mu \sim \mathcal{N}(50, 52^2) \\
+\qquad \sigma_w \sim \text{Exponential}(1) \\
+\qquad \sigma_\mu \sim \text{Exponential}(0.048).
+\end{align*}\end{split}\]</div>
+<div class="exercise admonition" id="lecture8-q2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 24 </span></p>
+<section id="exercise-content">
+<p>What other prior distribution can we use for both types of variance?</p>
+<p><strong>A.</strong> A Gamma distribution.</p>
+<p><strong>B.</strong> A Binomial distribution.</p>
+<p><strong>C.</strong> A Poisson distribution.</p>
+<p><strong>D.</strong> A Chi-squared distribution.</p>
+</section>
+</div>
+</section>
+<section id="coding-the-model">
+<h3>2.3. Coding the Model<a class="headerlink" href="#coding-the-model" title="Permalink to this heading">#</a></h3>
+<p>We code up this <code class="docutils literal notranslate"><span class="pre">spotify_model</span></code> model on <code class="docutils literal notranslate"><span class="pre">Stan</span></code>. The structure is similar to the baseball case from <code class="docutils literal notranslate"><span class="pre">lab2</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">spotify_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {                          </span>
+<span class="s">int&lt;lower=1&gt; n;                     //rows in training set</span>
+<span class="s">int&lt;lower=1&gt; num_artist;            //number of artists in training set</span>
+<span class="s">int&lt;lower=1&gt; artist[n];             //artist ID column by song in training set</span>
+<span class="s">vector[n] dance_score;              //danceability scores by song in training set             </span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">vector[num_artist] mean_dance;      //vector of posterior danceability score deviations for each artist (size num_artist)</span>
+<span class="s">real overall_mean;                  //overall mean in danceability score</span>
+<span class="s">real&lt;lower=0&gt; between_sigma;        //between-artist sd in danceability score</span>
+<span class="s">real&lt;lower=0&gt; within_sigma;         //within-artist sd in danceability score</span>
+<span class="s">}</span>
+<span class="s">model {</span>
+<span class="s">between_sigma ~ exponential(0.048);     //between-artist sd prior</span>
+<span class="s">within_sigma ~ exponential(1);  //within-artist sd prior</span>
+<span class="s">overall_mean ~ normal(50, 52);      //overall mean prior</span>
+<span class="s">for (j in 1:num_artist){            //danceability scores priors (deviations per artist)</span>
+<span class="s">  mean_dance[j] ~ normal(0, between_sigma);</span>
+<span class="s">}</span>
+<span class="s">for (i in 1:n){</span>
+<span class="s">  int artist_index = artist[i];     //auxiliary indexing variable</span>
+<span class="s">  dance_score[i] ~ normal(overall_mean + mean_dance[artist_index], within_sigma); //likelihood in training set</span>
+<span class="s">}</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="running-the-mcmc-simulation">
+<h3>2.4. Running the MCMC Simulation<a class="headerlink" href="#running-the-mcmc-simulation" title="Permalink to this heading">#</a></h3>
+<p>Before creating the <code class="docutils literal notranslate"><span class="pre">spotify_dictionary</span></code>, we switch the ID names to numerical codes from <code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">44</span></code> according to the alphabetical order in the levels of <code class="docutils literal notranslate"><span class="pre">spotify_training$artist</span></code>. We need to do this since we cannot work with factor levels in <code class="docutils literal notranslate"><span class="pre">Stan</span></code>. Then, we run the simulation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">levels</span><span class="p">(</span><span class="n">spotify_training</span><span class="o">$</span><span class="n">artist</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">44</span>
+
+<span class="n">spotify_dictionary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">spotify_training</span><span class="p">),</span>
+<span class="w">  </span><span class="n">num_artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">artist_catalogue</span><span class="p">),</span>
+<span class="w">  </span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.integer</span><span class="p">(</span><span class="n">spotify_training</span><span class="o">$</span><span class="n">artist</span><span class="p">),</span>
+<span class="w">  </span><span class="n">dance_score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spotify_training</span><span class="o">$</span><span class="n">danceability</span>
+<span class="p">)</span>
+
+<span class="n">posterior_spotify</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spotify_model</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spotify_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 5.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.59 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:     1 / 20000 [  0%]  (Warmup)
+Chain 1: Iteration:  2000 / 20000 [ 10%]  (Warmup)
+Chain 1: Iteration:  2001 / 20000 [ 10%]  (Sampling)
+Chain 1: Iteration:  4000 / 20000 [ 20%]  (Sampling)
+Chain 1: Iteration:  6000 / 20000 [ 30%]  (Sampling)
+Chain 1: Iteration:  8000 / 20000 [ 40%]  (Sampling)
+Chain 1: Iteration: 10000 / 20000 [ 50%]  (Sampling)
+Chain 1: Iteration: 12000 / 20000 [ 60%]  (Sampling)
+Chain 1: Iteration: 14000 / 20000 [ 70%]  (Sampling)
+Chain 1: Iteration: 16000 / 20000 [ 80%]  (Sampling)
+Chain 1: Iteration: 18000 / 20000 [ 90%]  (Sampling)
+Chain 1: Iteration: 20000 / 20000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.409 seconds (Warm-up)
+Chain 1:                6.71 seconds (Sampling)
+Chain 1:                8.119 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="output-summary">
+<h3>2.5. Output Summary<a class="headerlink" href="#output-summary" title="Permalink to this heading">#</a></h3>
+<p>We obtain the output from <code class="docutils literal notranslate"><span class="pre">posterior_spotify</span></code>. Firstly, let us focus the attention on the overall <code class="docutils literal notranslate"><span class="pre">danceability</span></code> <span class="math notranslate nohighlight">\(\mu\)</span> (<code class="docutils literal notranslate"><span class="pre">overall_mean</span></code>), the between-artist standard deviation <span class="math notranslate nohighlight">\(\sigma_\mu\)</span> (<code class="docutils literal notranslate"><span class="pre">between_sigma</span></code>), and within-artist standard deviation <span class="math notranslate nohighlight">\(\sigma_w\)</span> (<code class="docutils literal notranslate"><span class="pre">within_sigma</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_overall</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_spotify</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_overall</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_overall</span><span class="p">[</span><span class="m">45</span><span class="o">:</span><span class="m">47</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_overall</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 3 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>overall_mean</th><td>65.228</td><td>1.751</td><td>61.744</td><td>68.579</td></tr>
+	<tr><th scope=row>between_sigma</th><td>10.128</td><td>1.504</td><td> 7.588</td><td>13.373</td></tr>
+	<tr><th scope=row>within_sigma</th><td>12.013</td><td>0.476</td><td>11.126</td><td>12.984</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p><strong>For our first inquiry</strong>, we can conclude the following:</p>
+<ul class="simple">
+<li><p>The overall <code class="docutils literal notranslate"><span class="pre">danceability</span></code> <span class="math notranslate nohighlight">\(\mu\)</span> is between 61.744 and 68.579 with 95% probability and a posterior mean of 65.228.</p></li>
+<li><p>Moreover, we see more variability associated with the between-artist standard deviation <span class="math notranslate nohighlight">\(\sigma_\mu\)</span> which makes sense (artist diversity should be large in the platform!). Note the 95% credible interval between 7.588 and 13.373.</p></li>
+<li><p>On the other hand, the within-artist variability <span class="math notranslate nohighlight">\(\sigma_w\)</span> shows less variability. Note the 95% credible interval between 11.126 and 12.984.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">post_hist_spotify</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_spotify</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">  </span><span class="s">&quot;overall_mean&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s">&quot;between_sigma&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s">&quot;within_sigma&quot;</span>
+<span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16.5</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16.5</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16.5</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16.5</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">strip.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16.5</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Posterior Distribution and 95% Credible Intervals of Overall Mean and Standard Deviations&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">70</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="s">&quot;Danceability&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Scale for <span class=" -Color -Color-Green">x</span> is already present.
+Adding another scale for <span class=" -Color -Color-Green">x</span>, which will replace the existing scale.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_hist_spotify</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/8fd135102d4b25eee8372270038787c3ea0f9717cd95c08abb7b49f7fc6ceda0.png"><img alt="../_images/8fd135102d4b25eee8372270038787c3ea0f9717cd95c08abb7b49f7fc6ceda0.png" src="../_images/8fd135102d4b25eee8372270038787c3ea0f9717cd95c08abb7b49f7fc6ceda0.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+<p><strong>What about the mean <code class="docutils literal notranslate"><span class="pre">danceability</span></code> deviations by artist <span class="math notranslate nohighlight">\(b_j\)</span>?</strong></p>
+<p>Recall these deviations could be positive or negative given how we modelled them:</p>
+<div class="math notranslate nohighlight">
+\[\mu_j = \mu + b_j.\]</div>
+<p>Since <code class="docutils literal notranslate"><span class="pre">Stan</span></code> labels the parameters in the posterior samples as <code class="docutils literal notranslate"><span class="pre">mean_dance[1]</span></code>, …, <code class="docutils literal notranslate"><span class="pre">mean_dance[44]</span></code>, we will add a new column with the actual <code class="docutils literal notranslate"><span class="pre">artist</span></code> name stored in <code class="docutils literal notranslate"><span class="pre">artist_catalogue</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_artist_means</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_spotify</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_artist_means</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_artist_means</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">44</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_artist_means</span><span class="o">$</span><span class="n">artist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.factor</span><span class="p">(</span><span class="n">artist_catalogue</span><span class="o">$</span><span class="n">artist</span><span class="p">)</span>
+<span class="n">summary_artist_means</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="w"> </span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 44 × 5</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th><th scope=col>artist</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;fct&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>mean_dance[18]</th><td>16.324</td><td>5.072</td><td>6.793</td><td>26.317</td><td>House Of Pain</td></tr>
+	<tr><th scope=row>mean_dance[15]</th><td>14.339</td><td>5.997</td><td>3.167</td><td>27.308</td><td>Freestyle    </td></tr>
+	<tr><th scope=row>mean_dance[41]</th><td>12.673</td><td>3.437</td><td>5.771</td><td>19.364</td><td>TV Noise     </td></tr>
+	<tr><th scope=row>mean_dance[29]</th><td>11.903</td><td>4.897</td><td>2.387</td><td>21.454</td><td>Missy Elliott</td></tr>
+	<tr><th scope=row>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><th scope=row>mean_dance[43]</th><td>-14.321</td><td>4.350</td><td>-22.955</td><td>-6.364</td><td>X Ambassadors     </td></tr>
+	<tr><th scope=row>mean_dance[16]</th><td>-15.724</td><td>4.758</td><td>-25.361</td><td>-6.106</td><td>Hinder            </td></tr>
+	<tr><th scope=row>mean_dance[32]</th><td>-16.089</td><td>4.691</td><td>-25.402</td><td>-7.092</td><td>Placebo           </td></tr>
+	<tr><th scope=row>mean_dance[5]</th><td>-17.585</td><td>4.517</td><td>-26.706</td><td>-9.478</td><td>Black Stone Cherry</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Recall our <strong>second inquiry</strong>:</p>
+<blockquote>
+<div><p>Assuming the <code class="docutils literal notranslate"><span class="pre">spotify</span></code> dataset is representative enough of the 44 artists discography, how danceable is their music compared to the overall <strong>mean danceability</strong> for the songs on the platform?</p>
+</div></blockquote>
+<p>Let us focus on the top 10 posterior means for deviation <span class="math notranslate nohighlight">\(b_j\)</span> (they are plotted below along with their 95% credible intervals). Four artists have their credible intervals with positive bounds (i.e., there is a 95% probability they are more danceable than the overall <code class="docutils literal notranslate"><span class="pre">danceability</span></code> mean <span class="math notranslate nohighlight">\(\mu\)</span>!): <code class="docutils literal notranslate"><span class="pre">House</span> <span class="pre">of</span> <span class="pre">Pain</span></code>, <code class="docutils literal notranslate"><span class="pre">Freestyle</span></code>, <code class="docutils literal notranslate"><span class="pre">TV</span> <span class="pre">Noise</span></code>, and <code class="docutils literal notranslate"><span class="pre">Missy</span> <span class="pre">Elliot</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_artist_means_CIs_plot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_artist_means</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">slice</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">fct_reorder</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">artist</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_errorbarh</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">xmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">`2.5%`</span><span class="p">,</span><span class="w"> </span><span class="n">xmin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">`97.5%`</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">artist</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;none&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;95% CIs for Artist Mean Deviations&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Artist Mean Deviation&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Artist&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_artist_means_CIs_plot</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/c4a9bca5e149a1c3bca143e24c9492e02ff7e3ffeda3fade7494cc8c4a8f7e0b.png"><img alt="../_images/c4a9bca5e149a1c3bca143e24c9492e02ff7e3ffeda3fade7494cc8c4a8f7e0b.png" src="../_images/c4a9bca5e149a1c3bca143e24c9492e02ff7e3ffeda3fade7494cc8c4a8f7e0b.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+<p>Even though the hierarchical model can reduce the variability in our posterior estimates, we need to help it by including features! Since</p>
+<div class="math notranslate nohighlight">
+\[\mu_j = \mu + b_j,\]</div>
+<p>we might break down the mean deviation <span class="math notranslate nohighlight">\(b_j\)</span> with a regression systematic component. <strong>This is a potential improvement for this model!</strong></p>
+</section>
+</section>
+<section id="mcmc-diagnostics">
+<h2>3. MCMC Diagnostics<a class="headerlink" href="#mcmc-diagnostics" title="Permalink to this heading">#</a></h2>
+<p>This is the last topic of the block, and it will allow evaluating the MCMC posterior sampling quality.</p>
+<p>There are many potential pitfalls in MCMC: <strong>not enough iterations</strong>, <strong>not enough thinning</strong>, <strong>not enough burn-in</strong>, etc. So how do we know if it worked and is giving us “good” samples from the approximate posterior distribution? Thankfully, there are MCMC convergence diagnostics to provide us with a sense of whether we can trust the output of our MCMC algorithm.</p>
+<p>We are sampling via a Markov chain; thus, our sampled elements (i.e., “links” in the chain) will not be fully independent. However, we can make them “semi-independent” with the <code class="docutils literal notranslate"><span class="pre">thin</span></code> argument. Nonetheless, each Bayesian case behaves differently, and some are harder than others. Therefore, thinning can sometimes be less effective.</p>
+<p>Furthermore, a common practice is to sample via more than one chain. We would expect sampling consistency across all chains.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Sampling consistency across chains does not necessarily implicate the algorithm walks are quickly converging in all chains. That said, all sampling chains could also be equally bad!</p>
+</div>
+<p>To illustrate the use of MCMC diagnostics, let us sample four chains for the previous Spotify case. We will have the following number of posterior samples by chain:</p>
+<div class="math notranslate nohighlight">
+\[\texttt{samples} = \frac{\texttt{iterations} - \texttt{warmup}}{\texttt{thin}} = \frac{20,000 - 2,000}{20} = 900.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_spotify_4_chains</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spotify_model</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spotify_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.23 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:     1 / 20000 [  0%]  (Warmup)
+Chain 1: Iteration:  2000 / 20000 [ 10%]  (Warmup)
+Chain 1: Iteration:  2001 / 20000 [ 10%]  (Sampling)
+Chain 1: Iteration:  4000 / 20000 [ 20%]  (Sampling)
+Chain 1: Iteration:  6000 / 20000 [ 30%]  (Sampling)
+Chain 1: Iteration:  8000 / 20000 [ 40%]  (Sampling)
+Chain 1: Iteration: 10000 / 20000 [ 50%]  (Sampling)
+Chain 1: Iteration: 12000 / 20000 [ 60%]  (Sampling)
+Chain 1: Iteration: 14000 / 20000 [ 70%]  (Sampling)
+Chain 1: Iteration: 16000 / 20000 [ 80%]  (Sampling)
+Chain 1: Iteration: 18000 / 20000 [ 90%]  (Sampling)
+Chain 1: Iteration: 20000 / 20000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.294 seconds (Warm-up)
+Chain 1:                5.628 seconds (Sampling)
+Chain 1:                6.922 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 2e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:     1 / 20000 [  0%]  (Warmup)
+Chain 2: Iteration:  2000 / 20000 [ 10%]  (Warmup)
+Chain 2: Iteration:  2001 / 20000 [ 10%]  (Sampling)
+Chain 2: Iteration:  4000 / 20000 [ 20%]  (Sampling)
+Chain 2: Iteration:  6000 / 20000 [ 30%]  (Sampling)
+Chain 2: Iteration:  8000 / 20000 [ 40%]  (Sampling)
+Chain 2: Iteration: 10000 / 20000 [ 50%]  (Sampling)
+Chain 2: Iteration: 12000 / 20000 [ 60%]  (Sampling)
+Chain 2: Iteration: 14000 / 20000 [ 70%]  (Sampling)
+Chain 2: Iteration: 16000 / 20000 [ 80%]  (Sampling)
+Chain 2: Iteration: 18000 / 20000 [ 90%]  (Sampling)
+Chain 2: Iteration: 20000 / 20000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.411 seconds (Warm-up)
+Chain 2:                6.336 seconds (Sampling)
+Chain 2:                7.747 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 2.2e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:     1 / 20000 [  0%]  (Warmup)
+Chain 3: Iteration:  2000 / 20000 [ 10%]  (Warmup)
+Chain 3: Iteration:  2001 / 20000 [ 10%]  (Sampling)
+Chain 3: Iteration:  4000 / 20000 [ 20%]  (Sampling)
+Chain 3: Iteration:  6000 / 20000 [ 30%]  (Sampling)
+Chain 3: Iteration:  8000 / 20000 [ 40%]  (Sampling)
+Chain 3: Iteration: 10000 / 20000 [ 50%]  (Sampling)
+Chain 3: Iteration: 12000 / 20000 [ 60%]  (Sampling)
+Chain 3: Iteration: 14000 / 20000 [ 70%]  (Sampling)
+Chain 3: Iteration: 16000 / 20000 [ 80%]  (Sampling)
+Chain 3: Iteration: 18000 / 20000 [ 90%]  (Sampling)
+Chain 3: Iteration: 20000 / 20000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 1.52 seconds (Warm-up)
+Chain 3:                6.323 seconds (Sampling)
+Chain 3:                7.843 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 2.2e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:     1 / 20000 [  0%]  (Warmup)
+Chain 4: Iteration:  2000 / 20000 [ 10%]  (Warmup)
+Chain 4: Iteration:  2001 / 20000 [ 10%]  (Sampling)
+Chain 4: Iteration:  4000 / 20000 [ 20%]  (Sampling)
+Chain 4: Iteration:  6000 / 20000 [ 30%]  (Sampling)
+Chain 4: Iteration:  8000 / 20000 [ 40%]  (Sampling)
+Chain 4: Iteration: 10000 / 20000 [ 50%]  (Sampling)
+Chain 4: Iteration: 12000 / 20000 [ 60%]  (Sampling)
+Chain 4: Iteration: 14000 / 20000 [ 70%]  (Sampling)
+Chain 4: Iteration: 16000 / 20000 [ 80%]  (Sampling)
+Chain 4: Iteration: 18000 / 20000 [ 90%]  (Sampling)
+Chain 4: Iteration: 20000 / 20000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 1.812 seconds (Warm-up)
+Chain 4:                6.322 seconds (Sampling)
+Chain 4:                8.134 seconds (Total)
+Chain 4: 
+</pre></div>
+</div>
+</div>
+</div>
+<section id="trace-plots">
+<h3>3.1. Trace Plots<a class="headerlink" href="#trace-plots" title="Permalink to this heading">#</a></h3>
+<p>Trace plots horizontally illustrate the posterior sampling by a chain. All chain evolutions (<strong>excluding warmup</strong>) are overlaid. We will have a trace plot by a parameter of interest (here, we are only plotting <code class="docutils literal notranslate"><span class="pre">overall_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">between_sigma</span></code>, and <code class="docutils literal notranslate"><span class="pre">within_sigma</span></code> for practical purposes).</p>
+<p>Ideally, <strong>there should be a flat pattern by parameter without any upward or a downward trend throughout the chain</strong>. Moreover, <strong>we should not see any chain stuck</strong>. The function <code class="docutils literal notranslate"><span class="pre">mcmc_trace()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesplot</span></code> automatically displays these plots.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">color_scheme_set</span><span class="p">(</span><span class="s">&quot;mix-blue-pink&quot;</span><span class="p">)</span>
+
+<span class="n">trace_spotify_4_chains</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_trace</span><span class="p">(</span><span class="n">posterior_spotify_4_chains</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;overall_mean&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;between_sigma&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;within_sigma&quot;</span>
+<span class="w">  </span><span class="p">),</span>
+<span class="w">  </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">facet_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Trace Plots by Parameter of Interest&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">facet_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In the Spotify case (for <code class="docutils literal notranslate"><span class="pre">overall_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">between_sigma</span></code>, and <code class="docutils literal notranslate"><span class="pre">within_sigma</span></code>), we see acceptable proper plots (flat horizontal trends and no chain stucks).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">trace_spotify_4_chains</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/9661ffc5ffb48e1315e09968b557bcbfb5059e337fa1f576c16ef392d7d61ef2.png"><img alt="../_images/9661ffc5ffb48e1315e09968b557bcbfb5059e337fa1f576c16ef392d7d61ef2.png" src="../_images/9661ffc5ffb48e1315e09968b557bcbfb5059e337fa1f576c16ef392d7d61ef2.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+<p>The cases below belong to other toy examples (Beta-Binomial models) with bad MCMC samplings. Note <strong>the downward trend in Chain A</strong> and <strong>the sampling stuck in Chain B</strong>. The downward trend implicates the algorithm is sampling smaller parameter values throughout the simulation.</p>
+<br>
+<center><img width="1000" src="https://www.bayesrulesbook.com/bookdown_files/figure-html/bad-trace-1.png"/></center>
+<p><em>Source: <a class="reference external" href="https://www.bayesrulesbook.com/chapter-6.html#diagnostics">Johnson et al. (2021)</a></em></p>
+</section>
+<section id="empirical-density-plots">
+<h3>3.2. Empirical Density Plots<a class="headerlink" href="#empirical-density-plots" title="Permalink to this heading">#</a></h3>
+<p>We can also obtain empirical density plots for the parameters of interest with our MCMC posterior samples. The function <code class="docutils literal notranslate"><span class="pre">mcmc_dens_overlay()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesplot</span></code> automatically displays these overlaid plots (one by chain and parameter). Ideally, <strong>the overlaid plots would show similar behaviours to conclude chain consistency.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">density_spotify_4_chains</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_dens_overlay</span><span class="p">(</span><span class="n">posterior_spotify_4_chains</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;overall_mean&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;between_sigma&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;within_sigma&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">facet_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Overlaid Density Plots by Parameter of Interest&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">facet_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We see the same overall pattern with minor local variations in the Spotify case (for <code class="docutils literal notranslate"><span class="pre">overall_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">between_sigma</span></code>, and <code class="docutils literal notranslate"><span class="pre">within_sigma</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">density_spotify_4_chains</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/5682d2bf80b76ba0971b3d1e16487fb37d6a9f6bd93f5c31abcb41221fbc974b.png"><img alt="../_images/5682d2bf80b76ba0971b3d1e16487fb37d6a9f6bd93f5c31abcb41221fbc974b.png" src="../_images/5682d2bf80b76ba0971b3d1e16487fb37d6a9f6bd93f5c31abcb41221fbc974b.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+</section>
+<section id="effective-sample-size">
+<h3>3.3. Effective Sample Size<a class="headerlink" href="#effective-sample-size" title="Permalink to this heading">#</a></h3>
+<p>The effective sample size <span class="math notranslate nohighlight">\(N_{\text{eff}}\)</span> is a metric that measures the number of <strong>independent</strong> samples it would take to achieve an accurate MCMC posterior approximation.</p>
+<p>If <span class="math notranslate nohighlight">\(N\)</span> is the length of a given chain, given the characteristics of MCMC, <strong>we would expect that <span class="math notranslate nohighlight">\(N_{\text{eff}} &lt; N\)</span></strong>. <strong>Ideally</strong>, <span class="math notranslate nohighlight">\(N_{\text{eff}}\)</span> should be as close as possible to <span class="math notranslate nohighlight">\(N\)</span> or their correspoding ratio close to 1:</p>
+<div class="math notranslate nohighlight">
+\[\frac{N_{\text{eff}}}{N}.\]</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Ideally</strong>, the above ratio should be as close as <span class="math notranslate nohighlight">\(1\)</span> since <span class="math notranslate nohighlight">\(N_{\text{eff}}\)</span> represents the number of <strong>fully independent</strong> posterior samples we would need to get an accurate posterior approximation (such as in a Monte Carlo simulation!). On the other hand, in practice, given its link structure and our warmup and thinning settings, MCMC would need more than <span class="math notranslate nohighlight">\(N_{\text{eff}}\)</span> to achieve an accurate posterior approximation (i.e., <span class="math notranslate nohighlight">\(N &gt; N_{\text{eff}}\)</span>). Nevertheless, it might be the case (as in this example) that this ratio can be larger than <span class="math notranslate nohighlight">\(1\)</span> <strong>for standalone parameters</strong>.</p>
+<p>Having said that, note we could have the following possible scenarios:</p>
+<ul class="simple">
+<li><p><strong>For a given standalone parameter</strong>, a ratio <span class="math notranslate nohighlight">\(\frac{N_{\text{eff}}}{N} &lt; 1\)</span> indicates that our MCMC sampling would need a larger number of samples <span class="math notranslate nohighlight">\(N\)</span> to be as good as a Monte Carlo simulation. Again, recall we draw this conclusion <strong>per standalone parameter</strong>. Therefore, we would increase the number of iterations <strong>AND/OR</strong> thinning in the MCMC sampling <strong>once we see a big picture across all our parameters of interest in the model</strong>.</p></li>
+<li><p><strong>For a given standalone parameter</strong>, a ratio <span class="math notranslate nohighlight">\(\frac{N_{\text{eff}}}{N} = 1\)</span> indicates that our MCMC sampling is as good as a Monte Carlo simulation. Again, recall we can only draw this conclusion <strong>per standalone parameter</strong>. If all the parameters of interest show ratios <span class="math notranslate nohighlight">\(\frac{N_{\text{eff}}}{N}\)</span> close enough to <span class="math notranslate nohighlight">\(1\)</span> (either slightly above or below), we could leave the <code class="docutils literal notranslate"><span class="pre">sampling()</span></code> setup as is. On the other hand, some parameters in the model will show a ratio close to <span class="math notranslate nohighlight">\(1\)</span>, while others will not. Thus, we might need to <strong>modify accordingly</strong> the number of iterations <strong>AND/OR</strong> thinning <strong>once we see a big picture across all our parameters of interest in the model</strong>.</p></li>
+<li><p><strong>For a given standalone parameter</strong>, a ratio <span class="math notranslate nohighlight">\(\frac{N_{\text{eff}}}{N} &gt; 1\)</span> indicates that our MCMC sampling needs less posterior samples <span class="math notranslate nohighlight">\(N\)</span> to be as good as a Monte Carlo simulation. Again, recall we can only draw this conclusion <strong>per standalone parameter</strong>. Possibly, some parameters will show a ratio <span class="math notranslate nohighlight">\(&gt; 1\)</span> while others will have a ratio quite close or equal to <span class="math notranslate nohighlight">\(1\)</span> (or even have a ratio <span class="math notranslate nohighlight">\(&lt; 1\)</span>!). Thus, we might need to <strong>modify accordingly</strong> the number of iterations <strong>AND/OR</strong> thinning <strong>once we see a big picture across all our parameters of interest in the model</strong>.</p></li>
+</ul>
+</div>
+<p>The ratios, by parameter of interest, can be obtained via <code class="docutils literal notranslate"><span class="pre">neff_ratio()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesplot</span></code>. The specific mathematical computation for <span class="math notranslate nohighlight">\(N_{\text{eff}}\)</span> can be found <a class="reference external" href="https://mc-stan.org/docs/reference-manual/effective-sample-size.html">here</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">spotify_eff_sample_size</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">neff_ratio</span><span class="p">(</span><span class="n">posterior_spotify_4_chains</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;overall_mean&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;between_sigma&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;within_sigma&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">spotify_eff_sample_size</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>overall_mean</dt><dd>1.001</dd><dt>between_sigma</dt><dd>1.079</dd><dt>within_sigma</dt><dd>0.965</dd></dl>
+</div></div>
+</div>
+<p>Our effective sample sizes for <code class="docutils literal notranslate"><span class="pre">overall_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">between_sigma</span></code>, and <code class="docutils literal notranslate"><span class="pre">within_sigma</span></code> indicate an <strong>acceptable performance effective sample size</strong> (all three are <strong>around</strong> <span class="math notranslate nohighlight">\(1\)</span>).</p>
+<p>We can use <code class="docutils literal notranslate"><span class="pre">mcmc_neff()</span></code> if we want to plot these ratios. For the Spotify case, there are no major concerns regarding these metrics.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">eff_sample_size_4_chains</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_neff</span><span class="p">(</span><span class="n">spotify_eff_sample_size</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Effective Sample Sizes by Parameter of Interest&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">facet_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">eff_sample_size_4_chains</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/32fead138ecd2f7967f65e5956c8e3a1a6c483ceec1f7b96f0ad2c4a7708ec70.png"><img alt="../_images/32fead138ecd2f7967f65e5956c8e3a1a6c483ceec1f7b96f0ad2c4a7708ec70.png" src="../_images/32fead138ecd2f7967f65e5956c8e3a1a6c483ceec1f7b96f0ad2c4a7708ec70.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+</section>
+<section id="autocorrelation">
+<h3>3.4. Autocorrelation<a class="headerlink" href="#autocorrelation" title="Permalink to this heading">#</a></h3>
+<p>Recall our MCMC posterior samples are not entirely independent. Therefore, <strong>we need to measure autocorrelation across the posterior samples by parameter and chain</strong>.</p>
+<p>We can automatically display the correlation plot via <code class="docutils literal notranslate"><span class="pre">mcmc_acf()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesplot</span></code>. The <span class="math notranslate nohighlight">\(y\)</span>-axis indicates the autocorrelation function (<code class="docutils literal notranslate"><span class="pre">ACF</span></code>), <strong>for which 0 indicates no autocorrelation and 1 indicates full autocorrelation</strong>. The <span class="math notranslate nohighlight">\(x\)</span>-axis indicates the lag, i.e., how many steps apart the posterior samples are in the random walk.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">lag_4_chains</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_acf</span><span class="p">(</span><span class="n">posterior_spotify_4_chains</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;overall_mean&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;between_sigma&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;within_sigma&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Autocorrelation Plots by Parameter of Interest&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">facet_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For the Spotify case, the autocorrelation significantly decreases before lag 5; this is a sign of a <strong>quick mixing</strong> (i.e., the chain is fast-moving around a well-defined parameter space of posterior values).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">lag_4_chains</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/c723fe8af70ea9370a45b729d8309fd4033d95b29fcd2c4698482c0bf51b2c06.png"><img alt="../_images/c723fe8af70ea9370a45b729d8309fd4033d95b29fcd2c4698482c0bf51b2c06.png" src="../_images/c723fe8af70ea9370a45b729d8309fd4033d95b29fcd2c4698482c0bf51b2c06.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+</section>
+<section id="the-gelman-rubin-diagnostic">
+<h3>3.5. The Gelman-Rubin Diagnostic<a class="headerlink" href="#the-gelman-rubin-diagnostic" title="Permalink to this heading">#</a></h3>
+<p>To evaluate within and between-chain sampling variability, we can use the Gelman-Rubin diagnostic known as <span class="math notranslate nohighlight">\(\hat{R}\)</span>. The intuition is that if our MCMC algorithm is working well, and if we run multiple copies of our chain, then they should all give us roughly the same answer.</p>
+<p>In particular, <strong>we check that quantities related to the variance within each chain and variance between chains are roughly the same</strong>.</p>
+<p>For a given parameter <span class="math notranslate nohighlight">\(\theta\)</span> of interest, for which we run an MCMC simulation with <span class="math notranslate nohighlight">\(C\)</span> chains, we let <span class="math notranslate nohighlight">\(\text{Var}_{\text{combined}}\)</span> be the variabilty in the posterior samples of <span class="math notranslate nohighlight">\(\theta\)</span> across our <span class="math notranslate nohighlight">\(C\)</span> chains all combined and <span class="math notranslate nohighlight">\(\text{Var}_{\text{within}}\)</span> the average variability in the posterior samples of <span class="math notranslate nohighlight">\(\theta\)</span> in a standalone chain. The metric <span class="math notranslate nohighlight">\(\hat{R}\)</span> is the following:</p>
+<div class="math notranslate nohighlight">
+\[ 
+\hat{R} \approx \sqrt{\frac{\text{Var}_{\text{combined}}}{\text{Var}_{\text{within}}}}. 
+\]</div>
+<p><strong>Per parameter in our MCMC simulation</strong>, a given value of <span class="math notranslate nohighlight">\(\hat{R}\)</span> indicates the following:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\hat{R} \approx 1\)</span> indicates stability across the <span class="math notranslate nohighlight">\(C\)</span> chains.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\hat{R} &gt; 1\)</span> indicates instability in the variability across all combined chains when compared to the average variability in a standalone chain.</p></li>
+</ul>
+<p>We can automatically obtain this metric by parameter via <code class="docutils literal notranslate"><span class="pre">rhat()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesplot</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">spotify_r_hats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rhat</span><span class="p">(</span><span class="n">posterior_spotify_4_chains</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;overall_mean&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;between_sigma&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;within_sigma&quot;</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">spotify_r_hats</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>overall_mean</dt><dd>1</dd><dt>between_sigma</dt><dd>1</dd><dt>within_sigma</dt><dd>1.001</dd></dl>
+</div></div>
+</div>
+<p>We do not have any major concerns regarding this metric for the Spotify case. We can also plot them via <code class="docutils literal notranslate"><span class="pre">mcmc_rhat()</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">r_hats_4_chains</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_rhat</span><span class="p">(</span><span class="n">spotify_r_hats</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Gelman-Rubin Diagnostic by Parameter of Interest&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">facet_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">r_hats_4_chains</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/6d2a509c1463fca9064dfe6df08a3b604e48cc7a6f6c3c2eef8cb38b00704050.png"><img alt="../_images/6d2a509c1463fca9064dfe6df08a3b604e48cc7a6f6c3c2eef8cb38b00704050.png" src="../_images/6d2a509c1463fca9064dfe6df08a3b604e48cc7a6f6c3c2eef8cb38b00704050.png" style="width: 720px; height: 600px;" /></a>
+</div>
+</div>
+<div class="exercise admonition" id="lecture8-q3">
+
+<p class="admonition-title"><span class="caption-number">Exercise 25 </span></p>
+<section id="exercise-content">
+<p>Suppose you ran <span class="math notranslate nohighlight">\(C\)</span> chains (<span class="math notranslate nohighlight">\(C &gt; 1\)</span>) and have ensured all MCMC diagnostics are OK for all your parameters of interest.</p>
+<p>What shall we do with all the resulting posterior samples, coming from all <span class="math notranslate nohighlight">\(C\)</span> chains, when drawing our final inferential conclusions?</p>
+</section>
+</div>
+</section>
+</section>
+<section id="wrapping-up">
+<h2>4. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Well, this is the end of a pretty interesting Bayesian journey (for now, in MDS).</p></li>
+<li><p>Throughout these weeks, we have explored a new way of performing inference and prediction (sometimes via regression models) using foundational probability concepts and simulations. Priors, likelihood, and posteriors are always a must here.</p></li>
+<li><p>The Bayesian paradigm is a vast field in Statistics and Machine Learning. You have the foundational tools to dig more into it from now on.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="lecture7_hierarchical_models.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Lecture 7 - Bayesian Hierarchical Models</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="MCMC_tutorial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-spotify-dataset">1. The Spotify Dataset</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#if-you-like-dancing-you-might-wonder-how-danceable-spotify-s-songs-are">If you like dancing, you might wonder: how danceable Spotify’s songs are?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-statistical-inquiries">1.1. Main Statistical Inquiries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-wrangling">1.2. Data Wrangling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exploratory-data-analysis">1.3. Exploratory Data Analysis</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-hierarchical-model">2. The Bayesian Hierarchical Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-likelihood">2.1. The Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-priors">2.2. The Priors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-the-model">2.3. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-mcmc-simulation">2.4. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-summary">2.5. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mcmc-diagnostics">3. MCMC Diagnostics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trace-plots">3.1. Trace Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-density-plots">3.2. Empirical Density Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-sample-size">3.3. Effective Sample Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation">3.4. Autocorrelation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-gelman-rubin-diagnostic">3.5. The Gelman-Rubin Diagnostic</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">4. Wrapping Up</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By G. Alexi Rodríguez-Arelis, Hedayat Zarkoob, Michael Gelbart, and Trevor Campbell
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

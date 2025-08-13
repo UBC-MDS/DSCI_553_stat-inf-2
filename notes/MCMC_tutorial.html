@@ -1,0 +1,1315 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model &#8212; DSCI 553 - Statistical Inference and Computation II</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/MCMC_tutorial';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Distribution Cheatsheet" href="appendix-dist-cheatsheet.html" />
+    <link rel="prev" title="Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics" href="lecture8_model_diagnostics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/UBC_MDS_logo.png" class="logo__image only-light" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>
+    <script>document.write(`<img src="../_static/UBC_MDS_logo.png" class="logo__image only-dark" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    Welcome to DSCI 553: Statistical Inference and Computation II
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Lectures</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../lecture-learning-objectives.html">Lecture Learning Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture1_intro_and_stan.html">Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture2_Bayes_MAP.html">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture6_binary_logistic_regression.html">Lecture 6 - Bayesian Binary Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture7_hierarchical_models.html">Lecture 7 - Bayesian Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture8_model_diagnostics.html">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="appendix-dist-cheatsheet.html">Distribution Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-greek-alphabet.html">Greek Alphabet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-bayesian-workflow.html">The Bayesian Workflow</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2/issues/new?title=Issue%20on%20page%20%2Fnotes/MCMC_tutorial.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/MCMC_tutorial.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gamma-poisson-and-bird-count-data">1.  Gamma-Poisson and Bird Count Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-likelihood">1.1. The Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-lambda-prior">1.2. The <span class="math notranslate nohighlight">\(\lambda\)</span> Prior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayes-rule-in-action">1.3. The Bayes’ Rule in Action</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-practical-case-involving-the-gamma-poisson-model">1.4. A Practical Case Involving the Gamma-Poisson Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-markov-chain-monte-carlo">2. Overview of Markov Chain Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-algorithm">2.1. Monte Carlo Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain">2.2. Markov Chain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-metropolis-hastings-algorithm">2.3. The Metropolis-Hastings Algorithm</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#r-coding-via-metropolis-algorithm">3. <code class="docutils literal notranslate"><span class="pre">R</span></code> Coding via Metropolis Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">4. Wrapping Up</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="insights-of-markov-chain-monte-carlo-via-the-gamma-poisson-model">
+<h1>Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model<a class="headerlink" href="#insights-of-markov-chain-monte-carlo-via-the-gamma-poisson-model" title="Permalink to this heading">#</a></h1>
+<section id="today-s-learning-objectives">
+<h2>Today’s Learning Objectives<a class="headerlink" href="#today-s-learning-objectives" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Describe the Gamma-Poisson model via the Bayes’ rule.</p></li>
+<li><p>Describe the Monte Carlo algorithm.</p></li>
+<li><p>Describe a Markov Chain.</p></li>
+<li><p>Explain an overview of MCMC via the Bayes’ rule.</p></li>
+<li><p>Apply MCMC via the Metropolis-Hastings algorithm.</p></li>
+<li><p>Apply MCMC via the Metropolis algorithm.</p></li>
+<li><p>Practice <code class="docutils literal notranslate"><span class="pre">R</span></code> coding of the MCMC via the Metropolis algorithm with a Gamma-Poisson example.</p></li>
+</ol>
+</section>
+<section id="loading-r-packages">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages<a class="headerlink" href="#loading-r-packages" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesrules</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="gamma-poisson-and-bird-count-data">
+<h2>1.  Gamma-Poisson and Bird Count Data<a class="headerlink" href="#gamma-poisson-and-bird-count-data" title="Permalink to this heading">#</a></h2>
+<p>Firstly, we will explore another foundational Bayesian model called <strong>Gamma-Poisson</strong>. As in the case of the <strong>Beta-Binomial</strong> model from <a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html"><span class="doc">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</span></a>, the Gamma-Poisson model can be solved analytically to obtain the exact posterior distribution of our parameter of interest, i.e., using Markov Chain Monte Carlo (MCMC) to get an approximate posterior distribution is unnecessary <strong>in practice</strong>. Nevertheless, <strong>we will do it in this tutorial to verify that MCMC actually works via the Metropolis algorithm</strong>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Note we will repeat this same <strong>proof of concept</strong> for the Gamma-Poisson model in <code class="docutils literal notranslate"><span class="pre">worksheet2</span></code>, but via <code class="docutils literal notranslate"><span class="pre">Stan</span></code> with the <a class="reference external" href="https://www.jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf"><strong>No-U-Turn sampler (NUTS)</strong></a> algorithm.</p>
+</div>
+<p>We will use two common distributions: the continuous <a class="reference external" href="https://ubc-mds.github.io/DSCI_551_stat-prob-dsci/notes/appendix-dist-cheatsheet.html#gamma"><strong>Gamma</strong></a> and the discrete <a class="reference external" href="https://ubc-mds.github.io/DSCI_551_stat-prob-dsci/notes/appendix-dist-cheatsheet.html#poisson"><strong>Poisson</strong></a>. Again, each distribution will play a crucial role in this inferential process (<strong>via the Bayes’ rule!</strong>). That said, keep the Bayes’ rule in mind for the Gamma-Poisson model:</p>
+<div class="math notranslate nohighlight">
+\[\text{posterior} \propto \text{prior} \times \text{likelihood}.\]</div>
+<p>Thus, in this framework, we need to define the specific <strong>prior</strong> and <strong>likelihood</strong> to get the <strong>posterior</strong> of our population parameter of interest.</p>
+<section id="the-likelihood">
+<h3>1.1. The Likelihood<a class="headerlink" href="#the-likelihood" title="Permalink to this heading">#</a></h3>
+<p>Our gathered evidence will be an <em>independent and identically distributed (iid)</em> random sample of size <span class="math notranslate nohighlight">\(n\)</span> coming from a Poisson population with a <strong>continuous parameter <span class="math notranslate nohighlight">\(\lambda &gt; 0\)</span></strong>.</p>
+<p>Therefore, for the <span class="math notranslate nohighlight">\(i\)</span>th element, the probability mass function (PMF) is the following:</p>
+<div class="math notranslate nohighlight">
+\[f(y_i \mid \lambda) = \frac{\lambda^{y_i} \exp(-\lambda)}{y_i!} \qquad \text{for } i = 1, \dots, n.\]</div>
+<p>Let us define a vector of our gathered evidence such that <span class="math notranslate nohighlight">\(\mathbf{y} = (y_1, \dots, y_n)^T\)</span>. Therefore, the likelihood function (which is <strong>mathematically</strong> equal to the joint PMF) is</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+l(\lambda \mid \mathbf{y})&amp; = f(\mathbf{y} \mid \lambda) \\ 
+&amp;= \prod_{i = 1}^n \frac{\lambda^{y_i} \exp(-\lambda)}{y_i!} \\
+&amp;= \frac{\lambda^{\sum_{i = 1}^n y_i} \exp(-n\lambda)}{\prod_{i = 1}^n y_i!}.
+\end{align*}\end{split}\]</div>
+</section>
+<section id="the-lambda-prior">
+<h3>1.2. The <span class="math notranslate nohighlight">\(\lambda\)</span> Prior<a class="headerlink" href="#the-lambda-prior" title="Permalink to this heading">#</a></h3>
+<p>Moving along with this model, note we have the following <strong>likelihood</strong>:</p>
+<div class="math notranslate nohighlight">
+\[Y_i \mid \lambda \mathop\sim^\text{iid} \text{Poisson}(\lambda) \quad \text{for } i = 1, \dots, n.\]</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The previous equation is <strong>conditioning</strong> <span class="math notranslate nohighlight">\(Y_i\)</span> on <span class="math notranslate nohighlight">\(\lambda\)</span>. Recall one of the most critical characteristics of Bayesian thinking is that <strong>population parameters are not fixed anymore but RANDOM</strong>.</p>
+</div>
+<p>The Gamma-Poisson would need a <strong>prior</strong> distribution for <span class="math notranslate nohighlight">\(\lambda &gt; 0\)</span> (our parameter of interest). Note that <span class="math notranslate nohighlight">\(\lambda\)</span> should be nonnegative, thus we need to find a distribution with the <strong>right support</strong> (i.e., a proper range of plausible values).</p>
+<p>A suitable choice for the <strong>continuous</strong> prior distribution of <span class="math notranslate nohighlight">\(\lambda\)</span> is the Gamma distribution. Hence, the prior distribution can be:</p>
+<div class="math notranslate nohighlight">
+\[\lambda \sim \text{Gamma}(s, r).\]</div>
+<p>Its probability density function (PDF) is:</p>
+<div class="math notranslate nohighlight">
+\[f(\lambda) = \frac{r^s}{\Gamma(s)} \lambda^{s - 1} \exp(-r \lambda) \quad \text{for } \lambda &gt; 0,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Gamma(\cdot)\)</span> is the Gamma function. Moreover, the <strong>shape</strong> and <strong>rate</strong> parameters <span class="math notranslate nohighlight">\(s &gt; 0\)</span> and <span class="math notranslate nohighlight">\(r &gt;0\)</span> (respectively) are called <strong>hyperparameters</strong>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The <a class="reference external" href="https://ubc-mds.github.io/DSCI_551_stat-prob-dsci/notes/appendix-dist-cheatsheet.html#gamma"><strong>cheatsheet</strong></a> has <span class="math notranslate nohighlight">\(x\)</span> as a variable in the Gamma’s PDF instead of <span class="math notranslate nohighlight">\(\lambda\)</span>. Therefore, we are adapting the above PDF notation to the context of our problem. Moreover, we are reparameterizing the PDF with <span class="math notranslate nohighlight">\(s = k\)</span> and <span class="math notranslate nohighlight">\(r = 1 / \theta\)</span>.</p>
+</div>
+</section>
+<section id="the-bayes-rule-in-action">
+<h3>1.3. The Bayes’ Rule in Action<a class="headerlink" href="#the-bayes-rule-in-action" title="Permalink to this heading">#</a></h3>
+<p>We already have our Gamma <strong>prior</strong> and Poisson <strong>likelihood</strong>. It is time to apply the Bayes’ rule as follows:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{posterior} \propto \text{prior} \times \text{likelihood}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\overbrace{f(\lambda \mid \mathbf{y})}^{\text{Posterior}} \propto \overbrace{f(\lambda)}^{\text{Prior}} \times \overbrace{l(\lambda \mid \mathbf{y})}^{\text{Likelihood}}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\underbrace{f(\lambda \mid \mathbf{y})}_{\text{Posterior}} \propto \underbrace{\frac{r^s}{\Gamma(s)} \lambda^{s - 1} \exp(-r \lambda)}_{\text{Prior}} \times \underbrace{\frac{\lambda^{\sum_{i = 1}^n y_i} \exp(-n\lambda)}{\prod_{i = 1}^n y_i!}}_{\text{Likelihood}}.
+\]</div>
+<p>We can get rid of all the terms that <strong>DO NOT</strong> depend on <span class="math notranslate nohighlight">\(\lambda\)</span> on the right-hand side (under our inferential Bayesian framework, <strong>they are viewed as constants!</strong>):</p>
+<div class="math notranslate nohighlight">
+\[
+f(\lambda \mid \mathbf{y}) \propto \lambda^{s - 1} \exp(-r \lambda) \lambda^{\sum_{i = 1}^n y_i} \exp(-n\lambda) = \lambda^{\left( s + \sum_{i = 1}^n y_i \right) - 1} \exp [-(r + n) \lambda].
+\]</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>We are just grouping exponents by common bases in the above equation.</p>
+</div>
+<p>This result gives us <strong>an interesting insight for the posterior distribution of <span class="math notranslate nohighlight">\(\lambda\)</span></strong>:</p>
+<div class="math notranslate nohighlight">
+\[
+f(\lambda \mid \mathbf{y}) \propto \underbrace{\lambda^{(s + \sum_{i = 1}^n y_i) - 1} \exp [-(r + n) \lambda]}_{\text{Kernel of a Gamma}\left( s + \sum_{i = 1}^n y_i, r + n \right)}.
+\]</div>
+<p>This expression is what we call a <strong>kernel</strong> of a <span class="math notranslate nohighlight">\(\text{Gamma} \left( s + \sum_{i = 1}^n y_i, r + n \right)\)</span>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>A kernel is the part of a given PDF that <strong>DOES DEPEND</strong> on our parameter of interest! The <span class="math notranslate nohighlight">\(\propto\)</span> symbol allows us to conclude this matter.</p>
+</div>
+<p>Hence, we just obtained <strong>the exact posterior of <span class="math notranslate nohighlight">\(\lambda\)</span></strong>:</p>
+<div class="math notranslate nohighlight">
+\[f(\lambda \mid \mathbf{y}) = \overbrace{\frac{(r + n)^{s + \sum_{i = 1}^n y_i}}{\Gamma \left( s + \sum_{i = 1}^n y_i \right)}}^{\text{Does not depend on $\lambda$}} \lambda^{\left( s + \sum_{i = 1}^n y_i \right) - 1} \exp [-(r + n) \lambda].\]</div>
+</section>
+<section id="a-practical-case-involving-the-gamma-poisson-model">
+<h3>1.4. A Practical Case Involving the Gamma-Poisson Model<a class="headerlink" href="#a-practical-case-involving-the-gamma-poisson-model" title="Permalink to this heading">#</a></h3>
+<p>Our Gamma-Poisson model is defined as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad Y_i = y_i \mid \lambda \mathop\sim^\text{iid} \text{Poisson}(\lambda) \quad \text{for } i = 1, \dots, n \\
+\text{prior:} \quad \lambda \sim \text{Gamma}(s, r),
+\end{align*}\end{split}\]</div>
+<p>where <strong>the exact posterior for <span class="math notranslate nohighlight">\(\lambda\)</span></strong> is</p>
+<div class="math notranslate nohighlight">
+\[\lambda \mid \mathbf{Y} = \mathbf{y} \sim \text{Gamma} \left( s + \sum_{i = 1}^n y_i, r + n \right).\]</div>
+<p>Now, let us apply this Bayesian model. We will use the dataset <code class="docutils literal notranslate"><span class="pre">bird_counts</span></code> from the <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code> package.</p>
+<div class="hint admonition">
+<p class="admonition-title">Description of the Bird Counts Data</p>
+<p>The description of <code class="docutils literal notranslate"><span class="pre">bird_counts</span></code> is the following:</p>
+<blockquote>
+<div><p><em>Bird count data collected between the years 1921 and 2017, in late December, by birdwatchers in the Ontario, Canada area. The data was made available by the Bird Studies Canada website and distributed through the R for Data Science TidyTuesday project.</em></p>
+</div></blockquote>
+</div>
+<p><strong>Suppose you want to make Bayesian inference on the mean <code class="docutils literal notranslate"><span class="pre">count</span></code> <span class="math notranslate nohighlight">\(\lambda\)</span> of <a class="reference external" href="https://en.wikipedia.org/wiki/Belted_kingfisher">belted kingfishers</a> in Ontario, Canada area.</strong> Hence, the below code obtains our <code class="docutils literal notranslate"><span class="pre">observed_evidence</span></code> in column <code class="docutils literal notranslate"><span class="pre">count</span></code> <span class="math notranslate nohighlight">\(\mathbf{y} = (y_1, \dots, y_n)^T\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">observed_evidence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bird_counts</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span><span class="n">species</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Belted Kingfisher&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">select</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">)</span>
+
+<span class="n">observed_evidence</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 94 × 3</caption>
+<thead>
+	<tr><th scope=col>year</th><th scope=col>species</th><th scope=col>count</th></tr>
+	<tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>1921</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1922</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1924</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1925</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1926</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1928</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1930</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>1931</td><td>Belted Kingfisher</td><td>0</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td>2011</td><td>Belted Kingfisher</td><td>7</td></tr>
+	<tr><td>2012</td><td>Belted Kingfisher</td><td>8</td></tr>
+	<tr><td>2013</td><td>Belted Kingfisher</td><td>4</td></tr>
+	<tr><td>2014</td><td>Belted Kingfisher</td><td>8</td></tr>
+	<tr><td>2015</td><td>Belted Kingfisher</td><td>8</td></tr>
+	<tr><td>2016</td><td>Belted Kingfisher</td><td>5</td></tr>
+	<tr><td>2017</td><td>Belted Kingfisher</td><td>3</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Of course, there should be a correlation structure across the years, and we could use a <strong>Bayesian hierarchical count regression model</strong>. Nevertheless, that topic is out of the scope of this worksheet (we will cover hierarchical models in the fourth week of this block). Thus, let us assume the observations are independent.</p>
+</div>
+<p>Once we have our <code class="docutils literal notranslate"><span class="pre">observed_evidence</span></code>, note that:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gather*}
+\sum_{i = 1}^n y_i = 396 \\
+n = 94.
+\end{gather*}\end{split}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">sum</span><span class="p">(</span><span class="n">observed_evidence</span><span class="o">$</span><span class="n">count</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">396</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">nrow</span><span class="p">(</span><span class="n">observed_evidence</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">94</div></div>
+</div>
+<p>Suppose we assume the following prior for <span class="math notranslate nohighlight">\(\lambda\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\lambda \sim \text{Gamma}(s = 150, r = 40).\]</div>
+<p>Thus, the exact posterior of <span class="math notranslate nohighlight">\(\lambda\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[\lambda \mid \mathbf{Y} = \mathbf{y} \sim \text{Gamma} \left( s + \sum_{i = 1}^n y_i = 546, r + n = 134 \right).\]</div>
+<p>We use the function <code class="docutils literal notranslate"><span class="pre">plot_beta_binomial()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code> to plot the prior, likelihood, and posterior:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">gamma_poisson_birds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_gamma_poisson</span><span class="p">(</span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">sum_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">observed_evidence</span><span class="o">$</span><span class="n">count</span><span class="p">),</span><span class="w"> </span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">observed_evidence</span><span class="p">))</span><span class="w">  </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Comparison of Prior, Likelihood, and Posterior&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">margin</span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cm&quot;</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">gamma_poisson_birds</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/b6039dc891de3d6247eca8a5307e5f917115b721552e803cb944228314af1f94.png"><img alt="../_images/b6039dc891de3d6247eca8a5307e5f917115b721552e803cb944228314af1f94.png" src="../_images/b6039dc891de3d6247eca8a5307e5f917115b721552e803cb944228314af1f94.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Once we have worked with the exact Gamma posterior of <span class="math notranslate nohighlight">\(\lambda\)</span>, <strong>let us check whether we can obtain a decent approximation via Markov Chain Monte Carlo (MCMC)</strong>.</p>
+</section>
+</section>
+<section id="overview-of-markov-chain-monte-carlo">
+<h2>2. Overview of Markov Chain Monte Carlo<a class="headerlink" href="#overview-of-markov-chain-monte-carlo" title="Permalink to this heading">#</a></h2>
+<p><strong>In general</strong>, a Bayesian model will have <span class="math notranslate nohighlight">\(d\)</span> parameters of interest for which we will need to obtain a <strong>joint posterior distribution</strong>:</p>
+<div class="math notranslate nohighlight">
+\[\Theta = (\theta_1, \dots, \theta_d)^T.\]</div>
+<p>Recall the Bayes’ rule:</p>
+<div class="math notranslate nohighlight">
+\[\text{posterior} = \frac{\text{prior} \times \text{likelihood}}{\text{normalizing constant}} \propto \text{prior} \times \text{likelihood}.\]</div>
+<p>Using <span class="math notranslate nohighlight">\(\Theta\)</span> as our parameter <strong>vector</strong> of interest, let <span class="math notranslate nohighlight">\(f(\Theta)\)</span> be the <strong>multivariate</strong> joint prior.</p>
+<p>Moreover with our observed data <span class="math notranslate nohighlight">\(\mathbf{y} = (y_1, \dots, y_n)^T\)</span>, let <span class="math notranslate nohighlight">\(\mathscr{l}(\Theta \mid \mathbf{y})\)</span> be the corresponding <strong>multivariate</strong> likelihood function along with the <strong>multivariate</strong> normalizing constant <span class="math notranslate nohighlight">\(f(\mathbf{y})\)</span>.</p>
+<p>Then, for the <strong>multivariate</strong> joint posterior <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span>, the Bayes’ rule becomes:</p>
+<div class="math notranslate nohighlight">
+\[f(\Theta \mid \mathbf{y}) = \frac{f(\Theta) \times \mathscr{l}(\Theta \mid \mathbf{y})}{f(\mathbf{y})} \propto f(\Theta) \times \mathscr{l}(\Theta \mid \mathbf{y}).\]</div>
+<p>Why are we highlighting <strong>multivariate</strong> all the time? It is because we have <span class="math notranslate nohighlight">\(d\)</span> parameters in vector <span class="math notranslate nohighlight">\(\Theta\)</span>.</p>
+<p>Suppose we want to obtain an <strong>analytical</strong> form for <span class="math notranslate nohighlight">\(f(\mathbf{y})\)</span>, then this will be an integral to solve:</p>
+<div class="math notranslate nohighlight">
+\[f(\mathbf{y}) = \int_{\theta_1} \int_{\theta_2} \cdots \int_{\theta_d} f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y}) d\theta_d\ \cdots d\theta_1.\]</div>
+<p>Solving this multivariate integral looks pretty challenging! Nonetheless, recall we do not need to obtain <span class="math notranslate nohighlight">\(f(\mathbf{y})\)</span>, but we still need to work around the math in</p>
+<div class="math notranslate nohighlight">
+\[f(\Theta \mid \mathbf{y}) \propto f(\Theta) \times \mathscr{l}(\Theta \mid \mathbf{y}).\]</div>
+<p>Let us explore the MCMC algorithm by parts: <strong>Markov Chain</strong> and <strong>Monte Carlo</strong>.</p>
+<section id="monte-carlo-algorithm">
+<h3>2.1. Monte Carlo Algorithm<a class="headerlink" href="#monte-carlo-algorithm" title="Permalink to this heading">#</a></h3>
+<p>Suppose you have a closed analytical form for the posterior distribution <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span>. You can build your <strong>independent</strong> Monte Carlo sample <span class="math notranslate nohighlight">\(\{ \Theta_1, \dots, \Theta_N \}\)</span> of size <span class="math notranslate nohighlight">\(N\)</span>, from <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span> by selecting each element <span class="math notranslate nohighlight">\(\Theta_i\)</span> (<span class="math notranslate nohighlight">\(i = 1, \dots, N\)</span>) in the following way:</p>
+<ul class="simple">
+<li><p><strong>Step 1.</strong> Draw <span class="math notranslate nohighlight">\(\Theta_i\)</span> from <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span>.</p></li>
+<li><p><strong>Step 2.</strong> Go there.</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Drawing <strong>fully independent</strong> elements for our sample <strong>WILL NOT</strong> be possible in MCMC. Moreover, <strong>note that <span class="math notranslate nohighlight">\(n \neq N\)</span></strong>. The term <span class="math notranslate nohighlight">\(n\)</span> refers to your sampled data size in the <strong>likelihood</strong>, whereas the <span class="math notranslate nohighlight">\(N\)</span> refers to the number of draws <span class="math notranslate nohighlight">\(\Theta_i\)</span> in the simulation.</p>
+</div>
+</section>
+<section id="markov-chain">
+<h3>2.2. Markov Chain<a class="headerlink" href="#markov-chain" title="Permalink to this heading">#</a></h3>
+<p>Here comes the MCMC twist to the previous Monte Carlo approach: <strong>Markov Chain</strong>.</p>
+<div class="hint admonition">
+<p class="admonition-title">What is a Markov Chain?</p>
+<p>In terms of our Bayesian modelling for the posterior, it is a sequence <span class="math notranslate nohighlight">\(\{ \Theta_1, \dots, \Theta_N \}\)</span> of size <span class="math notranslate nohighlight">\(N\)</span> whose elements are <strong>NOT ENTIRELY INDEPENDENT</strong> (hence the word <strong>chain</strong>!).</p>
+</div>
+<p><strong>What does NOT ENTIRELY INDEPENDENT implicate?</strong> It implicates the so-called <strong>Markov property</strong>:</p>
+<blockquote>
+<div><p><em>The next sampled <span class="math notranslate nohighlight">\(\Theta_{i + 1}\)</span> will depend on the current <span class="math notranslate nohighlight">\(\Theta_{i}\)</span> but not on previous <span class="math notranslate nohighlight">\(\Theta_{i - 1}, \Theta_{i - 2}, \dots\)</span></em></p>
+</div></blockquote>
+<p>More formally, because of this property, the conditional probability function of <span class="math notranslate nohighlight">\(\Theta_{i + 1}\)</span> can be depicted as:</p>
+<div class="math notranslate nohighlight">
+\[f(\Theta_{i + 1} \mid \Theta_{i}, \mathbf{y}) = f(\Theta_{i + 1} \mid \Theta_1, \Theta_2, \dots \Theta_{i}, \mathbf{y}).\]</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>There is no free lunch here!</strong> Each element in this chain can be drawn <strong>from another distribution and not specifically from our target posterior <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span></strong>:</p>
+<div class="math notranslate nohighlight">
+\[f(\Theta_{i + 1} \mid \Theta_{i}, \mathbf{y}) \neq f(\Theta_{i + 1} \mid \mathbf{y}).\]</div>
+<p>Thus, what is the point of this Markov Chain approach? The answer lies in the MCMC algorithm that approximates <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span> via our <span class="math notranslate nohighlight">\(N\)</span> elements in the chain.</p>
+<p><strong>There is more than one MCMC algorithm to do so, and the foundational one is the Metropolis-Hastings algorithm.</strong></p>
+</div>
+<img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/3dRosenbrock.png" alt="Dinosaur" />
+<br>
+<br>
+<p>Let us check <strong>the plot above</strong> (source: <a class="reference external" href="https://upload.wikimedia.org/wikipedia/commons/a/a6/3dRosenbrock.png"><em>Wikipedia</em></a>) to explain the conceptual intuition behind MCMC:</p>
+<ul class="simple">
+<li><p>Suppose you have a standalone parameter of interest whose whole space is depicted as the entire black square.</p></li>
+<li><p>You will use a <strong>given algorithm</strong> to perform your MCMC simulations. There is more than one choice of algorithm you could use (e.g., Metropolis-Hastings, Metropolis, <a class="reference external" href="https://www.geeksforgeeks.org/what-is-gibbs-sampling/"><strong>Gibbs Sampling</strong></a>, <a class="reference external" href="https://www.jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf"><strong>No-U-Turn sampler NUTS</strong></a>, etc). The global ideas in the upcoming bullet points remain for any algorithm.</p></li>
+<li><p>Three Markov chains start on the right-hand side of the parameter space: chain 1 (in yellow), chain 2 (in green), and chain 3 (in blue).</p></li>
+<li><p>The region of <strong>the correct posterior distribution of your parameter of interest</strong> is shown on the left-hand side of the parameter space as <strong>a well-defined diagonal region</strong>. Moreover, the star indicates the maximum of this correct posterior distribution.</p></li>
+<li><p>Note that on the right-hand side, their corresponding states (i.e., links in the chains) are shown as dots with the same chain colour (either yellow, green or blue). These states correspond to the warmup period of the given algorithm (i.e., these warmup chain states allow the given algorithm to <strong>learn</strong> its way to the <strong>well-defined diagonal region</strong> on the left-hand side).</p></li>
+<li><p>The three chains have a random start on the right-hand side of the parameter space that might be closer or further away from the <strong>well-defined diagonal region</strong> on the left-hand side. This fact is based on what initial random value we use to start simulating from the corresponding chain. Note that chain 1 (in yellow) begins further away but eventually learns its way to the <strong>well-defined diagonal region</strong>.</p></li>
+<li><p>If we move from right to left in the parameter space, we will notice that the three chains start heading to the <strong>well-defined diagonal region</strong>. This fact is called: <em>the chains start mixing</em>.</p></li>
+<li><p>As we move more to the left to the <strong>well-defined diagonal region</strong>, the chain states (i.e., the dots) start getting coloured in red. These states correspond to the corresponding <strong>post-warmup period</strong> per chain. At the end of the day, these are the posterior samples (per chain!) you will have as the output of the MCMC simulation per chain.</p></li>
+<li><p>For the three chains and using a given MCMC algorithm in this plot, we can conclude that we converge to <strong>the correct posterior distribution of your parameter of interest</strong>.</p></li>
+<li><p>Finally, it is essential to remark that all chain states (i.e., the dots in the lines) are obtained by applying the Bayes’ rule through different iterations of a given algorithm.</p></li>
+</ul>
+</section>
+<section id="the-metropolis-hastings-algorithm">
+<h3>2.3. The Metropolis-Hastings Algorithm<a class="headerlink" href="#the-metropolis-hastings-algorithm" title="Permalink to this heading">#</a></h3>
+<p>This is one of the possible algorithms that will allow us to obtain <strong>an approximation of the posterior distribution <span class="math notranslate nohighlight">\(f(\Theta \mid \mathbf{y})\)</span></strong> via our Markov Chain <span class="math notranslate nohighlight">\(\{ \Theta_1, \dots, \Theta_N \}\)</span>.</p>
+<p>Hence, with <span class="math notranslate nohighlight">\(\Theta_i\)</span> in our current iteration <span class="math notranslate nohighlight">\((i = 1, 2, \dots, N - 1)\)</span>, the next iteration <span class="math notranslate nohighlight">\(\Theta_{i + 1}\)</span> will be selected through a two-step process.</p>
+<p>Recall the Bayes’ rule:</p>
+<div class="math notranslate nohighlight">
+\[f(\Theta \mid \mathbf{y}) \propto f(\Theta) \times \mathscr{l}(\Theta \mid \mathbf{y}).\]</div>
+<p>Let the current <span class="math notranslate nohighlight">\(\Theta_i = \Theta\)</span>. Then, the algorithm’s two steps are:</p>
+<ul class="simple">
+<li><p><strong>Step 1.</strong> Randomly draw a new location <span class="math notranslate nohighlight">\(\Theta'\)</span> from a proposed model with probability density function (PDF) <span class="math notranslate nohighlight">\(q(\Theta' \mid \Theta)\)</span>. This proposed model is what we call a <strong>jumping distribution</strong> and it could be a <strong>Uniform</strong> or <strong>Normal</strong> which are symmetric.</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Another choice of a jumping distribution could be <strong>asymmetric</strong>, such as the <strong>Log-normal</strong>. We can choose this jumping distribution class when there are <strong>constraints</strong> on our parameters of interest (e.g., they are nonnegative), or <strong>we want to sample large values from the chain</strong> (recall the Log-normal is a heavy-tailed distribution).</p>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">Why are the jumping Normal and Uniform distributions called symmetric?</p>
+<p>Let us check a couple of PDFs with specific parameters (<strong>just to explain why they are called symmetric</strong>). Their corresponding means are indicated as vertical dashed red lines. This <strong>symmetric</strong> characteristic refers to the fact that these distributions have the same form on the right and left-hand sides of their corresponding means.</p>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">std_normal</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">-5</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dnorm</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Example of a Jumping Normal(0, 1)&quot;</span><span class="p">)</span>
+
+<span class="n">uniform_0_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">-0.5</span><span class="p">,</span><span class="w"> </span><span class="m">1.5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1.2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dunif</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Example of a Jumping Uniform(0, 1)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">plot_grid</span><span class="p">(</span><span class="n">std_normal</span><span class="p">,</span><span class="w"> </span><span class="n">uniform_0_1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/e734f52b6b97110c4d4a9be3d68d92752782a78663cd4541abccc2d8a985234f.png"><img alt="../_images/e734f52b6b97110c4d4a9be3d68d92752782a78663cd4541abccc2d8a985234f.png" src="../_images/e734f52b6b97110c4d4a9be3d68d92752782a78663cd4541abccc2d8a985234f.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">Why is the jumping Log-normal distribution called asymmetric?</p>
+<p>Let us check the PDF with specific parameters (<strong>just to explain why it is called asymmetric</strong>). Its corresponding mean is indicated as a vertical dashed red line. This <strong>asymmetric</strong> characteristic refers to the distribution having different forms on the right and left-hand sides of its corresponding mean.</p>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">lognormal</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.75</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlnorm</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">meanlog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">sdlog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="m">0.5</span><span class="p">),</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Example of a Jumping Lognormal(0, 1) Distribution&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">lognormal</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/b678e49b3b083f7ee0217d6dda9c45ed04f19e1b1eba7ac46bb5ba53822d4447.png"><img alt="../_images/b678e49b3b083f7ee0217d6dda9c45ed04f19e1b1eba7ac46bb5ba53822d4447.png" src="../_images/b678e49b3b083f7ee0217d6dda9c45ed04f19e1b1eba7ac46bb5ba53822d4447.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<ul>
+<li><p><strong>Step 2.</strong> Now, let us decide to go or not to go to the proposed <span class="math notranslate nohighlight">\(\Theta'\)</span>:</p>
+<p>a. Compute the acceptance probability for <span class="math notranslate nohighlight">\(\Theta'\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\alpha = \min \bigg\{ 1, \frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})} \times \frac{q(\Theta \mid \Theta')}{q(\Theta' \mid \Theta)} \bigg\}.\]</div>
+<p>b. Obtain the next location <span class="math notranslate nohighlight">\(\Theta_{i + 1}\)</span> as a Bernoulli trial (<strong>flipping an unfair coin!</strong>) taking on the two possible values:</p>
+</li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\Theta_{i + 1} =
+\begin{cases}
+\Theta' \; \; \; \; \mbox{with probability } \alpha\\
+\Theta \; \; \; \; \mbox{with probability } 1 -\alpha.
+\end{cases}
+\end{split}\]</div>
+<p><strong>Going back to our belted kingfishers example</strong>, using our Poisson <code class="docutils literal notranslate"><span class="pre">observed_evidence</span></code>, along with the prior</p>
+<div class="math notranslate nohighlight">
+\[\lambda \sim \text{Gamma}(s = 150, r = 40),\]</div>
+<p>let us implement the Metropolis algorithm <strong>to obtain an approximate posterior distribution for</strong></p>
+<div class="math notranslate nohighlight">
+\[\Theta = \lambda,\]</div>
+<p>i.e., we have <span class="math notranslate nohighlight">\(d = 1\)</span> parameter.</p>
+<p><strong>How does the jumping Uniform distribution work in this case?</strong></p>
+<p>Let us start with the Bayes’ rule:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\overbrace{f(\lambda)}^{\text{Prior}} \times \overbrace{\mathscr{l}(\lambda \mid \mathbf{y})}^{\text{Likelihood}} &amp;= \underbrace{\frac{r^s}{\Gamma(s)} \lambda^{s - 1} \exp(-r \lambda)}_{\text{Prior}} \times \underbrace{\frac{\lambda^{\sum_{i = 1}^n y_i} \exp(-n\lambda)}{\prod_{i = 1}^n y_i!}}_{\text{Likelihood}} \\
+&amp;= \frac{40^{150}}{\Gamma(150)} \lambda^{150 - 1} \exp(-40 \lambda) \times \frac{\lambda^{396} \exp(-94\lambda)}{\prod_{i = 1}^n y_i!}
+\end{align*}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\prod_{i = 1}^n y_i!\)</span> being equal to</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">prod</span><span class="p">(</span><span class="nf">factorial</span><span class="p">(</span><span class="n">observed_evidence</span><span class="o">$</span><span class="n">count</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">4.70262154724954e+195</div></div>
+</div>
+<p>Then, below, we plot</p>
+<div class="math notranslate nohighlight">
+\[f(\lambda) \times \mathscr{l}(\lambda \mid \mathbf{y}).\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bayes_rule_lambda_plot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">dgamma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span>
+<span class="w">    </span><span class="nf">prod</span><span class="p">(</span><span class="nf">dpois</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observed_evidence</span><span class="o">$</span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;) x &quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l(&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;| y)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">lambda</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Prior x Likelihood using Bird Counts&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bayes_rule_lambda_plot</span><span class="w"> </span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/6ed0b30b387b1b43730030fbf085a2d69e55240e289a6df846791b4ce77684e4.png"><img alt="../_images/6ed0b30b387b1b43730030fbf085a2d69e55240e289a6df846791b4ce77684e4.png" src="../_images/6ed0b30b387b1b43730030fbf085a2d69e55240e289a6df846791b4ce77684e4.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Then, suppose the chain’s current state is <span class="math notranslate nohighlight">\(\Theta = \lambda = 4\)</span> (dashed vertical blue line in the following plot). In <strong>step 1</strong> of the algorithm, we would randomly choose the proposal <span class="math notranslate nohighlight">\(\lambda'\)</span> within the neighbourhood of a jumping <span class="math notranslate nohighlight">\(\text{Uniform}(3.5, 4.5)\)</span> distribution with window <span class="math notranslate nohighlight">\(w = 0.5\)</span> (whose bounds are plotted as dashed vertical orange lines in the following plot).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bayes_rule_lambda_plot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bayes_rule_lambda_plot</span><span class="w"> </span><span class="o">+</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3.5</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;orange&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4.5</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;orange&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">3.5</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">4.5</span><span class="p">,</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">),</span><span class="w"> </span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Scale for <span class=" -Color -Color-Green">x</span> is already present.
+Adding another scale for <span class=" -Color -Color-Green">x</span>, which will replace the existing scale.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bayes_rule_lambda_plot</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/ff965dd6655f3e47cea093ad76c0abc420880cfcf1abcfce94568df797df9fab.png"><img alt="../_images/ff965dd6655f3e47cea093ad76c0abc420880cfcf1abcfce94568df797df9fab.png" src="../_images/ff965dd6655f3e47cea093ad76c0abc420880cfcf1abcfce94568df797df9fab.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+</section>
+</section>
+<section id="r-coding-via-metropolis-algorithm">
+<h2>3. <code class="docutils literal notranslate"><span class="pre">R</span></code> Coding via Metropolis Algorithm<a class="headerlink" href="#r-coding-via-metropolis-algorithm" title="Permalink to this heading">#</a></h2>
+<p>The previous Metropolis-Hastings algorithm can be simplified when the PDF of the jumping distribution is symmetric such as the Uniform:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation*}
+q(\Theta' \mid \Theta) = q(\Theta \mid \Theta') =
+\begin{cases}
+\frac{1}{2w} \; \; \; \; \mbox{when $\Theta$ and $\Theta'$ are within $w$ units of each other} \\
+0 \; \; \; \; 	\mbox{otherwise.}
+\end{cases}
+\end{equation*}\end{split}\]</div>
+<p>The definition of <span class="math notranslate nohighlight">\(\alpha\)</span> in <strong>step 2</strong> will change to:</p>
+<div class="math notranslate nohighlight">
+\[\alpha = \min \bigg\{ 1, \frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})} \bigg\}.\]</div>
+<p>If <span class="math notranslate nohighlight">\(\frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})} \geq 1\)</span>, then the posterior plausability of <span class="math notranslate nohighlight">\(\Theta'\)</span> is as large as that of <span class="math notranslate nohighlight">\(\Theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\frac{f(\Theta' \mid \mathbf{y})}{f(\Theta \mid \mathbf{y})} \propto \frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})} \geq 1.\]</div>
+<p>Yielding <span class="math notranslate nohighlight">\(\alpha = 1\)</span>, <strong>so we WILL ALWAYS move to <span class="math notranslate nohighlight">\(\Theta'\)</span></strong>.</p>
+<p>If <span class="math notranslate nohighlight">\(\frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})} &lt; 1\)</span>, then the posterior plausability of <span class="math notranslate nohighlight">\(\Theta'\)</span> is less than that of <span class="math notranslate nohighlight">\(\Theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\frac{f(\Theta' \mid \mathbf{y})}{f(\Theta \mid \mathbf{y})} \propto \frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})} &lt; 1.\]</div>
+<p>Yieding <span class="math notranslate nohighlight">\(\alpha = \frac{f(\Theta') \mathscr{l}(\Theta' \mid \mathbf{y})}{f(\Theta) \mathscr{l}(\Theta \mid \mathbf{y})}\)</span>, <strong>so we MIGHT move to <span class="math notranslate nohighlight">\(\Theta'\)</span> according to our Bernoulli trial</strong>.</p>
+<p>Function <code class="docutils literal notranslate"><span class="pre">one_m_iteration()</span></code> implements the previous two steps. Note it has parameters <code class="docutils literal notranslate"><span class="pre">w</span></code> as the window and <code class="docutils literal notranslate"><span class="pre">current_lambda</span></code> as the current state in the Markov chain. Moreover, function <code class="docutils literal notranslate"><span class="pre">dgamma()</span></code> will depict the <strong>Gamma prior</strong> for <span class="math notranslate nohighlight">\(\lambda\)</span> and <code class="docutils literal notranslate"><span class="pre">dpois()</span></code> computes the corresponding <strong>Poisson likelihood</strong>.</p>
+<p>This function returns the <code class="docutils literal notranslate"><span class="pre">proposal_lambda</span></code>, the <code class="docutils literal notranslate"><span class="pre">alpha</span></code> probability, and the result of the Bernoulli trial.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The upcoming code is <strong>partially</strong> based on the one you can find in <a class="reference external" href="https://www.bayesrulesbook.com/chapter-7.html#the-metropolis-hastings-algorithm">section 7.2 The Metropolis-Hastings algorithm</a> from the textbook.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">one_m_iteration</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">current_lambda</span><span class="p">){</span>
+<span class="w">    </span>
+<span class="w"> </span><span class="c1"># STEP 1: Randomly drawing a new lambda given a window w</span>
+<span class="w">    </span>
+<span class="w"> </span><span class="n">proposal_lambda</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">runif</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_lambda</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_lambda</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="w">  </span>
+<span class="w"> </span><span class="c1"># STEP 2: Decide whether or not to go to the proposal_lambda</span>
+<span class="w">    </span>
+<span class="w"> </span><span class="n">proposal_plausible</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">dgamma</span><span class="p">(</span><span class="n">proposal_lambda</span><span class="p">,</span><span class="w"> </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span>
+<span class="w">    </span><span class="nf">prod</span><span class="p">(</span><span class="nf">dpois</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observed_evidence</span><span class="o">$</span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proposal_lambda</span><span class="p">))</span>
+<span class="w">    </span>
+<span class="w"> </span><span class="n">current_plausisble</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">dgamma</span><span class="p">(</span><span class="n">current_lambda</span><span class="p">,</span><span class="w"> </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span>
+<span class="w">    </span><span class="nf">prod</span><span class="p">(</span><span class="nf">dpois</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observed_evidence</span><span class="o">$</span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_lambda</span><span class="p">))</span>
+<span class="w">    </span>
+<span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">proposal_plausible</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">current_plausisble</span><span class="p">)</span>
+<span class="w">    </span>
+<span class="w"> </span><span class="n">next_stop</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">proposal_lambda</span><span class="p">,</span><span class="w"> </span><span class="n">current_lambda</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="p">))</span>
+<span class="w">  </span>
+<span class="w"> </span><span class="c1"># Return the results</span>
+<span class="w"> </span><span class="nf">return</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="n">proposal_lambda</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">next_stop</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Function <code class="docutils literal notranslate"><span class="pre">m_tour()</span></code> executes the corresponding random walk to find the <strong>Markov chain links</strong>. Its parameters are <code class="docutils literal notranslate"><span class="pre">N</span></code> (the number of posterior samples to look for), window <code class="docutils literal notranslate"><span class="pre">w</span></code>, and the initial search value as <code class="docutils literal notranslate"><span class="pre">current</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">m_tour</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">current</span><span class="p">){</span>
+<span class="w">  </span><span class="c1"># 1. Initialize the simulation</span>
+<span class="w">  </span><span class="n">lambda</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rep</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="w">  </span><span class="n">alpha</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rep</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c1"># 2. Simulate N Markov chain stops</span>
+<span class="w">  </span><span class="nf">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">N</span><span class="p">){</span><span class="w">    </span>
+<span class="w">    </span><span class="c1"># Simulate one iteration</span>
+<span class="w">    </span><span class="n">sim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">one_m_iteration</span><span class="p">(</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">current_lambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current</span><span class="p">)</span>
+<span class="w">      </span>
+<span class="w">    </span><span class="c1"># Record alpha</span>
+<span class="w">    </span><span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sim</span><span class="o">$</span><span class="n">alpha</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1"># Record next location</span>
+<span class="w">    </span><span class="n">lambda</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sim</span><span class="o">$</span><span class="n">next_stop</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1"># Reset the current location</span>
+<span class="w">    </span><span class="n">current</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sim</span><span class="o">$</span><span class="n">next_stop</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1"># 3. Return the chain locations</span>
+<span class="w">  </span><span class="nf">return</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="n">iteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">N</span><span class="p">),</span><span class="w"> </span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, let us run the MCMC simulation via the Metropolis algorithm.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">set.seed</span><span class="p">(</span><span class="m">553</span><span class="p">)</span>
+<span class="n">m_simulation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">m_tour</span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">current</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">m_simulation</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 10000 × 3</caption>
+<thead>
+	<tr><th scope=col>iteration</th><th scope=col>lambda</th><th scope=col>alpha</th></tr>
+	<tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>1</td><td>0.8474579</td><td>1.000000e+00</td></tr>
+	<tr><td>2</td><td>1.1703387</td><td>1.000000e+00</td></tr>
+	<tr><td>3</td><td>1.1703387</td><td>1.147450e-14</td></tr>
+	<tr><td>4</td><td>1.1703387</td><td>3.290888e-25</td></tr>
+	<tr><td>5</td><td>1.1703387</td><td>7.930903e-42</td></tr>
+	<tr><td>6</td><td>1.1703387</td><td>0.000000e+00</td></tr>
+	<tr><td>7</td><td>1.5088045</td><td>1.000000e+00</td></tr>
+	<tr><td>8</td><td>1.6950139</td><td>1.000000e+00</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td> 9994</td><td>4.008886</td><td>0.18602853</td></tr>
+	<tr><td> 9995</td><td>4.008886</td><td>0.05460504</td></tr>
+	<tr><td> 9996</td><td>3.973660</td><td>0.91412869</td></tr>
+	<tr><td> 9997</td><td>3.961146</td><td>0.95870882</td></tr>
+	<tr><td> 9998</td><td>3.951174</td><td>0.96320316</td></tr>
+	<tr><td> 9999</td><td>3.951174</td><td>0.34021606</td></tr>
+	<tr><td>10000</td><td>3.951174</td><td>0.00129470</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Assume we use a <code class="docutils literal notranslate"><span class="pre">thin</span></code> setup (as in <code class="docutils literal notranslate"><span class="pre">sampling()</span></code> from <code class="docutils literal notranslate"><span class="pre">Stan</span></code>) of <code class="docutils literal notranslate"><span class="pre">3</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">m_simulation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">m_simulation</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="o">%%</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="n">m_simulation</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2500 × 3</caption>
+<thead>
+	<tr><th scope=col>iteration</th><th scope=col>lambda</th><th scope=col>alpha</th></tr>
+	<tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td> 1</td><td>0.8474579</td><td>1.000000e+00</td></tr>
+	<tr><td> 5</td><td>1.1703387</td><td>7.930903e-42</td></tr>
+	<tr><td> 9</td><td>1.6950139</td><td>1.972020e-12</td></tr>
+	<tr><td>13</td><td>2.1820057</td><td>1.187154e-01</td></tr>
+	<tr><td>17</td><td>2.8358935</td><td>1.000000e+00</td></tr>
+	<tr><td>21</td><td>3.7587235</td><td>1.000000e+00</td></tr>
+	<tr><td>25</td><td>3.7606601</td><td>4.622410e-04</td></tr>
+	<tr><td>29</td><td>3.8581526</td><td>4.842129e-01</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td>9973</td><td>4.044626</td><td>0.101459047</td></tr>
+	<tr><td>9977</td><td>3.711987</td><td>0.109981660</td></tr>
+	<tr><td>9981</td><td>3.816835</td><td>0.007625099</td></tr>
+	<tr><td>9985</td><td>4.129019</td><td>0.069326108</td></tr>
+	<tr><td>9989</td><td>3.914059</td><td>1.000000000</td></tr>
+	<tr><td>9993</td><td>4.008886</td><td>0.073293502</td></tr>
+	<tr><td>9997</td><td>3.961146</td><td>0.958708815</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Then, as a warmup, we discard the first <code class="docutils literal notranslate"><span class="pre">500</span></code> samples:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">m_simulation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="n">m_simulation</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span><span class="p">)</span>
+<span class="n">m_simulation</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2000 × 3</caption>
+<thead>
+	<tr><th></th><th scope=col>iteration</th><th scope=col>lambda</th><th scope=col>alpha</th></tr>
+	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>501</th><td>2001</td><td>4.037586</td><td>1.000000000</td></tr>
+	<tr><th scope=row>502</th><td>2005</td><td>4.018275</td><td>0.210024892</td></tr>
+	<tr><th scope=row>503</th><td>2009</td><td>4.036120</td><td>1.000000000</td></tr>
+	<tr><th scope=row>504</th><td>2013</td><td>4.022553</td><td>0.249865024</td></tr>
+	<tr><th scope=row>505</th><td>2017</td><td>3.802944</td><td>0.002439906</td></tr>
+	<tr><th scope=row>506</th><td>2021</td><td>3.903436</td><td>0.014862101</td></tr>
+	<tr><th scope=row>507</th><td>2025</td><td>4.081944</td><td>0.089770076</td></tr>
+	<tr><th scope=row>508</th><td>2029</td><td>4.285217</td><td>0.372838339</td></tr>
+	<tr><th scope=row>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><th scope=row>2494</th><td>9973</td><td>4.044626</td><td>0.101459047</td></tr>
+	<tr><th scope=row>2495</th><td>9977</td><td>3.711987</td><td>0.109981660</td></tr>
+	<tr><th scope=row>2496</th><td>9981</td><td>3.816835</td><td>0.007625099</td></tr>
+	<tr><th scope=row>2497</th><td>9985</td><td>4.129019</td><td>0.069326108</td></tr>
+	<tr><th scope=row>2498</th><td>9989</td><td>3.914059</td><td>1.000000000</td></tr>
+	<tr><th scope=row>2499</th><td>9993</td><td>4.008886</td><td>0.073293502</td></tr>
+	<tr><th scope=row>2500</th><td>9997</td><td>3.961146</td><td>0.958708815</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Let us check whether our approximate posterior samples matched the previously obtained exact Gamma posterior for <span class="math notranslate nohighlight">\(\lambda\)</span>. We can see our simulation results are, in fact, coming from this Gamma posterior.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">gamma_poisson_birds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gamma_poisson_birds</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_histogram</span><span class="p">(</span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_simulation</span><span class="p">,</span>
+<span class="w">    </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">after_stat</span><span class="p">(</span><span class="n">density</span><span class="p">)),</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lightgreen&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;black&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.2</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">gamma_poisson_birds</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/abc4daf33e5b8cb18f01ce24ff8b4e81dc752ce872295d1a20743af41f0a4046.png"><img alt="../_images/abc4daf33e5b8cb18f01ce24ff8b4e81dc752ce872295d1a20743af41f0a4046.png" src="../_images/abc4daf33e5b8cb18f01ce24ff8b4e81dc752ce872295d1a20743af41f0a4046.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+</section>
+<section id="wrapping-up">
+<h2>4. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Metropolis-Hastings and its simplified Metropolis version are only a couple of MCMC tools.</p></li>
+<li><p>These two approaches target single parameters (e.g., a probability of success <span class="math notranslate nohighlight">\(p\)</span> or a mean <span class="math notranslate nohighlight">\(\mu\)</span>). However, when we want to deal with <span class="math notranslate nohighlight">\(d\)</span> parameters, such as <span class="math notranslate nohighlight">\(\Theta = (\theta_1, \dots, \theta_d)^T\)</span>, there are more efficient tools like <strong>Gibbs sampling</strong> (used in <a class="reference external" href="https://mcmc-jags.sourceforge.io">JAGS, Just Another Gibbs Sampler</a>) or <strong>Hamiltonian Monte Carlo (HMC)</strong> algorithm (used in <a class="reference external" href="https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html"><code class="docutils literal notranslate"><span class="pre">Stan</span></code></a>).</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="lecture8_model_diagnostics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="appendix-dist-cheatsheet.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Distribution Cheatsheet</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gamma-poisson-and-bird-count-data">1.  Gamma-Poisson and Bird Count Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-likelihood">1.1. The Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-lambda-prior">1.2. The <span class="math notranslate nohighlight">\(\lambda\)</span> Prior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayes-rule-in-action">1.3. The Bayes’ Rule in Action</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-practical-case-involving-the-gamma-poisson-model">1.4. A Practical Case Involving the Gamma-Poisson Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-markov-chain-monte-carlo">2. Overview of Markov Chain Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-algorithm">2.1. Monte Carlo Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain">2.2. Markov Chain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-metropolis-hastings-algorithm">2.3. The Metropolis-Hastings Algorithm</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#r-coding-via-metropolis-algorithm">3. <code class="docutils literal notranslate"><span class="pre">R</span></code> Coding via Metropolis Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">4. Wrapping Up</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By G. Alexi Rodríguez-Arelis, Hedayat Zarkoob, Michael Gelbart, and Trevor Campbell
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
