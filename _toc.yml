@@ -1,0 +1,22 @@
+format: jb-book
+root: README
+parts:
+  - caption: Lectures
+    chapters:
+    - file: lecture-learning-objectives
+    - file: notes/lecture1_intro_and_stan
+    - file: notes/lecture2_Bayes_MAP
+    - file: notes/lecture3_beta_binomial_Bayesian_modelling
+    - file: notes/lecture4_MCMC_Poisson_Gamma_Normal
+    - file: notes/lecture5_hypothesis_testing_intro_regression
+    - file: notes/lecture6_binary_logistic_regression
+    - file: notes/lecture7_hierarchical_models
+    - file: notes/lecture8_model_diagnostics
+  - caption: Tutorial
+    chapters:
+    - file: notes/MCMC_tutorial
+  - caption: Appendices
+    chapters:
+    - file: notes/appendix-dist-cheatsheet
+    - file: notes/appendix-greek-alphabet
+    - file: notes/appendix-bayesian-workflow

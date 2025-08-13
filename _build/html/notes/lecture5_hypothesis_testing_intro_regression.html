@@ -1,0 +1,1862 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing &#8212; DSCI 553 - Statistical Inference and Computation II</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/lecture5_hypothesis_testing_intro_regression';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lecture 6 - Bayesian Binary Logistic Regression" href="lecture6_binary_logistic_regression.html" />
+    <link rel="prev" title="Lecture 4 - Markov Chain Monte Carlo, Stan, and Complex Bayesian Models" href="lecture4_MCMC_Poisson_Gamma_Normal.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/UBC_MDS_logo.png" class="logo__image only-light" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>
+    <script>document.write(`<img src="../_static/UBC_MDS_logo.png" class="logo__image only-dark" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    Welcome to DSCI 553: Statistical Inference and Computation II
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Lectures</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../lecture-learning-objectives.html">Lecture Learning Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture1_intro_and_stan.html">Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture2_Bayes_MAP.html">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture6_binary_logistic_regression.html">Lecture 6 - Bayesian Binary Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture7_hierarchical_models.html">Lecture 7 - Bayesian Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture8_model_diagnostics.html">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="MCMC_tutorial.html">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="appendix-dist-cheatsheet.html">Distribution Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-greek-alphabet.html">Greek Alphabet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-bayesian-workflow.html">The Bayesian Workflow</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2/issues/new?title=Issue%20on%20page%20%2Fnotes/lecture5_hypothesis_testing_intro_regression.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/lecture5_hypothesis_testing_intro_regression.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#previously">Previously…</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-normal-linear-regression">1. Bayesian Normal Linear Regression</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bikes-dataset">1.1. The <code class="docutils literal notranslate"><span class="pre">bikes</span></code> Dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exploratory-data-analysis">1.2. Exploratory Data Analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fitting-a-frequentist-ols-regression-model">1.3. Fitting a Frequentist OLS Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-bayesian-regression-model">1.4.  Setting up a Bayesian Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo-simulation">1.5.  Markov Chain Monte Carlo Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obtaining-visualizing-and-interpreting-the-posterior-results">1.6. Obtaining, Visualizing, and Interpreting the Posterior Results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-tinder-example-comes-back">2. The Tinder Example Comes Back</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-prior">2.1. The Prior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-likelihood">2.2. The Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-posterior">2.3. The Posterior</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-hypothesis-testing">3. Bayesian Hypothesis Testing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#one-sided-test">3.1. One-Sided Test</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#two-sided-test">3.2. Two-Sided Test</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">4. Wrapping Up</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lecture-5-bayesian-normal-linear-regression-and-hypothesis-testing">
+<h1>Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing<a class="headerlink" href="#lecture-5-bayesian-normal-linear-regression-and-hypothesis-testing" title="Permalink to this heading">#</a></h1>
+<section id="today-s-learning-objectives">
+<h2>Today’s Learning Objectives<a class="headerlink" href="#today-s-learning-objectives" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Describe the basics of Bayesian Normal linear regression.</p></li>
+<li><p>Explore and contrast Bayesian Normal linear regression versus Ordinary Least-Squares (OLS).</p></li>
+<li><p>Retake the concept of the posterior credible interval in a Beta-Binomial framework.</p></li>
+<li><p>Introduce one-sided hypothesis testing in a Beta-Binomial framework.</p></li>
+<li><p>Relate the posterior credible interval with the two-sided hypothesis in a Beta-Binomial framework.</p></li>
+</ol>
+</section>
+<section id="loading-r-packages">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages<a class="headerlink" href="#loading-r-packages" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesrules</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">rstantools</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">broom</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">extraDistr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">rstan</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">broom.mixed</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">wesanderson</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="previously">
+<h2>Previously…<a class="headerlink" href="#previously" title="Permalink to this heading">#</a></h2>
+<p>We have explored the Bayes’ rule via probability theory with <strong>discrete and continuous variables</strong>. Note we expanded this approach to the Beta-Binomial and Gamma-Poisson models, a conjunction of continuous and discrete distributions for our prior and likelihood components, respectively. We already defined an interval estimate in a Bayesian framework: <strong>the posterior credible interval</strong>. Nonetheless, we have not discussed how to perform Bayesian hypothesis testing yet.</p>
+<p>Additionally, the bike-share (<a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html"><span class="doc">Lecture 4 - Markov Chain Monte Carlo, Stan, and Complex Bayesian Models</span></a>) and baseball (<code class="docutils literal notranslate"><span class="pre">lab2</span></code>) problems provided further insights into something we have not formally defined: <strong>Bayesian regression</strong>.</p>
+<p>Therefore, it is time to check <strong>Bayesian hypothesis testing</strong> and <strong>Normal regression</strong>.</p>
+</section>
+<section id="bayesian-normal-linear-regression">
+<h2>1. Bayesian Normal Linear Regression<a class="headerlink" href="#bayesian-normal-linear-regression" title="Permalink to this heading">#</a></h2>
+<p>Even though we already worked with two cases that paved the way (baseball and bikeshare data) to regression analysis, we have not formally introduced the concept of <strong>Bayesian regression</strong>. However, now that we have the Bayesian inference foundations, we can start with regression modelling in variable frameworks we explored in <strong>DSCI 561</strong> and <strong>562</strong>.</p>
+<p>The general ideas remain:</p>
+<ul class="simple">
+<li><p>We need to assess the association (or causation if that is the case) between a response <span class="math notranslate nohighlight">\(Y\)</span> and our <span class="math notranslate nohighlight">\(k\)</span> regressors <span class="math notranslate nohighlight">\(X_1, \dots, X_k\)</span>.</p></li>
+<li><p>Or, we need to predict a new <span class="math notranslate nohighlight">\(Y'\)</span> with our trained model.</p></li>
+</ul>
+<section id="the-bikes-dataset">
+<h3>1.1. The <code class="docutils literal notranslate"><span class="pre">bikes</span></code> Dataset<a class="headerlink" href="#the-bikes-dataset" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code> package contains another more reduced version of the dataset we used for our case in <a class="reference external" href="https://ubc-mds.github.io/DSCI_553_stat-inf-2/notes/lecture4_MCMC_Poisson_Gamma_Normal.html"><code class="docutils literal notranslate"><span class="pre">lecture4</span></code></a>. According to the package’s documentation, the description is the following:</p>
+<blockquote>
+<div><p><em>Data on ridership among registered members of the Capital Bikeshare service in Washington, D.C.</em></p>
+</div></blockquote>
+<p><strong>The dataset contains <span class="math notranslate nohighlight">\(n = 500\)</span> observations and thirteen variables.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bikes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 500 × 13</caption>
+<thead>
+	<tr><th scope=col>date</th><th scope=col>season</th><th scope=col>year</th><th scope=col>month</th><th scope=col>day_of_week</th><th scope=col>weekend</th><th scope=col>holiday</th><th scope=col>temp_actual</th><th scope=col>temp_feel</th><th scope=col>humidity</th><th scope=col>windspeed</th><th scope=col>weather_cat</th><th scope=col>rides</th></tr>
+	<tr><th scope=col>&lt;date&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;lgl&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>2011-01-01</td><td>winter</td><td>2011</td><td>Jan</td><td>Sat</td><td> TRUE</td><td>no</td><td>57.39952</td><td>64.72625</td><td>80.5833</td><td>10.74988</td><td>categ2</td><td> 654</td></tr>
+	<tr><td>2011-01-03</td><td>winter</td><td>2011</td><td>Jan</td><td>Mon</td><td>FALSE</td><td>no</td><td>46.49166</td><td>49.04645</td><td>43.7273</td><td>16.63670</td><td>categ1</td><td>1229</td></tr>
+	<tr><td>2011-01-04</td><td>winter</td><td>2011</td><td>Jan</td><td>Tue</td><td>FALSE</td><td>no</td><td>46.76000</td><td>51.09098</td><td>59.0435</td><td>10.73983</td><td>categ1</td><td>1454</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td>2012-12-29</td><td>winter</td><td>2012</td><td>Dec</td><td>Sat</td><td> TRUE</td><td>no</td><td>50.69598</td><td>53.81600</td><td>75.2917</td><td> 8.333661</td><td>categ2</td><td>1182</td></tr>
+	<tr><td>2012-12-30</td><td>winter</td><td>2012</td><td>Dec</td><td>Sun</td><td> TRUE</td><td>no</td><td>50.88048</td><td>52.85300</td><td>48.3333</td><td>23.500518</td><td>categ1</td><td>1432</td></tr>
+	<tr><td>2012-12-31</td><td>winter</td><td>2012</td><td>Dec</td><td>Mon</td><td>FALSE</td><td>no</td><td>47.92848</td><td>52.11383</td><td>57.7500</td><td>10.374682</td><td>categ2</td><td>2290</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>We will work with the following variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">weekend</span></code>: Whether or not the date falls on a weekend (<code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>). It is a <strong>binary variable</strong> and one of the <strong>regressors</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temp_feel</span></code>: What the temperature feels like (degrees Fahrenheit). It is a <strong>continuous variable</strong> and one of the <strong>regressors</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rides</span></code>: The number of bikeshare rides. It is an integer-type variable and our <strong>response</strong>.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bikeshare_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bikes</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">select</span><span class="p">(</span><span class="n">weekend</span><span class="p">,</span><span class="w"> </span><span class="n">temp_feel</span><span class="p">,</span><span class="w"> </span><span class="n">rides</span><span class="p">)</span>
+<span class="n">bikeshare_data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 500 × 3</caption>
+<thead>
+	<tr><th scope=col>weekend</th><th scope=col>temp_feel</th><th scope=col>rides</th></tr>
+	<tr><th scope=col>&lt;lgl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td> TRUE</td><td>64.72625</td><td> 654</td></tr>
+	<tr><td>FALSE</td><td>49.04645</td><td>1229</td></tr>
+	<tr><td>FALSE</td><td>51.09098</td><td>1454</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td> TRUE</td><td>53.81600</td><td>1182</td></tr>
+	<tr><td> TRUE</td><td>52.85300</td><td>1432</td></tr>
+	<tr><td>FALSE</td><td>52.11383</td><td>2290</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="admonition-main-statistical-inquiries admonition">
+<p class="admonition-title">Main statistical inquiries</p>
+<p>Suppose we are interested in the following statistical inquiries:</p>
+<ol class="arabic simple">
+<li><p>How are <code class="docutils literal notranslate"><span class="pre">weekend</span></code> and <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code> associated with <code class="docutils literal notranslate"><span class="pre">rides</span></code>?</p></li>
+<li><p>Is there a numerical result that can quantify this association?</p></li>
+<li><p>Can we predict the number of <code class="docutils literal notranslate"><span class="pre">rides</span></code> during a weekend with 75 degrees Fahrenheit? What is the prediction interval?</p></li>
+</ol>
+</div>
+<div class="exercise admonition" id="lecture5-q1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 15 </span></p>
+<section id="exercise-content">
+<p>Let us retake <strong>DSCI 562</strong> topics under a frequentist approach; what regression modelling can approach the above inquiries?</p>
+<p><strong>A.</strong> A generalized linear model (GLM) such as Multinomial regression.</p>
+<p><strong>B.</strong> A GLM such as Ordinal Logistic regression.</p>
+<p><strong>C.</strong> A GLM such as Poisson regression.</p>
+<p><strong>D.</strong> Ordinary Least-squares (OLS).</p>
+</section>
+</div>
+<figure class="align-default" id="poisson-and-normal">
+<a class="reference internal image-reference" href="../_images/Poisson_and_Normal.png"><img alt="../_images/Poisson_and_Normal.png" src="../_images/Poisson_and_Normal.png" style="height: 350px;" /></a>
+</figure>
+<p><em>Source: <a class="reference external" href="http://www.math.wm.edu/~leemis/chart/UDR/UDR.html">Univariate Distribution Relationships</a></em></p>
+</section>
+<section id="exploratory-data-analysis">
+<h3>1.2. Exploratory Data Analysis<a class="headerlink" href="#exploratory-data-analysis" title="Permalink to this heading">#</a></h3>
+<p>Let us make a quick exploratory data analysis on <code class="docutils literal notranslate"><span class="pre">bikeshare_data</span></code>: <code class="docutils literal notranslate"><span class="pre">rides</span></code> versus <code class="docutils literal notranslate"><span class="pre">weekend</span></code> and <code class="docutils literal notranslate"><span class="pre">rides</span></code> versus <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">weekend_boxplots</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bikeshare_data</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">weekend</span><span class="p">,</span><span class="w"> </span><span class="n">rides</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_boxplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">weekend</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bike Rides&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Weekend&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Side-by-Side Boxplots&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;none&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">scale_fill_manual</span><span class="p">(</span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">wes_palette</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;GrandBudapest1&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note the bike rides tend to be less during weekends.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">weekend_boxplots</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/e8b6a6117033bcf491a0ed1cf8dfca78eed19023f710a33d1a61ffe186d42f8a.png"><img alt="../_images/e8b6a6117033bcf491a0ed1cf8dfca78eed19023f710a33d1a61ffe186d42f8a.png" src="../_images/e8b6a6117033bcf491a0ed1cf8dfca78eed19023f710a33d1a61ffe186d42f8a.png" style="width: 720px; height: 540px;" /></a>
+</div>
+</div>
+<p>If we fit an OLS simple linear regression of <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code> versus <code class="docutils literal notranslate"><span class="pre">rides</span></code>, the <code class="docutils literal notranslate"><span class="pre">rides</span></code> seem to increase along with temperature linearly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bikeshare_data_scatterplot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">(</span><span class="n">bikeshare_data</span><span class="p">,</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp_feel</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rides</span>
+<span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bike Rides&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Temperature (F)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_smooth</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">temp_feel</span><span class="p">,</span><span class="w"> </span><span class="n">rides</span><span class="p">),</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lm&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">se</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;red&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;y ~ x&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Scatterplot with OLS Regression Fitted Line&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bikeshare_data_scatterplot</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/5a21f503d86efdef6b18e21c0e158ff93c6dcb02890c04994d1751a24b9a45b3.png"><img alt="../_images/5a21f503d86efdef6b18e21c0e158ff93c6dcb02890c04994d1751a24b9a45b3.png" src="../_images/5a21f503d86efdef6b18e21c0e158ff93c6dcb02890c04994d1751a24b9a45b3.png" style="width: 720px; height: 540px;" /></a>
+</div>
+</div>
+</section>
+<section id="fitting-a-frequentist-ols-regression-model">
+<h3>1.3. Fitting a Frequentist OLS Regression Model<a class="headerlink" href="#fitting-a-frequentist-ols-regression-model" title="Permalink to this heading">#</a></h3>
+<p>First, <strong>for the sake of approach comparison with <span class="math notranslate nohighlight">\(i = 1 , \dots , n\)</span></strong>; we will estimate an OLS regression model. In this case (for the <span class="math notranslate nohighlight">\(i\)</span>th observation) let <span class="math notranslate nohighlight">\(Y_i\)</span> be <code class="docutils literal notranslate"><span class="pre">rides</span></code>, <span class="math notranslate nohighlight">\(X_{i,1}\)</span> be <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code>, and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation*}
+X_{i, 2} =
+\begin{cases}
+1 \; \; \; \; \mbox{if } \texttt{weekend} \mbox{ is } \texttt{TRUE},\\
+0 \; \; \; \; 	\mbox{otherwise;}
+\end{cases}
+\end{equation*}\end{split}\]</div>
+<p>the OLS model is:</p>
+<div class="math notranslate nohighlight">
+\[
+Y_i = \beta_0 + \beta_1 X_{i, 1} + \beta_2 X_{i, 2} + \varepsilon_i.
+\]</div>
+<p>With the following assumptions:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gather*}
+\mathbb{E}(\varepsilon_i) = 0 \\
+\text{Var}(\varepsilon_i) = \sigma^2 \\
+\varepsilon_i \sim \mathcal{N}(0, \sigma^2) \\
+\varepsilon_i \perp \!\!\! \perp \varepsilon_k \; \; \; \; \text{for} \; i \neq k  \; \; \; \; \text{(independence)}. 
+\end{gather*}\end{split}\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">rides_OLS</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">rides</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">temp_feel</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">weekend</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bikeshare_data</span><span class="p">)</span>
+<span class="nf">tidy</span><span class="p">(</span><span class="n">rides_OLS</span><span class="p">,</span><span class="w"> </span><span class="n">conf.int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 3 × 7</caption>
+<thead>
+	<tr><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>statistic</th><th scope=col>p.value</th><th scope=col>conf.low</th><th scope=col>conf.high</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>(Intercept)</td><td>-1873.751</td><td>351.790</td><td>-5.326</td><td>0</td><td>-2564.929</td><td>-1182.573</td></tr>
+	<tr><td>temp_feel  </td><td>   80.347</td><td>  4.971</td><td>16.162</td><td>0</td><td>   70.580</td><td>   90.115</td></tr>
+	<tr><td>weekendTRUE</td><td> -707.621</td><td>123.644</td><td>-5.723</td><td>0</td><td> -950.550</td><td> -464.693</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><strong>From the frequentist point of view</strong>, the output indicates statistically significant coefficients. Note the estimated intercept is negative, which does not make sense for <code class="docutils literal notranslate"><span class="pre">rides</span></code>. <strong>We could fix this in our Bayesian approach.</strong></p>
+</div>
+</section>
+<section id="setting-up-a-bayesian-regression-model">
+<h3>1.4.  Setting up a Bayesian Regression Model<a class="headerlink" href="#setting-up-a-bayesian-regression-model" title="Permalink to this heading">#</a></h3>
+<p>Now that <code class="docutils literal notranslate"><span class="pre">rides_OLS</span></code> is all done, let us start our Bayesian model. <strong>Assuming response normality</strong>, we have the following:</p>
+<div class="math notranslate nohighlight">
+\[Y_i \sim \mathcal{N}(\mu_i = \beta_0 + \beta_1 X_{i, 1} + \beta_2 X_{i, 2}, \sigma^2)\]</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Each <span class="math notranslate nohighlight">\(Y_i\)</span> will have its own mean <span class="math notranslate nohighlight">\(\mu_i\)</span>. This mean is the <strong>systematic component</strong> of the regression model. Furthermore, all responses will share a common variance <span class="math notranslate nohighlight">\(\sigma^2\)</span> (<strong>analogous to the error terms in OLS</strong>).</p>
+</div>
+<p><strong>For the prior specification</strong>, we will proceed as follows:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\beta_0 \sim \text{Gamma}(\alpha =  7.5, \beta = 1)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta_1 \sim \mathcal{N}(\mu_{\beta_1} = 0, \sigma_{\beta_1}^2 = 1000^2)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta_2 \sim \mathcal{N}(\mu_{\beta_2} = 0, \sigma_{\beta_2}^2 = 1000^2)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma \sim \mathrm{IG}(\eta = 0.001, \lambda = 0.001)\)</span>, this is the <a class="reference external" href="http://www.math.wm.edu/~leemis/chart/UDR/PDFs/Invertedgamma.pdf">Inverse Gamma distribution</a> parametrized by <em>shape</em> <span class="math notranslate nohighlight">\(\eta = 0.001\)</span> and <em>rate</em> <span class="math notranslate nohighlight">\(\lambda = 0.001\)</span>. This prior distribution is a popular choice for <span class="math notranslate nohighlight">\(\sigma &gt; 0\)</span>. The <code class="docutils literal notranslate"><span class="pre">Stan</span></code> syntax is available <a class="reference external" href="https://mc-stan.org/docs/functions-reference/inverse-gamma-distribution.html">here</a>.</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>We have to stress the following:</p>
+<ul class="simple">
+<li><p>For these prior specifications, we assume that the mean of the <span class="math notranslate nohighlight">\(\beta_j\)</span> (<span class="math notranslate nohighlight">\(j = 1, 2\)</span>) is <span class="math notranslate nohighlight">\(0\)</span>, since we do not know if the variable <span class="math notranslate nohighlight">\(X_{i,j}\)</span> has any association with <span class="math notranslate nohighlight">\(Y_i\)</span>. We will use a large variance (i.e, <span class="math notranslate nohighlight">\(\sigma_{\beta_j}^2 = 1000^2\)</span>) on the coefficients <strong>to reflect PRIOR uncertainty</strong>.</p></li>
+<li><p>We also specify a nonnegative prior distribution (i.e., <strong>Inverse Gamma</strong>) for the common variance of the error terms <span class="math notranslate nohighlight">\(\sigma^2 &gt; 0\)</span>.</p></li>
+<li><p>The nature of <code class="docutils literal notranslate"><span class="pre">rides</span></code> is non-negative. Hence, a Gamma prior on <span class="math notranslate nohighlight">\(\beta_0\)</span> makes more sense than a Normal. <strong>Its hyperparameters are chosen to reflect our uncertainty in this intercept.</strong></p></li>
+</ul>
+<p>The density plots for these priors are shown below.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plotting Gamma prior for a_w</span>
+<span class="n">prior_gamma_beta_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">20</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dgamma</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7.5</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="s">&quot;0&quot;</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Prior Distribution for Intercept&quot;</span><span class="p">))</span>
+
+<span class="c1"># Plotting Normal prior for regression coefficients</span>
+<span class="n">prior_gamma_beta_j</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">-4000</span><span class="p">,</span><span class="w"> </span><span class="m">4000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.0004</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dnorm</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="s">&quot;j&quot;</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Prior Distribution for Regression Coefficients&quot;</span><span class="p">))</span>
+
+<span class="c1"># Plotting Inverted Gamma prior for common variance</span>
+<span class="n">prior_inverted_gamma_sigma_sq</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">40</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.003</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dinvgamma</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.001</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.001</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="n">sigma</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Prior Distribution for Common Standard Deviation&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="nf">plot_grid</span><span class="p">(</span><span class="n">prior_gamma_beta_0</span><span class="p">,</span><span class="w"> </span><span class="n">prior_gamma_beta_j</span><span class="p">,</span><span class="w"> </span><span class="n">prior_inverted_gamma_sigma_sq</span><span class="p">,</span><span class="w"> </span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/5907423fd4d41f5b9e053bd88614ff00de91b6b15719dea2fdf96a36be90683c.png"><img alt="../_images/5907423fd4d41f5b9e053bd88614ff00de91b6b15719dea2fdf96a36be90683c.png" src="../_images/5907423fd4d41f5b9e053bd88614ff00de91b6b15719dea2fdf96a36be90683c.png" style="width: 720px; height: 1200px;" /></a>
+</div>
+</div>
+<p>Finally, we formalize the model with a dataset containing <span class="math notranslate nohighlight">\(n\)</span> observations (i.e., rows in <code class="docutils literal notranslate"><span class="pre">bikes</span></code>), for the <span class="math notranslate nohighlight">\(i\)</span>th observation <span class="math notranslate nohighlight">\((i = 1, \dots, n)\)</span> with <span class="math notranslate nohighlight">\(Y_i\)</span> <code class="docutils literal notranslate"><span class="pre">rides</span></code>, <span class="math notranslate nohighlight">\(X_{i,1}\)</span> <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code> and the dummy <span class="math notranslate nohighlight">\(X_{i,2}\)</span> for <code class="docutils literal notranslate"><span class="pre">weekend</span></code>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad Y_i \mid \beta_0, \beta_1, \beta_2, \sigma^2 \mathop\sim^\text{ind} \mathcal{N} (\mu_i, \sigma^2) \\ \text{where} \quad \mu_i =  \beta_0 + \beta_1 X_{i, 1} + \beta_2 X_{i,2} \\
+\text{priors:} \quad \beta_0 \sim \text{Gamma}(\alpha =  7.5, \beta = 1) \\
+\beta_1 \sim \mathcal{N}(\mu_{\beta_1} = 0, \sigma_{\beta_1}^2 = 1000^2) \\
+\beta_2 \sim \mathcal{N}(\mu_{\beta_2} = 0, \sigma_{\beta_1}^2 = 1000^2) \\
+\sigma \sim \mathrm{IG}(\eta = 0.001, \lambda = 0.001).
+\end{align*}\end{split}\]</div>
+</section>
+<section id="markov-chain-monte-carlo-simulation">
+<h3>1.5.  Markov Chain Monte Carlo Simulation<a class="headerlink" href="#markov-chain-monte-carlo-simulation" title="Permalink to this heading">#</a></h3>
+<p><strong>We proceed with the <code class="docutils literal notranslate"><span class="pre">Stan</span></code> code for this model</strong>. We will continue using the blocks <code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, and <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
+<p>Additionally, we introduce the block <code class="docutils literal notranslate"><span class="pre">generated_quantities</span></code>. <strong>This block is executed after obtaining our posterior samples for the <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</strong> The new block needs the variables <code class="docutils literal notranslate"><span class="pre">pred_x_1</span></code> and <code class="docutils literal notranslate"><span class="pre">pred_x_2</span></code> for the predictive inquiry for the weekend (<code class="docutils literal notranslate"><span class="pre">pred_x_2</span></code>) with 75 degrees Fahrenheit (<code class="docutils literal notranslate"><span class="pre">pred_x_1</span></code>). <strong>We input these variables in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</strong></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The block <code class="docutils literal notranslate"><span class="pre">generated_quantities</span></code> will create a <strong>posterior predictive distribution <code class="docutils literal notranslate"><span class="pre">y_pred</span></code></strong> which takes into account two sources of variability:</p>
+<ul class="simple">
+<li><p><strong>Posterior variability in <code class="docutils literal notranslate"><span class="pre">parameters</span></code>:</strong> We will generate one prediction by row from the Markov Chain Monte Carlo (MCMC) output to take into account this variability, i.e., the variability will come from our approximate joint posterior distribution. These predictions will be computed using the fixed values <code class="docutils literal notranslate"><span class="pre">pred_x_1</span></code> and <code class="docutils literal notranslate"><span class="pre">pred_x_2</span></code>.</p></li>
+<li><p><strong>Sampling variability:</strong> Each prediction by row from the MCMC output should deviate from its respective <strong>posterior prediction</strong> (computed with the posterior sampled parameters). Thus, we will add random noise to it.</p></li>
+</ul>
+<p>We are basically constructing a predictive distribution for the response for a weekend with 75 degrees Fahrenheit, from which we will compute an interval <strong>analogous to the Prediction Interval (PI) from OLS</strong>.</p>
+</div>
+<p>The block <code class="docutils literal notranslate"><span class="pre">generated</span> <span class="pre">quantities</span></code> takes the posterior samples of our parameters and computes <span class="math notranslate nohighlight">\(\mu_i\)</span> with the fixed values <code class="docutils literal notranslate"><span class="pre">pred_x_1</span></code> and <code class="docutils literal notranslate"><span class="pre">pred_x_2</span></code>. Then, <strong>we used a Normal random number generator <code class="docutils literal notranslate"><span class="pre">normal_rng()</span></code> to add the so-called random noise</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bikerides_stan</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {</span>
+<span class="s">  int&lt;lower=0&gt; n;                               // training sample size</span>
+<span class="s">  vector[n] y;                                  // response vector</span>
+<span class="s">  vector[n] x_1;                                // regressor 1 vector</span>
+<span class="s">  vector[n] x_2;                                // regressor 2 vector</span>
+<span class="s">  real pred_x_1;                                // fixed value for regressor 1</span>
+<span class="s">  real pred_x_2;                                // fixed value for regressor 2</span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">  real&lt;lower=0&gt; beta_0;                         // intercept with lower bound</span>
+<span class="s">  real beta_1;                                  // regression coefficient 1</span>
+<span class="s">  real beta_2;                                  // regression coefficient 2</span>
+<span class="s">  real&lt;lower=0&gt; sigma;                          // common standard deviation with lower bound</span>
+<span class="s">  }</span>
+<span class="s">model {</span>
+<span class="s">  beta_0 ~ gamma(7.5, 1);                       // alpha = 7.5 and beta = 1</span>
+<span class="s">  beta_1 ~ normal(0, 1000);                     // mu_b1 = 0 and sigma_b1 = 1000</span>
+<span class="s">  beta_2 ~ normal(0, 1000);                     // mu_b2 = 0 and sigma_b2 = 1000</span>
+<span class="s">  sigma ~ inv_gamma(0.001, 0.001);              // eta = 0.001 and lambda = 0.001</span>
+<span class="s">  y ~ normal(beta_0 + beta_1 * x_1 + beta_2 * x_2, sigma);</span>
+<span class="s">}</span>
+<span class="s">generated quantities {</span>
+<span class="s">  real y_pred = normal_rng(beta_0 + beta_1 * pred_x_1 + beta_2 * pred_x_2, sigma);</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we create a <strong>dictionary</strong> with all the <code class="docutils literal notranslate"><span class="pre">data</span></code> variables we need to pass into <code class="docutils literal notranslate"><span class="pre">Stan</span></code> as a <code class="docutils literal notranslate"><span class="pre">list()</span></code>. <strong>We cannot pass logical values to <code class="docutils literal notranslate"><span class="pre">Stan</span></code> but <code class="docutils literal notranslate"><span class="pre">0</span></code>s and <code class="docutils literal notranslate"><span class="pre">1</span></code>s. Hence we use <code class="docutils literal notranslate"><span class="pre">model_matrix()</span></code> to convert column <code class="docutils literal notranslate"><span class="pre">weekend</span></code> to <code class="docutils literal notranslate"><span class="pre">0</span></code>s and <code class="docutils literal notranslate"><span class="pre">1</span></code>s.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">model_matrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">model.matrix</span><span class="p">(</span><span class="n">rides</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">temp_feel</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">weekend</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bikeshare_data</span><span class="p">))</span>
+<span class="n">model_matrix</span>
+
+<span class="n">bikerides_dictionary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">bikeshare_data</span><span class="p">),</span><span class="w"> </span>
+<span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bikeshare_data</span><span class="o">$</span><span class="n">rides</span><span class="p">,</span>
+<span class="w">  </span><span class="n">x_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bikeshare_data</span><span class="o">$</span><span class="n">temp_feel</span><span class="p">,</span>
+<span class="w">  </span><span class="n">x_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model_matrix</span><span class="o">$</span><span class="n">weekendTRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pred_x_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pred_x_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 500 × 3</caption>
+<thead>
+	<tr><th></th><th scope=col>(Intercept)</th><th scope=col>temp_feel</th><th scope=col>weekendTRUE</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>1</td><td>64.72625</td><td>1</td></tr>
+	<tr><th scope=row>2</th><td>1</td><td>49.04645</td><td>0</td></tr>
+	<tr><th scope=row>3</th><td>1</td><td>51.09098</td><td>0</td></tr>
+	<tr><th scope=row>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><th scope=row>498</th><td>1</td><td>53.81600</td><td>1</td></tr>
+	<tr><th scope=row>499</th><td>1</td><td>52.85300</td><td>1</td></tr>
+	<tr><th scope=row>500</th><td>1</td><td>52.11383</td><td>0</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Then, we compile the <code class="docutils literal notranslate"><span class="pre">Stan</span></code> model and run the simulation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_bikeshare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bikerides_stan</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bikerides_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">60</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.47 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:     1 / 40000 [  0%]  (Warmup)
+Chain 1: Iteration:  4000 / 40000 [ 10%]  (Warmup)
+Chain 1: Iteration:  8000 / 40000 [ 20%]  (Warmup)
+Chain 1: Iteration: 12000 / 40000 [ 30%]  (Warmup)
+Chain 1: Iteration: 16000 / 40000 [ 40%]  (Warmup)
+Chain 1: Iteration: 20000 / 40000 [ 50%]  (Warmup)
+Chain 1: Iteration: 20001 / 40000 [ 50%]  (Sampling)
+Chain 1: Iteration: 24000 / 40000 [ 60%]  (Sampling)
+Chain 1: Iteration: 28000 / 40000 [ 70%]  (Sampling)
+Chain 1: Iteration: 32000 / 40000 [ 80%]  (Sampling)
+Chain 1: Iteration: 36000 / 40000 [ 90%]  (Sampling)
+Chain 1: Iteration: 40000 / 40000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.595 seconds (Warm-up)
+Chain 1:                1.954 seconds (Sampling)
+Chain 1:                3.549 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="obtaining-visualizing-and-interpreting-the-posterior-results">
+<h3>1.6. Obtaining, Visualizing, and Interpreting the Posterior Results<a class="headerlink" href="#obtaining-visualizing-and-interpreting-the-posterior-results" title="Permalink to this heading">#</a></h3>
+<p><strong>When comparing both outputs, Bayesian and OLS,</strong> we highlight the following:</p>
+<ul class="simple">
+<li><p>Our nonnegative Bayesian intercept is <strong>more precise</strong> than the negative OLS estimation.</p></li>
+<li><p>Moreover, the <strong>point estimates</strong> for <span class="math notranslate nohighlight">\(\beta_1\)</span> differ greatly, but the Bayesian one is more precise (<strong>check the posterior credible interval versus the frequentist 95% confidence interval</strong>).</p></li>
+<li><p>Regarding the <strong>point estimates</strong> for <span class="math notranslate nohighlight">\(\beta_2\)</span>, both approaches show considerable variability.</p></li>
+<li><p>Note that the <strong>point estimates</strong> for <span class="math notranslate nohighlight">\(\sigma\)</span> are quite similar between both approaches!</p></li>
+<li><p>Finally, <strong>both predictive intervals show high variability</strong>.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bayesian posterior summaries!</span>
+<span class="n">tidy_posterior_bikeshare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_bikeshare</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)[</span><span class="m">-6</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span>
+<span class="n">tidy_posterior_bikeshare</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A matrix: 5 × 4 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>beta_0</th><td>   7.50</td><td>   2.76</td><td>    3.15</td><td>  14.11</td></tr>
+	<tr><th scope=row>beta_1</th><td>  54.17</td><td>   0.94</td><td>   52.37</td><td>  55.86</td></tr>
+	<tr><th scope=row>beta_2</th><td>-789.32</td><td> 124.54</td><td>-1034.84</td><td>-543.73</td></tr>
+	<tr><th scope=row>sigma</th><td>1279.47</td><td>  38.09</td><td> 1208.41</td><td>1354.80</td></tr>
+	<tr><th scope=row>y_pred</th><td>3279.83</td><td>1332.33</td><td>  640.81</td><td>5674.73</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Frequentist OLS output!</span>
+<span class="nf">tidy</span><span class="p">(</span><span class="n">rides_OLS</span><span class="p">,</span><span class="w"> </span><span class="n">conf.int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="nf">glance</span><span class="p">(</span><span class="n">rides_OLS</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="nf">predict.lm</span><span class="p">(</span><span class="n">rides_OLS</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">temp_feel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">weekend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w"> </span><span class="n">interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;prediction&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 3 × 7</caption>
+<thead>
+	<tr><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>statistic</th><th scope=col>p.value</th><th scope=col>conf.low</th><th scope=col>conf.high</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>(Intercept)</td><td>-1873.751</td><td>351.790</td><td>-5.326</td><td>0</td><td>-2564.929</td><td>-1182.573</td></tr>
+	<tr><td>temp_feel  </td><td>   80.347</td><td>  4.971</td><td>16.162</td><td>0</td><td>   70.580</td><td>   90.115</td></tr>
+	<tr><td>weekendTRUE</td><td> -707.621</td><td>123.644</td><td>-5.723</td><td>0</td><td> -950.550</td><td> -464.693</td></tr>
+</tbody>
+</table>
+</div><div class="output text_html"><table class="dataframe">
+<caption>A tibble: 1 × 12</caption>
+<thead>
+	<tr><th scope=col>r.squared</th><th scope=col>adj.r.squared</th><th scope=col>sigma</th><th scope=col>statistic</th><th scope=col>p.value</th><th scope=col>df</th><th scope=col>logLik</th><th scope=col>AIC</th><th scope=col>BIC</th><th scope=col>deviance</th><th scope=col>df.residual</th><th scope=col>nobs</th></tr>
+	<tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>0.38</td><td>0.378</td><td>1242.26</td><td>152.4</td><td>0</td><td>2</td><td>-4270.308</td><td>8548.617</td><td>8565.475</td><td>766974881</td><td>497</td><td>500</td></tr>
+</tbody>
+</table>
+</div><div class="output text_html"><table class="dataframe">
+<caption>A matrix: 1 × 3 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope=col>fit</th><th scope=col>lwr</th><th scope=col>upr</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>3444.68</td><td>994.407</td><td>5894.953</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Retaking our initial inquiries, we state the following:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><em>How are <code class="docutils literal notranslate"><span class="pre">weekend</span></code> and <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code> associated with <code class="docutils literal notranslate"><span class="pre">rides</span></code>?</em></p></li>
+<li><p><em>Is there a numerical result that can quantify this association?</em></p></li>
+</ol>
+</div></blockquote>
+<p>Our Bayesian estimates (i.e., <strong>means of the MCMC posterior samples</strong>) for <span class="math notranslate nohighlight">\(\beta_1\)</span> and <span class="math notranslate nohighlight">\(\beta_2\)</span> indicate that bike rides linearly increase by 54.20 on average for each degree Fahrenheit, whereas they decrease by 796.40 on average during weekends.</p>
+<p><strong>Statistically, according to our 95% posterior credible intervals, the regression coefficients are different from zero (the intervals do not contain it).</strong></p>
+<blockquote>
+<div><ol class="arabic simple" start="3">
+<li><p><em>Can we predict the number of <code class="docutils literal notranslate"><span class="pre">rides</span></code> during a weekend with 75 degrees Fahrenheit? What is the prediction interval?</em></p></li>
+</ol>
+</div></blockquote>
+<p>Yes, we can obtain a <strong>Bayesian posterior predictive distribution</strong> for a <strong>95% prediction interval</strong> of the number of <code class="docutils literal notranslate"><span class="pre">rides</span></code> during a weekend with 75 degrees Fahrenheit:</p>
+<div class="math notranslate nohighlight">
+\[(640.81, 5674.73).\]</div>
+<p>Let us plot the aproximate posterior distribution for <code class="docutils literal notranslate"><span class="pre">temp_feel</span></code> (<span class="math notranslate nohighlight">\(\beta_1\)</span>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">beta_1_post_dist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_bikeshare</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;beta_1&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Distribution and 95% Credible Interval for&quot;</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beta</span><span class="p">[</span><span class="m">1</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="s">&quot;Bikeshare Rides per °F&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">beta_1_post_dist</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/7a4469a1f7ace4c252be8f879fca0393c0047994c548d0a6e6f7cebf462cd647.png"><img alt="../_images/7a4469a1f7ace4c252be8f879fca0393c0047994c548d0a6e6f7cebf462cd647.png" src="../_images/7a4469a1f7ace4c252be8f879fca0393c0047994c548d0a6e6f7cebf462cd647.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Now, we will do it for <code class="docutils literal notranslate"><span class="pre">weekend</span></code> (<span class="math notranslate nohighlight">\(\beta_2\)</span>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">beta_2_post_dist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_bikeshare</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;beta_2&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Distribution and 95% Credible Interval for&quot;</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beta</span><span class="p">[</span><span class="m">2</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="s">&quot;Bikeshare Rides Difference During Weekends Compared to Weekdays&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">beta_2_post_dist</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/5bf8bdaaaff23f18b03f57a6b8a8a6e72c6b28e6bd14134f09bd557b50294305.png"><img alt="../_images/5bf8bdaaaff23f18b03f57a6b8a8a6e72c6b28e6bd14134f09bd557b50294305.png" src="../_images/5bf8bdaaaff23f18b03f57a6b8a8a6e72c6b28e6bd14134f09bd557b50294305.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Then, we proceed with <span class="math notranslate nohighlight">\(\sigma\)</span> (<strong>the overall standard deviation between the observations</strong>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">sigma_post_dist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_bikeshare</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;sigma&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Distribution and 95% Credible Interval for&quot;</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">sigma</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="s">&quot;Bikeshare Rides&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">sigma_post_dist</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/cbbe47eed83d354aa809e4dfeaec142aa898f8067c54e5c3c17524333ce654de.png"><img alt="../_images/cbbe47eed83d354aa809e4dfeaec142aa898f8067c54e5c3c17524333ce654de.png" src="../_images/cbbe47eed83d354aa809e4dfeaec142aa898f8067c54e5c3c17524333ce654de.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>And finally, the <strong>95% prediction interval</strong> of the number of <code class="docutils literal notranslate"><span class="pre">rides</span></code> during a weekend with 75°F.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">PI_post_dist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_bikeshare</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;y_pred&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;95% Response Prediction Interval During a Weekend and 75°F&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="s">&quot;Bikeshare Rides&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">PI_post_dist</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/027faed1afee48238904518ee0c333326e973f629686124e3801d8528ff2b2c0.png"><img alt="../_images/027faed1afee48238904518ee0c333326e973f629686124e3801d8528ff2b2c0.png" src="../_images/027faed1afee48238904518ee0c333326e973f629686124e3801d8528ff2b2c0.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The 95% credible and the prediction intervals, show a critical concern: <strong>large variability in MCMC sampling for <span class="math notranslate nohighlight">\(\beta_2\)</span>, <span class="math notranslate nohighlight">\(\sigma\)</span>, and the prediction interval</strong>. These findings suggest the model is not capturing the right systematic component, i.e., the relation might be non-linear, and there might be other regressors we are missing.</p>
+</div>
+</section>
+</section>
+<section id="the-tinder-example-comes-back">
+<h2>2. The Tinder Example Comes Back<a class="headerlink" href="#the-tinder-example-comes-back" title="Permalink to this heading">#</a></h2>
+<p>We have had enough bottle cap flips on this block. So let us retake a new Tinder example while applying what we learned in the theoretical Beta-Binomial model from <a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html"><span class="doc">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</span></a>.</p>
+<center>        
+<img src="https://logos-world.net/wp-content/uploads/2020/09/Tinder-Logo.png" width="300" height="170"/>
+</center>
+<p>Again, <strong>for the single population living in Vancouver looking for a partner</strong>, let us suppose we want to make inference <strong>on the probability <span class="math notranslate nohighlight">\(\pi\)</span> of finding a partner when using Tinder</strong>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This Tinder example is a whole new problem with different data. In <a class="reference internal" href="lecture2_Bayes_MAP.html"><span class="doc">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</span></a>, we were building the intuition of the Bayes’ rule using Bernoulli distributions, without getting into Beta-Binomial terrains. But now, we can elaborate more formal Bayesian conclusions by using the Beta-Binomial model we saw in <a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html"><span class="doc">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</span></a>.</p>
+</div>
+<p>Let us recall the Bayes’ rule:</p>
+<div class="math notranslate nohighlight">
+\[\text{posterior} \propto \text{prior} \times \text{likelihood}.\]</div>
+<p>Hence, <strong>via new Tinder data</strong>, let us build our theoretical posterior before proceeding with Bayesian hypothesis testing.</p>
+<section id="the-prior">
+<h3>2.1. The Prior<a class="headerlink" href="#the-prior" title="Permalink to this heading">#</a></h3>
+<p><strong>We need to obtain our Beta prior for <span class="math notranslate nohighlight">\(\pi\)</span>.</strong> Again, as an enthusiastic Tinder researcher in the literature, I collected information from 60 previous studies on using this app to find a partner. <strong>These studies were run in cities as similar as Vancouver.</strong></p>
+<p>Furthermore, in each study, there was a sample of single subjects. <strong>All subjects were using Tinder in each sample.</strong> The corresponding researchers recorded how many subjects ended up partnered in each study by using Tinder (the <strong>success</strong>).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Again, this is simulated data.</p>
+</div>
+<p>Let us recall the Bernoulli trial we used in <a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html"><span class="doc">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</span></a>.</p>
+<p>A <strong>independent</strong> subject <span class="math notranslate nohighlight">\(X_i\)</span> is assumed as:</p>
+<div class="math notranslate nohighlight">
+\[X_i \sim \mathrm{Bernoulli}(\pi) \quad \text{for} \quad i = 1, \dots, n.\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\pi \in [0, 1]\)</span> is the unknown parameter we want to infer: <strong>the probability of finding a partner if we use Tinder</strong>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_i\)</span> is the result at the end of the study (<span class="math notranslate nohighlight">\(1 = \text{partnered}\)</span> or <span class="math notranslate nohighlight">\(0 = \text{non-partnered}\)</span>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_i = 1\)</span> is the <strong>success</strong> with probability <span class="math notranslate nohighlight">\(\pi\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(n\)</span> is the sample size of each study.</p></li>
+</ul>
+<p>Now, we need to set our theoretical Beta prior. I recorded the estimation results of <span class="math notranslate nohighlight">\(\pi\)</span> in these 60 studies. It is stored in <code class="docutils literal notranslate"><span class="pre">tinder_prior_pi_studies</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">tinder_prior_pi_studies</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="s">&quot;../data/tinder_prior_pi_studies.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">show_col_types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+<span class="n">tinder_prior_pi_studies</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A spec_tbl_df: 60 × 1</caption>
+<thead>
+	<tr><th scope=col>tinder_prior_pi</th></tr>
+	<tr><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>0.2652300</td></tr>
+	<tr><td>0.3879204</td></tr>
+	<tr><td>0.2221071</td></tr>
+	<tr><td>⋮</td></tr>
+	<tr><td>0.3726435</td></tr>
+	<tr><td>0.2260178</td></tr>
+	<tr><td>0.2890508</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Now, we obtain a histogram of <code class="docutils literal notranslate"><span class="pre">tinder_prior_pi_studies</span></code> (with the <span class="math notranslate nohighlight">\(y\)</span>-axis adjusted as a <code class="docutils literal notranslate"><span class="pre">after_stat(density)</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">hist_prior</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_histogram</span><span class="p">(</span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tinder_prior_pi_studies</span><span class="p">,</span>
+<span class="w">    </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tinder_prior_pi</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">after_stat</span><span class="p">(</span><span class="n">density</span><span class="p">)),</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;grey&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Histogram of 60 Prior Estimations of &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">coord_cartesian</span><span class="p">(</span><span class="n">xlim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">hist_prior</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/d6bf6385a97981408a7155a62d233159fbdbb117929274033c1396d67ce8457b.png"><img alt="../_images/d6bf6385a97981408a7155a62d233159fbdbb117929274033c1396d67ce8457b.png" src="../_images/d6bf6385a97981408a7155a62d233159fbdbb117929274033c1396d67ce8457b.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>The histogram is right-skewed (a hint on the fact that, for the Beta prior, <span class="math notranslate nohighlight">\(a &lt; b\)</span>). We can also obtain the summary statistics.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">mean</span><span class="p">(</span><span class="n">tinder_prior_pi_studies</span><span class="o">$</span><span class="n">tinder_prior_pi</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="nf">var</span><span class="p">(</span><span class="n">tinder_prior_pi_studies</span><span class="o">$</span><span class="n">tinder_prior_pi</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="nf">sd</span><span class="p">(</span><span class="n">tinder_prior_pi_studies</span><span class="o">$</span><span class="n">tinder_prior_pi</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.255</div><div class="output text_html">0.01</div><div class="output text_html">0.098</div></div>
+</div>
+<p>Using the function <code class="docutils literal notranslate"><span class="pre">summarize_beta_binomial()</span></code>, let us obtain the theoretical values for <span class="math notranslate nohighlight">\(\text{Beta(a = 4, b = 12)}\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">summarize_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Warning message in summarize_beta_binomial(a = 4, b = 12):
+“To summarize the posterior, 
+            specify data y and n”
+</pre></div>
+</div>
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 1 × 7</caption>
+<thead>
+	<tr><th scope=col>model</th><th scope=col>alpha</th><th scope=col>beta</th><th scope=col>mean</th><th scope=col>mode</th><th scope=col>var</th><th scope=col>sd</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>prior</td><td>4</td><td>12</td><td>0.25</td><td>0.2142857</td><td>0.01102941</td><td>0.105021</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>The summary statistics from <code class="docutils literal notranslate"><span class="pre">tinder_prior_pi_studies</span></code> are close to the theoretical prior metrics for <span class="math notranslate nohighlight">\(\text{Beta(a = 4, b = 12)}\)</span>. Hence, let us proceed with a Beta prior with hyperparameters <span class="math notranslate nohighlight">\(a = 4\)</span> and <span class="math notranslate nohighlight">\(b = 12\)</span>.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Note this might not be the only choice. Given the right-skewness in the histogram of previous studies, we could select a different pair of hyperparameters as long as <span class="math notranslate nohighlight">\(a &lt; b\)</span> for our chosen theoretical Beta prior (<strong>a frequentist <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/sta4.341"><strong>goodness of fit test</strong></a> might be an appealing option too!</strong>).</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Note that the histogram below has 8 bars for better visualization.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">hist_prior</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_histogram</span><span class="p">(</span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tinder_prior_pi_studies</span><span class="p">,</span>
+<span class="w">    </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tinder_prior_pi</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">after_stat</span><span class="p">(</span><span class="n">density</span><span class="p">)),</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;grey&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Histogram of 60 Prior Estimations of &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; with theoretical Beta(a = 4, b = 12)&quot;</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="n">hist_prior</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/2e103a585b1a6f9de010510bd9e38ce4e6f7454c130e2d5f6f33835fcdd6e4d7.png"><img alt="../_images/2e103a585b1a6f9de010510bd9e38ce4e6f7454c130e2d5f6f33835fcdd6e4d7.png" src="../_images/2e103a585b1a6f9de010510bd9e38ce4e6f7454c130e2d5f6f33835fcdd6e4d7.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>We decided to use this prior:</p>
+<div class="math notranslate nohighlight">
+\[\pi \sim \text{Beta}(a = 4, b = 12).\]</div>
+</section>
+<section id="the-likelihood">
+<h3>2.2. The Likelihood<a class="headerlink" href="#the-likelihood" title="Permalink to this heading">#</a></h3>
+<p>We ran our Tinder study in Vancouver with <span class="math notranslate nohighlight">\(n = 200\)</span> subjects, all of them used Tinder. <strong>At the end of the study, 20 of them ended up partnered by using Tinder.</strong></p>
+<p>The Beta-Binomial model is set up as follows:</p>
+<div class="math notranslate nohighlight">
+\[X_i \sim \text{Bernoulli}(\pi) \quad \text{with ending up partnered as success}\]</div>
+<div class="math notranslate nohighlight">
+\[Y = \sum_{i = 1}^n X_i\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gather*}
+Y \mid \pi \sim \text{Binomial}(n = 200, \pi) \\
+\pi \sim \text{Beta}(a = 4, b = 12).
+\end{gather*}\end{split}\]</div>
+</section>
+<section id="the-posterior">
+<h3>2.3. The Posterior<a class="headerlink" href="#the-posterior" title="Permalink to this heading">#</a></h3>
+<p>We previously derived <strong>the exact Beta posterior</strong> for <span class="math notranslate nohighlight">\(\pi\)</span> with the Beta-Binomial model:</p>
+<div class="math notranslate nohighlight">
+\[\pi \mid Y = y \sim \text{Beta}(a' = a + y, b' = b + n - y).\]</div>
+<p>Since <span class="math notranslate nohighlight">\(a = 4\)</span>, <span class="math notranslate nohighlight">\(b = 12\)</span>, <span class="math notranslate nohighlight">\(n = 200\)</span>, and <span class="math notranslate nohighlight">\(y = 20\)</span>; then we have:</p>
+<div class="math notranslate nohighlight">
+\[\pi \mid Y = y \sim \text{Beta}(a' = 24, b' = 192).\]</div>
+<p>Now, we can get the theoretical prior and posterior metrics.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">summarize_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2 × 7</caption>
+<thead>
+	<tr><th scope=col>model</th><th scope=col>alpha</th><th scope=col>beta</th><th scope=col>mean</th><th scope=col>mode</th><th scope=col>var</th><th scope=col>sd</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>prior    </td><td> 4</td><td> 12</td><td>0.2500000</td><td>0.2142857</td><td>0.0110294118</td><td>0.10502101</td></tr>
+	<tr><td>posterior</td><td>24</td><td>192</td><td>0.1111111</td><td>0.1074766</td><td>0.0004551402</td><td>0.02133402</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Finally, we plot the prior, likelihood, and posterior.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">plot_comparison</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Comparison of Prior, Likelihood, and Posterior&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">margin</span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cm&quot;</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">plot_comparison</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/efc3bb8dcbd662b6d65968871e3cb1c75bc8e2c8625569881eabd6a0a6c5da14.png"><img alt="../_images/efc3bb8dcbd662b6d65968871e3cb1c75bc8e2c8625569881eabd6a0a6c5da14.png" src="../_images/efc3bb8dcbd662b6d65968871e3cb1c75bc8e2c8625569881eabd6a0a6c5da14.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>We updated our prior information, along with our own evidence, to get our Beta posterior. Note the small variability associated to the posterior <span class="math notranslate nohighlight">\(\pi\)</span> (<strong>less uncertainty!</strong>).</p>
+<p>Let us obtain a 95% posterior credible interval for <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">qbeta</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0.025</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">),</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">),</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class=list-inline><li>0.07</li><li>0.16</li></ol>
+</div></div>
+</div>
+<p>We can also plot this <strong>posterior</strong> 95% credible interval via <code class="docutils literal notranslate"><span class="pre">plot_beta_ci()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_CI</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta_ci</span><span class="p">(</span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">,</span><span class="w"> </span><span class="n">ci_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;95% Posterior Credible Interval of &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="n">posterior_CI</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/a35b2af5d48fbe837c728bd25f692d7ebca54bc192dea139f7717bafbb90d994.png"><img alt="../_images/a35b2af5d48fbe837c728bd25f692d7ebca54bc192dea139f7717bafbb90d994.png" src="../_images/a35b2af5d48fbe837c728bd25f692d7ebca54bc192dea139f7717bafbb90d994.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+</section>
+</section>
+<section id="bayesian-hypothesis-testing">
+<h2>3. Bayesian Hypothesis Testing<a class="headerlink" href="#bayesian-hypothesis-testing" title="Permalink to this heading">#</a></h2>
+<section id="one-sided-test">
+<h3>3.1. One-Sided Test<a class="headerlink" href="#one-sided-test" title="Permalink to this heading">#</a></h3>
+<p><strong>We have not interpreted our posterior results yet!</strong> We could do so via the 95% posterior credible interval. Nonetheless, we will try a different approach to make inference by using our theoretical Beta posterior. For example, suppose another researcher claims the following:</p>
+<blockquote>
+<div><p><em>In any city like Vancouver, more than 15% of the single people who use the Tinder app will eventually find a partner.</em></p>
+</div></blockquote>
+<p>We could assess this statement by using our Bayesian results!</p>
+<p><strong>How do we do it?</strong> Bayesian hypothesis testing comes to the rescue. As in the case of frequentist statistics, we will have two hypotheses for <span class="math notranslate nohighlight">\(\pi\)</span>: <strong>null</strong> <span class="math notranslate nohighlight">\((H_0)\)</span> and <strong>alternative</strong> <span class="math notranslate nohighlight">\((H_a)\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[H_0: \pi \leq 0.15\]</div>
+<div class="math notranslate nohighlight">
+\[H_a: \pi &gt; 0.15.\]</div>
+<p>The alternative hypothesis is associated with the researcher’s claim, whereas the null will be the opposite.</p>
+<p><strong>Here comes the Bayesian twist.</strong> Unlike frequentist statistics, each hypothesis will have a probability associated with the previously obtained Beta posterior. So, <strong>how do we get these probabilities?</strong> We can simply use <code class="docutils literal notranslate"><span class="pre">pbeta()</span></code>. Moreover, let us plot these probabilities for a better understanding.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Recall the Beta posterior of <span class="math notranslate nohighlight">\(\pi\)</span> is a probability over probabilities.</p>
+</div>
+<p>Let <span class="math notranslate nohighlight">\(f(\pi \mid y = 20)\)</span> be the posterior <span class="math notranslate nohighlight">\(\text{Beta}(a' = 24, b' = 192)\)</span> probability density function (PDF).</p>
+<p>Firstly, for</p>
+<div class="math notranslate nohighlight">
+\[H_0: \pi \leq 0.15;\]</div>
+<p>its posterior probability will be given by:</p>
+<div class="math notranslate nohighlight">
+\[P(\pi \leq 0.15 \mid Y = 20) = \int_{0}^{0.15} f(\pi \mid y = 20) \,d\pi = 0.957.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_prob_H_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">pbeta</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">posterior_prob_H_0</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.957</div></div>
+</div>
+<p>Now, for the alternative</p>
+<div class="math notranslate nohighlight">
+\[H_a: \pi &gt; 0.15;\]</div>
+<p>its posterior probability will be given by:</p>
+<div class="math notranslate nohighlight">
+\[P(\pi &gt; 0.15 \mid Y = 20) = \int_{0.15}^{1} f(\pi \mid y = 20) \,d\pi = 0.043.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_prob_H_a</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">pbeta</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">,</span><span class="w"> </span><span class="n">lower.tail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">posterior_prob_H_a</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.043</div></div>
+</div>
+<p>Therefore, the associated posterior probability to <span class="math notranslate nohighlight">\(H_0\)</span> is 0.957 and 0.043 for <span class="math notranslate nohighlight">\(H_a\)</span> (the complement!). The plots for the Beta posterior show these areas. <strong>Note a vertical red line crosses <span class="math notranslate nohighlight">\(\pi = 0.15\)</span> on the <span class="math notranslate nohighlight">\(x\)</span>-axes.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Modified code, from bayesrules, to plot the posterior probabilities of H_0 and H_a.</span>
+
+<span class="n">plot_posterior_prob_H_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)),</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">),</span>
+<span class="w">    </span><span class="n">xlim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.15</span><span class="p">),</span>
+<span class="w">    </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;area&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lightblue&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Posterior Prob. of Null Hypothesis (Blue Area)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">20</span><span class="p">)</span>
+
+<span class="n">plot_posterior_prob_H_a</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)),</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">),</span>
+<span class="w">    </span><span class="n">xlim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;area&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lightgreen&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Posterior Prob. of Alternative Hypothesis (Green Area)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">plot_grid</span><span class="p">(</span><span class="n">plot_posterior_prob_H_0</span><span class="p">,</span><span class="w"> </span><span class="n">plot_posterior_prob_H_a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/9d637d31e4c3eb69ecf7d6e5c1aaa732d9fcd5391ab30522559179d4d0d1a8e5.png"><img alt="../_images/9d637d31e4c3eb69ecf7d6e5c1aaa732d9fcd5391ab30522559179d4d0d1a8e5.png" src="../_images/9d637d31e4c3eb69ecf7d6e5c1aaa732d9fcd5391ab30522559179d4d0d1a8e5.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Summarizing, we have two <strong>posterior probabilities</strong>:</p>
+<div class="math notranslate nohighlight">
+\[P(H_0 \mid Y = 20) = P(\pi \leq 0.15 \mid Y = 20) = 0.957\]</div>
+<div class="math notranslate nohighlight">
+\[P(H_a \mid Y = 20) = P(\pi &gt; 0.15 \mid Y = 20) = 0.043.\]</div>
+<p>Now, we can compute the <strong>posterior odds</strong> that <span class="math notranslate nohighlight">\(\pi &gt; 0.15\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\text{posterior odds} = \frac{P(H_a \mid Y = 20)}{P(H_0 \mid Y = 20)} = \frac{0.043}{0.957} = 0.045.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_odds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">posterior_prob_H_a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">posterior_prob_H_0</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">posterior_odds</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.045</div></div>
+</div>
+<p><strong>How can we interpret this ratio?</strong> We can state that <span class="math notranslate nohighlight">\(\pi\)</span> is 22.22 times <span class="math notranslate nohighlight">\(\big(\frac{1}{0.045}\big)\)</span> more likely to be less or equal than 0.15 compared to being above 0.15 using our <strong>posterior model</strong>.</p>
+<p>In Bayesian hypothesis testing, we do not use <span class="math notranslate nohighlight">\(p\)</span>-values. However, there is an analogous metric called the <strong>Bayes factor</strong>. This factor will compare the <strong>posterior odds</strong> versus the <strong>prior odds</strong>. It will shed light on how our inference on <span class="math notranslate nohighlight">\(\pi\)</span> changed given our observed evidence (reflected in the posterior distribution via the Bayes’ rule).</p>
+<p>We already computed the <strong>posterior odds</strong>, let us proceed with the <strong>prior odds</strong>. Let <span class="math notranslate nohighlight">\(f(\pi)\)</span> be the prior <span class="math notranslate nohighlight">\(\text{Beta}(a = 4, b = 12)\)</span> PDF.</p>
+<p>For</p>
+<div class="math notranslate nohighlight">
+\[H_0: \pi \leq 0.15;\]</div>
+<p>its prior probability will be given by:</p>
+<div class="math notranslate nohighlight">
+\[P(\pi \leq 0.15) = \int_{0}^{0.15} f(\pi) \,d\pi = 0.177.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_prob_H_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">pbeta</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">prior_prob_H_0</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.177</div></div>
+</div>
+<p>Now, for the alternative</p>
+<div class="math notranslate nohighlight">
+\[H_a: \pi &gt; 0.15;\]</div>
+<p>its prior probability will be given by:</p>
+<div class="math notranslate nohighlight">
+\[P(\pi &gt; 0.15) = \int_{0.15}^{1} f(\pi) \,d\pi = 0.823.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_prob_H_a</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">pbeta</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">lower.tail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">prior_prob_H_a</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.823</div></div>
+</div>
+<p>Thus, the associated prior probability to <span class="math notranslate nohighlight">\(H_0\)</span> is 0.177 and 0.823 for <span class="math notranslate nohighlight">\(H_a\)</span> (the complement!). The plots for the Beta prior show these areas. <strong>Note a vertical red line crosses <span class="math notranslate nohighlight">\(\pi = 0.15\)</span> on the <span class="math notranslate nohighlight">\(x\)</span>-axes.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Modified code, from bayesrules, to plot the posterior probabilities of H_0 and H_a.</span>
+
+<span class="n">plot_prior_prob_H_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)),</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">),</span>
+<span class="w">    </span><span class="n">xlim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.15</span><span class="p">),</span>
+<span class="w">    </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;area&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lightblue&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Prior Prob. of Null Hypothesis (Blue Area)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">20</span><span class="p">)</span>
+
+<span class="n">plot_prior_prob_H_a</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)),</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">),</span>
+<span class="w">    </span><span class="n">xlim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;area&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lightgreen&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">stat_function</span><span class="p">(</span>
+<span class="w">    </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span>
+<span class="w">    </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.15</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Prior Prob. of Alternative Hypothesis (Green Area)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14.5</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">plot_grid</span><span class="p">(</span><span class="n">plot_prior_prob_H_0</span><span class="p">,</span><span class="w"> </span><span class="n">plot_prior_prob_H_a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/d6b069f65d87068d171b6caba2f68a868ee52fc0245e367d63f30543d21cb305.png"><img alt="../_images/d6b069f65d87068d171b6caba2f68a868ee52fc0245e367d63f30543d21cb305.png" src="../_images/d6b069f65d87068d171b6caba2f68a868ee52fc0245e367d63f30543d21cb305.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Summarizing, we have two prior probabilities:</p>
+<div class="math notranslate nohighlight">
+\[P(H_0) = P(\pi \leq 0.15) = 0.177\]</div>
+<div class="math notranslate nohighlight">
+\[P(H_a) = P(\pi &gt; 0.15) = 0.823.\]</div>
+<p>We can compute the <strong>prior odds</strong> that <span class="math notranslate nohighlight">\(\pi &gt; 0.15\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\text{prior odds} = \frac{P(H_a)}{P(H_0)} = \frac{0.823}{0.177} = 4.639.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_odds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">prior_prob_H_a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">prior_prob_H_0</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">prior_odds</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">4.639</div></div>
+</div>
+<p><strong>How can we interpret this ratio?</strong> We can state that <span class="math notranslate nohighlight">\(\pi\)</span> is 4.639 times more likely to be above 0.15 compared to being less or equal than 0.15 using our prior model.</p>
+<p>The <strong>Bayes factor</strong> is computed as follows:</p>
+<div class="math notranslate nohighlight">
+\[\text{Bayes Factor} = \frac{\text{posterior odds}}{\text{prior odds}} = 0.01.\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">bayes_factor</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">posterior_odds</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">prior_odds</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">bayes_factor</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.01</div></div>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">How can we interpret the Bayes factor?</p>
+<p>In general, there are three possible scenarios:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\text{Bayes Factor} = 1\)</span>: The plausibility of <span class="math notranslate nohighlight">\(H_a\)</span> remained the same, even though we collected new evidence (our study) and applied the Bayes’ rule.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\text{Bayes Factor} &gt; 1\)</span>: The plausibility of <span class="math notranslate nohighlight">\(H_a\)</span> increased once we have collected more evidence (our study) and applied the Bayes’ rule.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\text{Bayes Factor} &lt; 1\)</span>: The plausibility of <span class="math notranslate nohighlight">\(H_a\)</span> decreased once we have collected more evidence (our study) and applied the Bayes’ rule.</p></li>
+</ul>
+</div>
+<p><strong>Therefore, the researcher’s statement is less plausible in the light of our own evidence!</strong></p>
+<div class="exercise admonition" id="lecture5-q2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 16 </span></p>
+<section id="exercise-content">
+<p>Suppose you want to apply the previous hypothesis testing procedure using the approximate posterior samples from MCMC. Hence, there is no analytical solution to the corresponding integrals to obtain the probabilities associated with the posterior odds. Actually, we do not even have an exact PDF to integrate!</p>
+<p><strong>What workaround can you use in that regard to obtain the posterior odds?</strong></p>
+</section>
+</div>
+</section>
+<section id="two-sided-test">
+<h3>3.2. Two-Sided Test<a class="headerlink" href="#two-sided-test" title="Permalink to this heading">#</a></h3>
+<p>Now let us suppose the researcher only wants to assess whether or not 15% of the single people who use the Tinder app will eventually find a partner (in any city like Vancouver). This is a two-sided test:</p>
+<div class="math notranslate nohighlight">
+\[H_0: \pi = 0.15\]</div>
+<div class="math notranslate nohighlight">
+\[H_a: \pi \neq 0.15.\]</div>
+<p>However, in a continuous parameter like <span class="math notranslate nohighlight">\(\pi\)</span>, there is a problem:</p>
+<div class="math notranslate nohighlight">
+\[P(\pi = 0.15 \mid Y = 20) = \int_{0.15}^{0.15} f(\pi \mid y = 20) \,d\pi = 0.\]</div>
+<p><strong>We cannot obtain the posterior odds!</strong> And forget about the prior odds (it is the same problem).</p>
+<p>There is a tweak to solve this two-sided test, we can restate our hypotheses as some range of plausible values (<span class="math notranslate nohighlight">\(\pm 0.10\)</span>, for instance):</p>
+<div class="math notranslate nohighlight">
+\[H_0: \pi \in (0.05, 0.25)\]</div>
+<div class="math notranslate nohighlight">
+\[H_a: \pi \notin (0.05, 0.25).\]</div>
+<p><strong>And let us use our 95% posterior credible interval to evaluate this test:</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">qbeta</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0.025</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">),</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="m">192</span><span class="p">),</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class=list-inline><li>0.07</li><li>0.16</li></ol>
+</div></div>
+</div>
+<p>This credible interval falls within the hypothesized range in <span class="math notranslate nohighlight">\(H_0\)</span>. <strong>Therefore, we have reasonable posterior evidence in favour of <span class="math notranslate nohighlight">\(H_0\)</span> with 95% probability!</strong></p>
+</section>
+</section>
+<section id="wrapping-up">
+<h2>4. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>We can extend the Bayesian paradigm to a regression framework where the systematic component will become part of our likelihood.</p></li>
+<li><p>The use of priors on our regression parameters of interest allows us to make more clever modelling (i.e., choosing the right support for our parameters). Nonetheless, obtaining prior knowledge can be a challenging task.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Stan</span></code> is a powerful tool that will even allow us to estimate non-linear regression models using MCMC. Moreover, the algorithm is the same for all the regression approaches!</p></li>
+<li><p>Bayesian hypothesis testing has a framework for assigning probabilities to our hypotheses based on our prior and posterior models.</p></li>
+<li><p>The Bayes Factor is the substitute to <span class="math notranslate nohighlight">\(p\)</span>-value in hypothesis testing.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="lecture4_MCMC_Poisson_Gamma_Normal.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lecture6_binary_logistic_regression.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Lecture 6 - Bayesian Binary Logistic Regression</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#previously">Previously…</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-normal-linear-regression">1. Bayesian Normal Linear Regression</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bikes-dataset">1.1. The <code class="docutils literal notranslate"><span class="pre">bikes</span></code> Dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exploratory-data-analysis">1.2. Exploratory Data Analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fitting-a-frequentist-ols-regression-model">1.3. Fitting a Frequentist OLS Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-bayesian-regression-model">1.4.  Setting up a Bayesian Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo-simulation">1.5.  Markov Chain Monte Carlo Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obtaining-visualizing-and-interpreting-the-posterior-results">1.6. Obtaining, Visualizing, and Interpreting the Posterior Results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-tinder-example-comes-back">2. The Tinder Example Comes Back</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-prior">2.1. The Prior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-likelihood">2.2. The Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-posterior">2.3. The Posterior</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-hypothesis-testing">3. Bayesian Hypothesis Testing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#one-sided-test">3.1. One-Sided Test</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#two-sided-test">3.2. Two-Sided Test</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">4. Wrapping Up</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By G. Alexi Rodríguez-Arelis, Hedayat Zarkoob, Michael Gelbart, and Trevor Campbell
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

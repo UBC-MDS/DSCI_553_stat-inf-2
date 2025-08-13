@@ -1,0 +1,1935 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Lecture 7 - Bayesian Hierarchical Models &#8212; DSCI 553 - Statistical Inference and Computation II</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/lecture7_hierarchical_models';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics" href="lecture8_model_diagnostics.html" />
+    <link rel="prev" title="Lecture 6 - Bayesian Binary Logistic Regression" href="lecture6_binary_logistic_regression.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/UBC_MDS_logo.png" class="logo__image only-light" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>
+    <script>document.write(`<img src="../_static/UBC_MDS_logo.png" class="logo__image only-dark" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    Welcome to DSCI 553: Statistical Inference and Computation II
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Lectures</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../lecture-learning-objectives.html">Lecture Learning Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture1_intro_and_stan.html">Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture2_Bayes_MAP.html">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture3_beta_binomial_Bayesian_modelling.html">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture6_binary_logistic_regression.html">Lecture 6 - Bayesian Binary Logistic Regression</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lecture 7 - Bayesian Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture8_model_diagnostics.html">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="MCMC_tutorial.html">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="appendix-dist-cheatsheet.html">Distribution Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-greek-alphabet.html">Greek Alphabet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-bayesian-workflow.html">The Bayesian Workflow</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2/issues/new?title=Issue%20on%20page%20%2Fnotes/lecture7_hierarchical_models.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/lecture7_hierarchical_models.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lecture 7 - Bayesian Hierarchical Models</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#previously">Previously…</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-rockets-data">1. The Rockets Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-rocket-model-warmup">2. Single Rocket Model (Warmup!)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-the-model">2.1. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-mcmc-simulation">2.2. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-summary">2.3. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-pooled-rocket-model">3. Complete Pooled Rocket Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.1. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.2. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.3. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#let-us-go-to-space">4. Let Us Go to Space!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-pooled-rocket-model">5.  Non-Pooled Rocket Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">5.1. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">5.2. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">5.3. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-rocket-model">6. Hierarchical Rocket Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-priors">6.1. The Priors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">6.2. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">6.3. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">6.4. Output Summary</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction-for-a-new-rocket">6.5. Prediction for a New Rocket</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">7. Wrapping Up</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lecture-7-bayesian-hierarchical-models">
+<h1>Lecture 7 - Bayesian Hierarchical Models<a class="headerlink" href="#lecture-7-bayesian-hierarchical-models" title="Permalink to this heading">#</a></h1>
+<section id="today-s-learning-objectives">
+<h2>Today’s Learning Objectives<a class="headerlink" href="#today-s-learning-objectives" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Explain the concept of the Bayesian hierarchical model.</p></li>
+<li><p>Contrast the hierarchical model versus standard Bayesian models.</p></li>
+<li><p>Demonstrate the advantages of hierarchical modelling in Bayesian inference.</p></li>
+<li><p>Apply hierarchical modelling to predictive inquiries.</p></li>
+</ol>
+</section>
+<section id="loading-r-packages">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages<a class="headerlink" href="#loading-r-packages" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">rstan</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">broom.mixed</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesrules</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="previously">
+<h2>Previously…<a class="headerlink" href="#previously" title="Permalink to this heading">#</a></h2>
+<p>We are in the last week of the block, and we have been exposed to <strong>standard Bayesian models</strong>. These models involve <strong>a likelihood conditioned on parameters of interest, which are random variables</strong>. These parameters have <strong>prior distributions</strong>. Furthermore, <strong>these priors have fixed hyperparameters</strong>.</p>
+<p>Suppose you want to make inference on the <strong>mean number of people</strong> who stand in line, from 9:00 to 10:00 a.m. on Mondays, in the branches of a major Canadian bank. You collect data across different branches during that time slot and end up with <span class="math notranslate nohighlight">\(n\)</span> observations. Moreover, you decide to take a Bayesian approach for this inquiry.</p>
+<p>Nonetheless, we can make <strong>a flexible model in such a way we assign a mean by branch</strong>. Hence, let <span class="math notranslate nohighlight">\(S_i\)</span> be the number of <strong>people</strong> standing in line from 9:00 to 10:00 a.m. on Mondays in the <span class="math notranslate nohighlight">\(i\)</span>th branch <span class="math notranslate nohighlight">\((i = 1, \dots, n)\)</span>, and <span class="math notranslate nohighlight">\(\theta_i\)</span> the mean by branch. Therefore, the formal Bayesian model will be the following:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad S_i \mid  \theta_i \mathop\sim^\text{ind} \text{Poisson}(\theta_i) \quad \text{for } i = 1, \dots, n \\
+\text{priors:} \qquad \theta_i \sim \text{Gamma}(\alpha, \beta) \\
+\qquad \alpha \sim \text{Exponential}(\eta = 0.1) \\
+\qquad \beta \sim \text{Exponential}(\gamma = 0.5).
+\end{align*}\end{split}\]</div>
+<p>Note <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are now random variables! This is  a <strong>hierarchical model</strong>!</p>
+<div class="exercise admonition" id="lecture7-q1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 19 </span></p>
+<section id="exercise-content">
+<p>Why do <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> have Exponential priors?</p>
+<p><strong>A.</strong> Both <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are discrete and nonnegative in the Gamma prior distribution of <span class="math notranslate nohighlight">\(\theta_i\)</span>.</p>
+<p><strong>B.</strong> Both <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are continuous and unbounded in the Gamma prior distribution of <span class="math notranslate nohighlight">\(\theta_i\)</span>.</p>
+<p><strong>C.</strong> Both <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are continuous and nonnegative in the Gamma prior distribution of <span class="math notranslate nohighlight">\(\theta_i\)</span>.</p>
+<p><strong>D.</strong> Both <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are discrete and unbounded in the Gamma prior distribution of <span class="math notranslate nohighlight">\(\theta_i\)</span>.</p>
+</section>
+</div>
+</section>
+<section id="the-rockets-data">
+<h2>1. The Rockets Data<a class="headerlink" href="#the-rockets-data" title="Permalink to this heading">#</a></h2>
+<p>To illustrate the differences between the Bayesian models we have seen so far and the concept of <strong>hierarchy</strong>, we will retake the <code class="docutils literal notranslate"><span class="pre">rockets</span></code> problem from <code class="docutils literal notranslate"><span class="pre">lab2</span></code>. Then, throughout the lecture, we will build different Bayesian arrangements until we get to a hierarchical model. This will highlight these differences according to each model’s specific inferential inquiry.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Recall <code class="docutils literal notranslate"><span class="pre">rockets</span></code> contains data on 367 rockets. It has three columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LV.Type</span></code>: The rocket’s type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numberOfLaunches</span></code>: Number of launches.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numberOfFailures</span></code>: Number of failures.</p></li>
+</ul>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">rockets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="s">&quot;../data/failure_counts.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">show_col_types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+<span class="n">rockets</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A spec_tbl_df: 367 × 3</caption>
+<thead>
+	<tr><th scope=col>LV.Type</th><th scope=col>numberOfLaunches</th><th scope=col>numberOfFailures</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>Aerobee    </td><td>1</td><td>0</td></tr>
+	<tr><td>Angara A5  </td><td>1</td><td>0</td></tr>
+	<tr><td>Antares 110</td><td>2</td><td>0</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td>Zenit-3SL  </td><td>36</td><td>3</td></tr>
+	<tr><td>Zenit-3SLB </td><td> 6</td><td>0</td></tr>
+	<tr><td>Zenit-3SLBF</td><td> 3</td><td>0</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="single-rocket-model-warmup">
+<h2>2. Single Rocket Model (Warmup!)<a class="headerlink" href="#single-rocket-model-warmup" title="Permalink to this heading">#</a></h2>
+<p>Let</p>
+<div class="math notranslate nohighlight">
+\[X|\pi \sim \text{Binomial}(n,\pi)\]</div>
+<p>be the number of successes that a <strong>specific</strong> rocket had in <span class="math notranslate nohighlight">\(n\)</span> launches. We will assume that the <strong>probability of success</strong> <span class="math notranslate nohighlight">\(\pi\)</span> is a continuous random variable that can take any value in the interval <span class="math notranslate nohighlight">\([0, 1]\)</span>.</p>
+<p>As our <strong>prior distribution</strong>, we will define a Beta PDF over the interval <span class="math notranslate nohighlight">\([0, 1]\)</span>. Thus, the formal Bayesian model will be:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad X|\pi \sim \text{Binomial}(n, \pi)\\
+\text{prior:} \qquad \pi \sim \text{Beta}(a = 1,b = 1).
+\end{align*}\end{split}\]</div>
+<p>Let us call it <code class="docutils literal notranslate"><span class="pre">Single_Rocket</span></code>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>For a <strong>GIVEN type of rocket</strong> (i.e., a row in <code class="docutils literal notranslate"><span class="pre">rockets</span></code>), our goal with <code class="docutils literal notranslate"><span class="pre">Single_Rocket</span></code> will be to infer its <strong>launch success probability <span class="math notranslate nohighlight">\(\pi\)</span></strong>.</p>
+</div>
+<section id="coding-the-model">
+<h3>2.1. Coding the Model<a class="headerlink" href="#coding-the-model" title="Permalink to this heading">#</a></h3>
+<p>We start by coding <code class="docutils literal notranslate"><span class="pre">Single_Rocket</span></code> on <code class="docutils literal notranslate"><span class="pre">Stan</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Single_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {                          </span>
+<span class="s">int&lt;lower=1&gt; n;    // Number of trials in a given rocket type</span>
+<span class="s">int&lt;lower=0&gt; X;    // Number of successes in a given rocket type</span>
+<span class="s">real&lt;lower=0&gt; a;   // Hyperparameter for Beta prior</span>
+<span class="s">real&lt;lower=0&gt; b;   // Hyperparameter for Beta prior</span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">real &lt;lower=0,upper=1&gt; pi;    // Probability of launch success in a given rocket type </span>
+<span class="s">}</span>
+<span class="s">model {</span>
+<span class="s">pi ~ beta(a, b);</span>
+<span class="s">X ~ binomial(n, pi);</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="running-the-mcmc-simulation">
+<h3>2.2. Running the MCMC Simulation<a class="headerlink" href="#running-the-mcmc-simulation" title="Permalink to this heading">#</a></h3>
+<p>Suppose you are interested in making inference in the launch success probability <span class="math notranslate nohighlight">\(\pi\)</span> for the type <code class="docutils literal notranslate"><span class="pre">Ariane</span> <span class="pre">1</span></code>. Hence, let us use that row from <code class="docutils literal notranslate"><span class="pre">rockets</span></code> as our <strong>observed data</strong>. First, we create the data dictionary and proceed with <code class="docutils literal notranslate"><span class="pre">stan()</span></code>. We use a prior <span class="math notranslate nohighlight">\(\text{Beta}(a = 1, b = 1)\)</span> which assumes all values of <span class="math notranslate nohighlight">\(\pi\)</span> as equally probable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="c1"># Plotting Beta(1,1) prior</span>
+<span class="n">prior_beta_1_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">shape1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">shape2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Prior Beta(1, 1) for &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_beta_1_1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/67b7d55b5a99c027581e68cbf2827a8b879f5712c1f3e30dd956e04351d2a119.png"><img alt="../_images/67b7d55b5a99c027581e68cbf2827a8b879f5712c1f3e30dd956e04351d2a119.png" src="../_images/67b7d55b5a99c027581e68cbf2827a8b879f5712c1f3e30dd956e04351d2a119.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Ariane_1_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rockets</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span><span class="n">LV.Type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Ariane 1&quot;</span><span class="p">)</span>
+<span class="n">Ariane_1_data</span>
+
+<span class="n">Single_Rocket_dictionary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Ariane_1_data</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Ariane_1_data</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Ariane_1_data</span><span class="o">$</span><span class="n">numberOfFailures</span><span class="p">,</span><span class="w"> </span><span class="c1"># Successes in Ariane 1</span>
+<span class="w">  </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A spec_tbl_df: 1 × 3</caption>
+<thead>
+	<tr><th scope=col>LV.Type</th><th scope=col>numberOfLaunches</th><th scope=col>numberOfFailures</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>Ariane 1</td><td>11</td><td>2</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_Single_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Single_Rocket</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Single_Rocket_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4e-06 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 1: Iteration: 1001 / 10000 [ 10%]  (Sampling)
+Chain 1: Iteration: 2000 / 10000 [ 20%]  (Sampling)
+Chain 1: Iteration: 3000 / 10000 [ 30%]  (Sampling)
+Chain 1: Iteration: 4000 / 10000 [ 40%]  (Sampling)
+Chain 1: Iteration: 5000 / 10000 [ 50%]  (Sampling)
+Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.002 seconds (Warm-up)
+Chain 1:                0.017 seconds (Sampling)
+Chain 1:                0.019 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="output-summary">
+<h3>2.3. Output Summary<a class="headerlink" href="#output-summary" title="Permalink to this heading">#</a></h3>
+<p>With a left-skewed distribution, our posterior mean of <span class="math notranslate nohighlight">\(\pi\)</span> for <code class="docutils literal notranslate"><span class="pre">Ariane</span> <span class="pre">1</span></code> is 0.767. Moreover, <strong>the 95% credible interval shows high variability</strong>. Therefore, we could either increase our sample size for <code class="docutils literal notranslate"><span class="pre">Ariane</span> <span class="pre">1</span></code> (<strong>to have a narrower likelihood</strong>) or tune the Beta prior (<strong>i.e., a prior with less variability</strong>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_Ariane_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_Single_Rocket</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_Ariane_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Ariane_1</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_Ariane_1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 1 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>pi</th><td>0.767</td><td>0.116</td><td>0.505</td><td>0.945</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_plot_Ariane_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_Single_Rocket</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;pi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Dist. and 95% Credible Interval of &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; for Ariane 1&quot;</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_plot_Ariane_1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/78797e762742c5c0b8a5ac2a792b2e51fbd553c1e8e7cea999630d7df38d15a0.png"><img alt="../_images/78797e762742c5c0b8a5ac2a792b2e51fbd553c1e8e7cea999630d7df38d15a0.png" src="../_images/78797e762742c5c0b8a5ac2a792b2e51fbd553c1e8e7cea999630d7df38d15a0.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+</section>
+</section>
+<section id="complete-pooled-rocket-model">
+<h2>3. Complete Pooled Rocket Model<a class="headerlink" href="#complete-pooled-rocket-model" title="Permalink to this heading">#</a></h2>
+<p>Our second Bayesian approach is called a <strong>complete pooled model</strong>. In this model, we will combine the data provided by <strong>ALL</strong> rockets into <strong>one pool of information</strong>. For the <span class="math notranslate nohighlight">\(i\)</span>th rocket, the model is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad X_i|\pi \sim \text{Binomial}(n_i, \pi) \quad \text{for } i = 1, \dots, 367\\
+\text{prior:} \qquad \pi \sim \text{Beta}(a = 1, b = 1).
+\end{align*}\end{split}\]</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Even though it might not look like it, this model is quite different from the <code class="docutils literal notranslate"><span class="pre">SingleRocket</span></code> model. The difference is that, in this complete pooled model, <strong>we are considering all the rocket types</strong>.</p>
+<p>While we allow them to have different numbers of launches, we assume that all of them have the same probability of success <span class="math notranslate nohighlight">\(\pi\)</span>. <strong>In this way, we will be estimating the OVERALL probability of success across all rockets.</strong></p>
+</div>
+<section id="id1">
+<h3>3.1. Coding the Model<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>We code up this <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket</span></code> model on <code class="docutils literal notranslate"><span class="pre">Stan</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">data</span></code> block includes one integer to define the number of rockets to use in the simulation (<code class="docutils literal notranslate"><span class="pre">num_rockets</span></code>), a vector of integers containing all launch successes by rocket (<code class="docutils literal notranslate"><span class="pre">X[num_rockets]</span></code>), and a vector of integers containing all trials by rocket (<code class="docutils literal notranslate"><span class="pre">n[num_rockets]</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Complete_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {                          </span>
+<span class="s">int&lt;lower=1&gt; num_rockets;     // number of rockets </span>
+<span class="s">int&lt;lower=0&gt; X[num_rockets];  // vector with sucesses by rocket</span>
+<span class="s">int&lt;lower=1&gt; n[num_rockets];  // vector with trials by rocket</span>
+<span class="s">real&lt;lower=0&gt; a;</span>
+<span class="s">real&lt;lower=0&gt; b;  </span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">real &lt;lower=0,upper=1&gt; pi;</span>
+<span class="s">}</span>
+<span class="s">model {</span>
+<span class="s">pi ~ beta(a, b);</span>
+<span class="s">for (i in 1:num_rockets){    // modelling the likelihood by rocket</span>
+<span class="s">X[i] ~ binomial(n[i], pi);</span>
+<span class="s">}</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h3>3.2. Running the MCMC Simulation<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>To build the <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket_dictionary</span></code> we need to use the corresponding columns from <code class="docutils literal notranslate"><span class="pre">rockets</span></code>. Recall <code class="docutils literal notranslate"><span class="pre">X</span></code> is provided by substracting two columns.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Complete_Pooled_Rocket_dictionary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">  </span><span class="n">num_rockets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">rockets</span><span class="p">),</span>
+<span class="w">  </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfFailures</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_Complete_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Complete_Pooled_Rocket</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Complete_Pooled_Rocket_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 1: Iteration: 1001 / 10000 [ 10%]  (Sampling)
+Chain 1: Iteration: 2000 / 10000 [ 20%]  (Sampling)
+Chain 1: Iteration: 3000 / 10000 [ 30%]  (Sampling)
+Chain 1: Iteration: 4000 / 10000 [ 40%]  (Sampling)
+Chain 1: Iteration: 5000 / 10000 [ 50%]  (Sampling)
+Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.06 seconds (Warm-up)
+Chain 1:                0.451 seconds (Sampling)
+Chain 1:                0.511 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h3>3.3. Output Summary<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">Ariane</span> <span class="pre">1</span></code>, the posterior distribution of the overall <span class="math notranslate nohighlight">\(\pi\)</span> is symmetric with a mean of 0.924. Moreover, <strong>the 95% CI shows a low variability in this posterior distribution</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_Complete_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_Complete_Pooled_Rocket</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_Complete_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Complete_Pooled_Rocket</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_Complete_Pooled_Rocket</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 1 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>pi</th><td>0.924</td><td>0.004</td><td>0.917</td><td>0.931</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_plot_Complete_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_Complete_Pooled_Rocket</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;pi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Dist. and 95% Credible Interval of &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_plot_Complete_Pooled_Rocket</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/024e739da58c74ad1ab8cbc8c31652595fd1ebf9754901a662b4b926185f4d13.png"><img alt="../_images/024e739da58c74ad1ab8cbc8c31652595fd1ebf9754901a662b4b926185f4d13.png" src="../_images/024e739da58c74ad1ab8cbc8c31652595fd1ebf9754901a662b4b926185f4d13.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<div class="exercise admonition" id="lecture7-q2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 20 </span></p>
+<section id="exercise-content">
+<p>Note that the approximate 95% credible interval for <span class="math notranslate nohighlight">\(\pi\)</span> is <span class="math notranslate nohighlight">\((0.917, 0.931)\)</span>. Is this interval an indicator of high precision on the estimation of <span class="math notranslate nohighlight">\(\pi\)</span>?</p>
+<p><strong>A.</strong> Yes.</p>
+<p><strong>B.</strong> No.</p>
+</section>
+</div>
+</section>
+</section>
+<section id="let-us-go-to-space">
+<h2>4. Let Us Go to Space!<a class="headerlink" href="#let-us-go-to-space" title="Permalink to this heading">#</a></h2>
+<p>You told a certain CEO from a rocket company that you wanted to go to space, and they asked you to pick your preferred rocket model from the <code class="docutils literal notranslate"><span class="pre">rockets</span></code> dataset. <strong>Let us try to decide which rocket we trust the most.</strong> Therefore, the Bayesian <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket</span></code> is not suitable for this purpose <strong>since it makes inference on a single <span class="math notranslate nohighlight">\(\pi\)</span></strong>!</p>
+<p>We will start with a similar approach such as in <code class="docutils literal notranslate"><span class="pre">lab1</span></code> for the helicopter problem.</p>
+<p>Firstly, <strong>we will only trust our observed data (i.e., the likelihood) without relying on the Bayes’ rule</strong>. This will implicate using <strong>maximum likelihood estimation</strong> to compute <span class="math notranslate nohighlight">\(\hat{\pi}_i\)</span> for the <span class="math notranslate nohighlight">\(i\)</span>th rocket <span class="math notranslate nohighlight">\((i = 1, \dots, 367)\)</span>. In a Binomial likelihood, we know the maximum likelihood estimate (MLE) is:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\pi}_i = \frac{x_i}{n_i},\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_i\)</span> and <span class="math notranslate nohighlight">\(n_i\)</span> are the respective <strong>observed</strong> numbers of successes and trials.</p>
+<p>We will compute <span class="math notranslate nohighlight">\(\hat{\pi}_i\)</span> in <code class="docutils literal notranslate"><span class="pre">rockets</span></code> <strong>so we can select that rocket with the largest estimation for its launch success probability</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">60</span><span class="p">)</span>
+
+<span class="n">rockets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rockets</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span><span class="n">MLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">numberOfLaunches</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">numberOfFailures</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">numberOfLaunches</span><span class="p">)</span>
+
+<span class="n">rockets</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">MLE</span><span class="p">,</span><span class="w"> </span><span class="n">LV.Type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 367 × 4</caption>
+<thead>
+	<tr><th scope=col>LV.Type</th><th scope=col>numberOfLaunches</th><th scope=col>numberOfFailures</th><th scope=col>MLE</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>ARPA Taurus    </td><td> 2</td><td>0</td><td>1</td></tr>
+	<tr><td>Aerobee        </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Angara A5      </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Antares 110    </td><td> 2</td><td>0</td><td>1</td></tr>
+	<tr><td>Antares 120    </td><td> 2</td><td>0</td><td>1</td></tr>
+	<tr><td>Antares 230    </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 40      </td><td> 7</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 42L     </td><td>13</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 44P     </td><td>15</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 5ES     </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 5ES/ATV </td><td> 5</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 5G+     </td><td> 3</td><td>0</td><td>1</td></tr>
+	<tr><td>Ariane 5GS     </td><td> 6</td><td>0</td><td>1</td></tr>
+	<tr><td>Athena-1       </td><td> 2</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas 3A       </td><td> 2</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas 3B       </td><td> 4</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas Agena D  </td><td>15</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas B        </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas Centaur D</td><td> 7</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas E        </td><td>15</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas E Altair </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas E/OIS    </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas E/SGS-2  </td><td> 4</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas F/Agena D</td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas F/MSD    </td><td> 3</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas F/OIS    </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas F/PTS    </td><td> 1</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas F/SVS    </td><td> 7</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas H        </td><td> 5</td><td>0</td><td>1</td></tr>
+	<tr><td>Atlas II       </td><td>10</td><td>0</td><td>1</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td>Proton-M/DM-3   </td><td> 3</td><td>2</td><td>0.3333333</td></tr>
+	<tr><td>Scout X-2M      </td><td> 3</td><td>2</td><td>0.3333333</td></tr>
+	<tr><td>Thor Able I     </td><td> 3</td><td>2</td><td>0.3333333</td></tr>
+	<tr><td>Vostok-L 8K72   </td><td> 9</td><td>6</td><td>0.3333333</td></tr>
+	<tr><td>Vanguard        </td><td>11</td><td>8</td><td>0.2727273</td></tr>
+	<tr><td>Lambda 4S       </td><td> 5</td><td>4</td><td>0.2000000</td></tr>
+	<tr><td>Antares 130     </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Atlas Able      </td><td> 3</td><td>3</td><td>0.0000000</td></tr>
+	<tr><td>Atlas E/MSD     </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Atlas E/SVS     </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Blue Scout II   </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Chang Zheng 2   </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Conestoga 1620  </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Energiya        </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Europa I        </td><td> 3</td><td>3</td><td>0.0000000</td></tr>
+	<tr><td>Europa II       </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>KT-1            </td><td> 3</td><td>3</td><td>0.0000000</td></tr>
+	<tr><td>LLV-1           </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>N-1 11A52       </td><td> 4</td><td>4</td><td>0.0000000</td></tr>
+	<tr><td>Paektusan 1     </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Project Pilot   </td><td> 6</td><td>6</td><td>0.0000000</td></tr>
+	<tr><td>SS-520          </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Scout X-2B      </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Start           </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Super Strypi    </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Taurus 3110     </td><td> 2</td><td>2</td><td>0.0000000</td></tr>
+	<tr><td>Unha-2          </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>VLS-1           </td><td> 2</td><td>2</td><td>0.0000000</td></tr>
+	<tr><td>Volna           </td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+	<tr><td>Zenit-2 11K77.05</td><td> 1</td><td>1</td><td>0.0000000</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p><strong>We can see there is more than one rocket with a 100% success rate!</strong> Nevertheless, <strong>they often could have a small number of launches</strong>. So we might not trust those rockets all that much. <strong>MLE is frequentist-based; thus, it heavily relies on large sample sizes!</strong></p>
+<p>Bayesian inference can help us decide while considering sample size by rocket with the upcoming model.</p>
+</section>
+<section id="non-pooled-rocket-model">
+<h2>5.  Non-Pooled Rocket Model<a class="headerlink" href="#non-pooled-rocket-model" title="Permalink to this heading">#</a></h2>
+<p>Our third Bayesian approach is a <strong>non-pooled model</strong>. In this model, we will make inference on the 367 different success probabilities (one by rocket) in a single <code class="docutils literal notranslate"><span class="pre">Stan</span></code> model. This approach goes to the other extreme when compared to <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket</span></code>!</p>
+<p>For the <span class="math notranslate nohighlight">\(i\)</span>th rocket, the model is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad X_i|\pi_i \sim \text{Binomial}(n_i, \pi_i) \quad \text{for } i = 1, \dots, 367\\
+\text{prior:} \qquad \pi_i \sim \text{Beta}(a = 1,b = 1).
+\end{align*}\end{split}\]</div>
+<div class="exercise admonition" id="lecture7-q3">
+
+<p class="admonition-title"><span class="caption-number">Exercise 21 </span></p>
+<section id="exercise-content">
+<p>In this <strong>non-pooled model</strong>, is it possible to make inference on an overall <span class="math notranslate nohighlight">\(\pi\)</span>?</p>
+<p><strong>A.</strong> Yes.</p>
+<p><strong>B.</strong> No.</p>
+</section>
+</div>
+<section id="id4">
+<h3>5.1. Coding the Model<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<p>We code up this <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code> model on <code class="docutils literal notranslate"><span class="pre">Stan</span></code>. The <code class="docutils literal notranslate"><span class="pre">data</span></code> block structure from <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket</span></code> remains. However, <strong>we tweak the <code class="docutils literal notranslate"><span class="pre">model</span></code> block to assign the same prior <code class="docutils literal notranslate"><span class="pre">beta(a,b)</span></code> by rocket probability</strong>. Furthermore, <strong>the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> block is adapted to have a vector of probabilities <code class="docutils literal notranslate"><span class="pre">pi</span></code> of size <code class="docutils literal notranslate"><span class="pre">num_rockets</span></code></strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Non_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {                          </span>
+<span class="s">int&lt;lower=1&gt; num_rockets;     // number of rockets </span>
+<span class="s">int&lt;lower=0&gt; X[num_rockets];  // vector with sucesses by rocket</span>
+<span class="s">int&lt;lower=1&gt; n[num_rockets];  // vector with trials by rocket</span>
+<span class="s">real&lt;lower=0&gt; a;</span>
+<span class="s">real&lt;lower=0&gt; b;  </span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">vector&lt;lower=0,upper=1&gt;[num_rockets] pi;  // vector of 367 probabilities of success (one per rocket)</span>
+<span class="s">}</span>
+<span class="s">model {</span>
+<span class="s">for (i in 1:num_rockets){</span>
+<span class="s">pi[i] ~ beta(a,b);           // prior for pi_i by rocket</span>
+<span class="s">X[i] ~ binomial(n[i],pi[i]); // modelling the likelihood by rocket</span>
+<span class="s">}</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h3>5.2. Running the MCMC Simulation<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<p>To run the <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code> model, we need to use the corresponding columns from <code class="docutils literal notranslate"><span class="pre">rockets</span></code>. The dictionary is identical to <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket_dictionary</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Non_Pooled_Rocket_dictionary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">  </span><span class="n">num_rockets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">rockets</span><span class="p">),</span>
+<span class="w">  </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfFailures</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_Non_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Non_Pooled_Rocket</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Non_Pooled_Rocket_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 8.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.83 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 1: Iteration: 1001 / 10000 [ 10%]  (Sampling)
+Chain 1: Iteration: 2000 / 10000 [ 20%]  (Sampling)
+Chain 1: Iteration: 3000 / 10000 [ 30%]  (Sampling)
+Chain 1: Iteration: 4000 / 10000 [ 40%]  (Sampling)
+Chain 1: Iteration: 5000 / 10000 [ 50%]  (Sampling)
+Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.194 seconds (Warm-up)
+Chain 1:                7.645 seconds (Sampling)
+Chain 1:                8.839 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h3>5.3. Output Summary<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<p>We obtain the output from <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code>. Since <code class="docutils literal notranslate"><span class="pre">Stan</span></code> labels the parameters in the posterior samples as <code class="docutils literal notranslate"><span class="pre">pi[1]</span></code>, …, <code class="docutils literal notranslate"><span class="pre">pi[367]</span></code>, we will add a new column with the actual <code class="docutils literal notranslate"><span class="pre">rocket</span></code> name using <code class="docutils literal notranslate"><span class="pre">rockets$LV.Type</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">)</span>
+
+<span class="n">summary_Non_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_Non_Pooled_Rocket</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_Non_Pooled_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Non_Pooled_Rocket</span><span class="p">[</span><span class="m">-368</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_Non_Pooled_Rocket</span><span class="o">$</span><span class="n">rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">LV.Type</span>
+<span class="n">summary_Non_Pooled_Rocket</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 367 × 5</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th><th scope=col>rocket</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>pi[266]</th><td>0.987</td><td>0.013</td><td>0.953</td><td>1.000</td><td>Soyuz-U2      </td></tr>
+	<tr><th scope=row>pi[267]</th><td>0.985</td><td>0.011</td><td>0.959</td><td>0.998</td><td>Space Shuttle </td></tr>
+	<tr><th scope=row>pi[261]</th><td>0.984</td><td>0.016</td><td>0.941</td><td>0.999</td><td>Soyuz-FG      </td></tr>
+	<tr><th scope=row>pi[357]</th><td>0.978</td><td>0.015</td><td>0.942</td><td>0.997</td><td>Vostok 8A92M  </td></tr>
+	<tr><th scope=row>pi[343]</th><td>0.972</td><td>0.016</td><td>0.934</td><td>0.994</td><td>Tsiklon-2     </td></tr>
+	<tr><th scope=row>pi[78]</th><td>0.971</td><td>0.029</td><td>0.894</td><td>1.000</td><td>Chang Zheng 2D</td></tr>
+	<tr><th scope=row>pi[264]</th><td>0.970</td><td>0.007</td><td>0.955</td><td>0.982</td><td>Soyuz-U       </td></tr>
+	<tr><th scope=row>pi[16]</th><td>0.969</td><td>0.021</td><td>0.916</td><td>0.996</td><td>Ariane 5ECA   </td></tr>
+	<tr><th scope=row>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><th scope=row>pi[281]</th><td>0.255</td><td>0.196</td><td>0.009</td><td>0.711</td><td>Taurus 3110  </td></tr>
+	<tr><th scope=row>pi[353]</th><td>0.250</td><td>0.188</td><td>0.009</td><td>0.692</td><td>VLS-1        </td></tr>
+	<tr><th scope=row>pi[28]</th><td>0.204</td><td>0.167</td><td>0.006</td><td>0.623</td><td>Atlas Able   </td></tr>
+	<tr><th scope=row>pi[179]</th><td>0.203</td><td>0.165</td><td>0.008</td><td>0.601</td><td>KT-1         </td></tr>
+	<tr><th scope=row>pi[157]</th><td>0.201</td><td>0.161</td><td>0.006</td><td>0.589</td><td>Europa I     </td></tr>
+	<tr><th scope=row>pi[201]</th><td>0.165</td><td>0.140</td><td>0.005</td><td>0.507</td><td>N-1 11A52    </td></tr>
+	<tr><th scope=row>pi[211]</th><td>0.125</td><td>0.113</td><td>0.003</td><td>0.422</td><td>Project Pilot</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Note that the top 3 rockets in the posterior values for <span class="math notranslate nohighlight">\(\pi_i\)</span> do not correspond to the previous top 3 rockets in MLE from <code class="docutils literal notranslate"><span class="pre">rockets</span></code>. We can also plot the <strong>top 10 rockets by posterior mean probability of launch</strong> and the 95% credible intervals. Note the overlap across these ten rockets.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_rocket_CIs_plot_Non_Pooled</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Non_Pooled_Rocket</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">slice</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span><span class="n">rocket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">fct_reorder</span><span class="p">(</span><span class="n">rocket</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rocket</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_errorbarh</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">xmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">`2.5%`</span><span class="p">,</span><span class="w"> </span><span class="n">xmin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">`97.5%`</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rocket</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;none&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;95% Credible Intervals for &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="s">&quot; by Rocket (Non-Pooled)&quot;</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Probability of Launch Success&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Rocket&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0.85</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">0.85</span><span class="p">,</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="m">0.025</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_rocket_CIs_plot_Non_Pooled</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/359c928008e71d3b08960f4565479516c44cd96a0590180e767e75f5d3ed3576.png"><img alt="../_images/359c928008e71d3b08960f4565479516c44cd96a0590180e767e75f5d3ed3576.png" src="../_images/359c928008e71d3b08960f4565479516c44cd96a0590180e767e75f5d3ed3576.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Let us add our Bayesian posterior means to <code class="docutils literal notranslate"><span class="pre">rockets</span></code> and sort them from the largest posterior mean to the lowest.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">)</span>
+<span class="n">rockets</span><span class="o">$</span><span class="n">posterior_non_pooled_means</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Non_Pooled_Rocket</span><span class="o">$</span><span class="n">mean</span>
+<span class="n">rockets</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">posterior_non_pooled_means</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A tibble: 367 × 5</caption>
+<thead>
+	<tr><th scope=col>LV.Type</th><th scope=col>numberOfLaunches</th><th scope=col>numberOfFailures</th><th scope=col>MLE</th><th scope=col>posterior_non_pooled_means</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>Soyuz-U2      </td><td> 72</td><td> 0</td><td>1.0000000</td><td>0.987</td></tr>
+	<tr><td>Space Shuttle </td><td>135</td><td> 1</td><td>0.9925926</td><td>0.985</td></tr>
+	<tr><td>Soyuz-FG      </td><td> 59</td><td> 0</td><td>1.0000000</td><td>0.984</td></tr>
+	<tr><td>Vostok 8A92M  </td><td> 93</td><td> 1</td><td>0.9892473</td><td>0.978</td></tr>
+	<tr><td>Tsiklon-2     </td><td>105</td><td> 2</td><td>0.9809524</td><td>0.972</td></tr>
+	<tr><td>Chang Zheng 2D</td><td> 32</td><td> 0</td><td>1.0000000</td><td>0.971</td></tr>
+	<tr><td>Soyuz-U       </td><td>633</td><td>18</td><td>0.9715640</td><td>0.970</td></tr>
+	<tr><td>Ariane 5ECA   </td><td> 61</td><td> 1</td><td>0.9836066</td><td>0.969</td></tr>
+	<tr><td>Atlas IIAS    </td><td> 30</td><td> 0</td><td>1.0000000</td><td>0.968</td></tr>
+	<tr><td>Soyuz-U-PVB   </td><td>154</td><td> 4</td><td>0.9740260</td><td>0.968</td></tr>
+	<tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><td>Zenit-2 11K77.05</td><td> 1</td><td>1</td><td>0.0000000</td><td>0.328</td></tr>
+	<tr><td>Vanguard        </td><td>11</td><td>8</td><td>0.2727273</td><td>0.310</td></tr>
+	<tr><td>Lambda 4S       </td><td> 5</td><td>4</td><td>0.2000000</td><td>0.287</td></tr>
+	<tr><td>Taurus 3110     </td><td> 2</td><td>2</td><td>0.0000000</td><td>0.255</td></tr>
+	<tr><td>VLS-1           </td><td> 2</td><td>2</td><td>0.0000000</td><td>0.250</td></tr>
+	<tr><td>Atlas Able      </td><td> 3</td><td>3</td><td>0.0000000</td><td>0.204</td></tr>
+	<tr><td>KT-1            </td><td> 3</td><td>3</td><td>0.0000000</td><td>0.203</td></tr>
+	<tr><td>Europa I        </td><td> 3</td><td>3</td><td>0.0000000</td><td>0.201</td></tr>
+	<tr><td>N-1 11A52       </td><td> 4</td><td>4</td><td>0.0000000</td><td>0.165</td></tr>
+	<tr><td>Project Pilot   </td><td> 6</td><td>6</td><td>0.0000000</td><td>0.125</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="exercise admonition" id="lecture7-q4">
+
+<p class="admonition-title"><span class="caption-number">Exercise 22 </span></p>
+<section id="exercise-content">
+<p>From <code class="docutils literal notranslate"><span class="pre">rockets</span></code>, which one of the two estimators (MLE or the posterior mean with <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code>) do you think is more helpful in choosing your rocket?</p>
+</section>
+</div>
+</section>
+</section>
+<section id="hierarchical-rocket-model">
+<h2>6. Hierarchical Rocket Model<a class="headerlink" href="#hierarchical-rocket-model" title="Permalink to this heading">#</a></h2>
+<p>Except for the initial warmup model (which is a single iteration of <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code>!), we have tried different Bayesian models using two opposite approaches:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket</span></code>: We obtained approximate posterior samples for <span class="math notranslate nohighlight">\(\pi\)</span>, the overall probability of launch success. <strong>However, this approach does not allow us to infer any probability of an individual rocket.</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code>: We obtained approximate posterior samples for the probability of launch success <span class="math notranslate nohighlight">\(\pi_i\)</span> by <strong>EACH</strong> rocket type.</p></li>
+</ul>
+<p>To choose the most successful rocket, <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code> worked reasonably better than MLE. However, recall the formal modelling:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad X_i|\pi_i \sim \text{Binomial}(n_i, \pi_i) \quad \text{for } i = 1, \dots, 367\\
+\text{prior:} \qquad \pi_i \sim \text{Beta}(a = 1, b = 1).
+\end{align*}\end{split}\]</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><strong>Why should we restrict our prior for each <span class="math notranslate nohighlight">\(\pi_i\)</span> to fixed hyperparameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> for the Beta distribution?</strong> We have only been using <span class="math notranslate nohighlight">\(\text{Beta}(a = 1, b = 1)\)</span> thorughout the whole lecture!</p>
+</div>
+<p>There are other important drawbacks in <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code>:</p>
+<ul class="simple">
+<li><p>Firstly, <strong>we cannot generalize this model to some new rocket</strong>.</p></li>
+<li><p>Secondly, <strong>we would not take any valuable information provided by some rocket type to infer on another type in <code class="docutils literal notranslate"><span class="pre">rockets</span></code></strong>.</p></li>
+</ul>
+<p><strong>Here comes another Bayesian twist!</strong> To make the model even more flexible, let us make <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> random too in the Beta prior. Hence, <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> will become parameters too (<strong>and not hyperparameters!</strong>).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is the foundational point of a <strong>hierarchical model</strong>. This hierarchical model will take into account two sources of variability (different to the predictive sources of variability we saw in <a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html"><span class="doc">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</span></a>):</p>
+<ul class="simple">
+<li><p><strong>Within-group variability:</strong> How much variability we have among the observations within each group of interest. In this case, the group is a rocket type, while the observations are different trials.</p></li>
+<li><p><strong>Between-group variability:</strong> How much variability we have from group to group. In this example, we can assess this matter from one rocket type to another.</p></li>
+</ul>
+<p>Essentially, the hierarchical model takes the best of <code class="docutils literal notranslate"><span class="pre">Non_Pooled_Rocket</span></code> and <code class="docutils literal notranslate"><span class="pre">Complete_Pooled_Rocket</span></code>. <strong>Note it will be able to infer on the following:</strong></p>
+<ul class="simple">
+<li><p>It will use valuable information from all the <code class="docutils literal notranslate"><span class="pre">rockets</span></code> in the dataset to infer the launch success probability on <strong>a specific rocket</strong>.</p></li>
+<li><p>We can obtain the posterior predictive distribution of the launch success probability <strong>for a new rocket</strong>.</p></li>
+</ul>
+</div>
+<p>Our hierarchical model is formally defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{likelihood:} \qquad X_i|\pi_i \sim \text{Binomial}(n_i, \pi_i) \quad \text{for } i = 1, \dots, 367\\
+\text{priors:} \qquad \pi_i \sim \text{Beta}(a, b) \\
+\quad a \sim \text{Gamma}(0.001, 0.001) \\
+\qquad b \sim \text{Gamma}(0.001, 0.001).
+\end{align*}\end{split}\]</div>
+<div class="hint admonition">
+<p class="admonition-title">What is the big picture here?</p>
+<p>First, <strong>this hierarchical model learns a different <span class="math notranslate nohighlight">\(\pi_i\)</span> from each rocket type</strong>. The key here is that the data from all rockets contribute to our inferences about <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>. Thus, <strong>it is like our prior for each rocket is being set by all the rockets!</strong></p>
+</div>
+<section id="the-priors">
+<h3>6.1. The Priors<a class="headerlink" href="#the-priors" title="Permalink to this heading">#</a></h3>
+<p><strong>Why a Gamma distribution for <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>?</strong></p>
+<p>Recall the probability density function (PDF) of the Beta distribution:</p>
+<div class="math notranslate nohighlight">
+\[f(\pi_i) = \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi_i ^{a - 1} (1 - \pi_i)^{b - 1} \quad \text{for} \quad 0 \leq \pi_i \leq 1.\]</div>
+<p>In this PDF, we have that <span class="math notranslate nohighlight">\(a &gt; 0\)</span> and <span class="math notranslate nohighlight">\(b &gt; 0\)</span> are continuous. Thus, <strong>a nonnegative continuous Gamma is suitable in this case</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plotting Gamma prior</span>
+<span class="n">prior_gamma</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dgamma</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.001</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.001</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.00001</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hierarchical Parameter&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Prior Gamma(0.001, 0.001) for a and b&quot;</span><span class="w"> </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The corresponding Gamma prior distribution for <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are plotted below (the prior mean is the vertical dashed red line).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_gamma</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/77b36ab1a677c3c13ddecfba7b30a92fd6d17c5fc6ee84013c2f053b274b16b1.png"><img alt="../_images/77b36ab1a677c3c13ddecfba7b30a92fd6d17c5fc6ee84013c2f053b274b16b1.png" src="../_images/77b36ab1a677c3c13ddecfba7b30a92fd6d17c5fc6ee84013c2f053b274b16b1.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p>Note the Gamma priors <strong>tend to assign small values</strong> for <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> in</p>
+<div class="math notranslate nohighlight">
+\[\pi_i \sim \text{Beta}(a, b).\]</div>
+<p><strong>As an example</strong>, for a given <span class="math notranslate nohighlight">\(\pi_i\)</span>, suppose its Beta prior has <span class="math notranslate nohighlight">\(a = 0.0002\)</span> and <span class="math notranslate nohighlight">\(b = 0.0005\)</span>. This Beta prior for <span class="math notranslate nohighlight">\(\pi_i\)</span> is plotted below. We can see these prior beliefs for <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> basically put the success probability <span class="math notranslate nohighlight">\(\pi_i\)</span> close to either its lower or upper bound. Translating this into our prior beliefs, <strong>we think that any rocket would be either good or bad (we do not want any intermediate point here since we are using that rocket to go to space!).</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plotting Beta prior</span>
+<span class="n">prior_beta</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">shape1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0002</span><span class="p">,</span><span class="w"> </span><span class="n">shape2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0005</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">[</span><span class="s">&quot;i&quot;</span><span class="p">]))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Example of a Possible Prior Beta(0.0002, 0.0005)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_beta</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/0b700aad5e0797fd29a7ae2294ba839a66bbc09d04ab8f8450cd7aa1499ad735.png"><img alt="../_images/0b700aad5e0797fd29a7ae2294ba839a66bbc09d04ab8f8450cd7aa1499ad735.png" src="../_images/0b700aad5e0797fd29a7ae2294ba839a66bbc09d04ab8f8450cd7aa1499ad735.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+</section>
+<section id="id7">
+<h3>6.2. Coding the Model<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<p>We code up this <code class="docutils literal notranslate"><span class="pre">Hierarchical_Rocket</span></code> model on <code class="docutils literal notranslate"><span class="pre">Stan</span></code>:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">data</span></code> block structure will not have <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> since they are random now.</p></li>
+<li><p>Furthermore, we add the Gamma priors for <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> in the <code class="docutils literal notranslate"><span class="pre">model</span></code> block while keeping the Beta prior for each <span class="math notranslate nohighlight">\(\pi_i\)</span>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">parameters</span></code> block has new variables: <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p></li>
+<li><p>Besides the posterior sampled probabilities by rocket type, we will also obtain posterior samples for  <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Hierarchical_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {                          </span>
+<span class="s">int&lt;lower=1&gt; num_rockets;    // number of rockets </span>
+<span class="s">int&lt;lower=0&gt; X[num_rockets];  // vector with sucesses by rocket</span>
+<span class="s">int&lt;lower=1&gt; n[num_rockets];  // vector with trials by rocket</span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">vector&lt;lower=0,upper=1&gt;[num_rockets] pi; // vector of 367 probabilities of launch success</span>
+<span class="s">real&lt;lower=0&gt; a; // beta parameter</span>
+<span class="s">real&lt;lower=0&gt; b; // beta parameter</span>
+<span class="s">}</span>
+<span class="s">model {</span>
+<span class="s">a ~ gamma(0.001, 0.001);     // prior for a</span>
+<span class="s">b ~ gamma(0.001, 0.001);     // prior for b</span>
+
+<span class="s">for (i in 1:num_rockets){</span>
+<span class="s">pi[i] ~ beta(a,b);           // modelling the pi_i by rocket</span>
+<span class="s">X[i] ~ binomial(n[i],pi[i]); // modelling the likelihood by rocket</span>
+<span class="s">}</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h3>6.3. Running the MCMC Simulation<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<p>To run the <code class="docutils literal notranslate"><span class="pre">Hierarchical_Rocket</span></code> model, we need to use the corresponding columns from <code class="docutils literal notranslate"><span class="pre">rockets</span></code>. This dictionary will not have <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">Hierarchical_Rocket_dictionary</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">  </span><span class="n">num_rockets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">rockets</span><span class="p">),</span>
+<span class="w">  </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfLaunches</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfFailures</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">numberOfLaunches</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_Hierarchical_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Hierarchical_Rocket</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Hierarchical_Rocket_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.7 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 1: Iteration: 1001 / 10000 [ 10%]  (Sampling)
+Chain 1: Iteration: 2000 / 10000 [ 20%]  (Sampling)
+Chain 1: Iteration: 3000 / 10000 [ 30%]  (Sampling)
+Chain 1: Iteration: 4000 / 10000 [ 40%]  (Sampling)
+Chain 1: Iteration: 5000 / 10000 [ 50%]  (Sampling)
+Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.944 seconds (Warm-up)
+Chain 1:                12.514 seconds (Sampling)
+Chain 1:                14.458 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h3>6.4. Output Summary<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<p>We obtain the output from <code class="docutils literal notranslate"><span class="pre">posterior_Hierarchical_Rocket</span></code>. Since <code class="docutils literal notranslate"><span class="pre">Stan</span></code> labels the parameters in the posterior samples as <code class="docutils literal notranslate"><span class="pre">pi[1]</span></code>, …, <code class="docutils literal notranslate"><span class="pre">pi[367]</span></code>, we will add a new column with the actual <code class="docutils literal notranslate"><span class="pre">rocket</span></code> name using <code class="docutils literal notranslate"><span class="pre">rockets$LV.Type</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_Hierarchical_Rocket</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Hierarchical_Rocket</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">367</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket</span><span class="o">$</span><span class="n">rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rockets</span><span class="o">$</span><span class="n">LV.Type</span>
+<span class="n">summary_Hierarchical_Rocket</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 367 × 5</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th><th scope=col>rocket</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>pi[266]</th><td>0.991</td><td>0.011</td><td>0.961</td><td>1.000</td><td>Soyuz-U2      </td></tr>
+	<tr><th scope=row>pi[261]</th><td>0.989</td><td>0.013</td><td>0.956</td><td>1.000</td><td>Soyuz-FG      </td></tr>
+	<tr><th scope=row>pi[267]</th><td>0.988</td><td>0.010</td><td>0.963</td><td>0.999</td><td>Space Shuttle </td></tr>
+	<tr><th scope=row>pi[357]</th><td>0.983</td><td>0.013</td><td>0.950</td><td>0.998</td><td>Vostok 8A92M  </td></tr>
+	<tr><th scope=row>pi[78]</th><td>0.982</td><td>0.021</td><td>0.923</td><td>1.000</td><td>Chang Zheng 2D</td></tr>
+	<tr><th scope=row>pi[54]</th><td>0.980</td><td>0.023</td><td>0.915</td><td>1.000</td><td>Atlas IIAS    </td></tr>
+	<tr><th scope=row>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+	<tr><th scope=row>pi[192]</th><td>0.545</td><td>0.074</td><td>0.398</td><td>0.685</td><td>Molniya 8K78 </td></tr>
+	<tr><th scope=row>pi[184]</th><td>0.544</td><td>0.155</td><td>0.241</td><td>0.821</td><td>Lambda 4S    </td></tr>
+	<tr><th scope=row>pi[360]</th><td>0.529</td><td>0.125</td><td>0.284</td><td>0.759</td><td>Vostok-L 8K72</td></tr>
+	<tr><th scope=row>pi[201]</th><td>0.496</td><td>0.162</td><td>0.187</td><td>0.800</td><td>N-1 11A52    </td></tr>
+	<tr><th scope=row>pi[351]</th><td>0.470</td><td>0.123</td><td>0.242</td><td>0.701</td><td>Vanguard     </td></tr>
+	<tr><th scope=row>pi[211]</th><td>0.405</td><td>0.145</td><td>0.147</td><td>0.699</td><td>Project Pilot</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>We plot the top 10 rockets and the posterior 95% credible intervals from <code class="docutils literal notranslate"><span class="pre">posterior_Hierarchical_Rocket</span></code>. Then we compare this top 10 versus the ones obtained with <code class="docutils literal notranslate"><span class="pre">posterior_Non_Pooled_Rocket</span></code>. The credible interval overlapping is still there.</p>
+<p>Nonetheles, for those rockets still present in the top 10 from <code class="docutils literal notranslate"><span class="pre">posterior_Hierarchical_Rocket</span></code>, the credible intervals are narrower! <strong>We have more precise results.</strong></p>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_rocket_CIs_plot_Hierarchical</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Hierarchical_Rocket</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">slice</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span><span class="n">rocket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">fct_reorder</span><span class="p">(</span><span class="n">rocket</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rocket</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_errorbarh</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">xmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">`2.5%`</span><span class="p">,</span><span class="w"> </span><span class="n">xmin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">`97.5%`</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rocket</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;none&quot;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;95% Credible Intervals for &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="s">&quot; by Rocket (Hierarchical)&quot;</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Probability of Launch Success&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Rocket&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.85</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">0.85</span><span class="p">,</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="m">0.025</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">11</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="nf">plot_grid</span><span class="p">(</span><span class="n">posterior_rocket_CIs_plot_Non_Pooled</span><span class="p">,</span><span class="w"> </span><span class="n">posterior_rocket_CIs_plot_Hierarchical</span><span class="p">,</span><span class="w"> </span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/005e97909c3868c54977d37c3eea94277a72254e22fbd50704096e6586bab463.png"><img alt="../_images/005e97909c3868c54977d37c3eea94277a72254e22fbd50704096e6586bab463.png" src="../_images/005e97909c3868c54977d37c3eea94277a72254e22fbd50704096e6586bab463.png" style="width: 720px; height: 660px;" /></a>
+</div>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">So, what rocket should we choose with a hierarchical model?</p>
+<p>If we had to choose based on the <strong>hierarchical</strong> Bayesian results, we would still take <code class="docutils literal notranslate"><span class="pre">Soyuz-U2</span></code> or <code class="docutils literal notranslate"><span class="pre">Space</span> <span class="pre">Shuttle</span></code> (now with narrower 95% credible intervals!).</p>
+</div>
+<p><strong>Why are our estimates more precise?</strong></p>
+<p>A useful property of hierarchical models is the notion of <strong>“borrowing strength”</strong>, where a rocket uses the information about the probability of success from other rockets. As we saw above, this affects the mean of our posterior distributions, but it also affects the variance. <strong>This helps us to learn the parameters and actually reduce the posterior variance of our Bayesian estimates!</strong></p>
+<p><strong>How about the posterior results for <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>?</strong></p>
+<p>Also, we have posterior summaries for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_Hierarchical_Rocket_ab</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">posterior_Hierarchical_Rocket</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket_ab</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Hierarchical_Rocket_ab</span><span class="p">[</span><span class="m">368</span><span class="o">:</span><span class="m">369</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket_ab</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>a</th><td>4.673</td><td>0.933</td><td>3.133</td><td>6.616</td></tr>
+	<tr><th scope=row>b</th><td>0.685</td><td>0.109</td><td>0.490</td><td>0.911</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Note the posterior distributions of <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are right-skewed.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_plot_Hierarchical_Rocket_ab</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">posterior_Hierarchical_Rocket</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">strip.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Distributions of a and b&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">post_plot_Hierarchical_Rocket_ab</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/c018056eb245976b56af1d50f03e540c8f82c17383857980ed85f8068e6e95fd.png"><img alt="../_images/c018056eb245976b56af1d50f03e540c8f82c17383857980ed85f8068e6e95fd.png" src="../_images/c018056eb245976b56af1d50f03e540c8f82c17383857980ed85f8068e6e95fd.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<p><strong>How is the average launch success probability for all the <code class="docutils literal notranslate"><span class="pre">rockets</span></code>?</strong></p>
+<p>We will use the posterior means of <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> as parameters of a Beta distribution to report posterior metrics on the <strong>average launch probability of success <span class="math notranslate nohighlight">\(\pi\)</span></strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_Hierarchical_Rocket_ab</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>a</th><td>4.673</td><td>0.933</td><td>3.133</td><td>6.616</td></tr>
+	<tr><th scope=row>b</th><td>0.685</td><td>0.109</td><td>0.490</td><td>0.911</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Using the posterior means for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> from <code class="docutils literal notranslate"><span class="pre">summary_Hierarchical_Rocket_ab</span></code>, let us deliver the summary statistics for a theoretical Beta distribution via <code class="docutils literal notranslate"><span class="pre">summarize_beta()</span></code> from package <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">summarize_beta</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">summary_Hierarchical_Rocket_ab</span><span class="o">$</span><span class="n">mean</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">summary_Hierarchical_Rocket_ab</span><span class="o">$</span><span class="n">mean</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 1 × 4</caption>
+<thead>
+	<tr><th scope=col>mean</th><th scope=col>mode</th><th scope=col>var</th><th scope=col>sd</th></tr>
+	<tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>0.872</td><td>1</td><td>0.018</td><td>0.132</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Then, using posterior means <span class="math notranslate nohighlight">\(a = 4.673\)</span> and <span class="math notranslate nohighlight">\(b = 0.685\)</span>, we plot this <strong>average posterior theoretical Beta</strong>. Note that its corresponding mean <span class="math notranslate nohighlight">\(0.872\)</span> is indicated as a vertical dashed line.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plotting average Beta posterior</span>
+<span class="n">average_beta_posterior</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ylim</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_function</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbeta</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">shape1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4.673</span><span class="p">,</span><span class="w"> </span><span class="n">shape2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.685</span><span class="p">),</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.872</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkred&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linetype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dashed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Density&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="kc">pi</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Average Posterior Beta(4.771, 0.699) for &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This average Beta posterior leans more towards high probabilities for launch success <strong>given the evidence provided by all <code class="docutils literal notranslate"><span class="pre">rockets</span></code> along with our priors</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="n">average_beta_posterior</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/98aafc2edaea764c7fffe68c54a7e2b81e24bef8eb23e3b9a5e4f583ecc2f2ca.png"><img alt="../_images/98aafc2edaea764c7fffe68c54a7e2b81e24bef8eb23e3b9a5e4f583ecc2f2ca.png" src="../_images/98aafc2edaea764c7fffe68c54a7e2b81e24bef8eb23e3b9a5e4f583ecc2f2ca.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+</section>
+<section id="prediction-for-a-new-rocket">
+<h3>6.5. Prediction for a New Rocket<a class="headerlink" href="#prediction-for-a-new-rocket" title="Permalink to this heading">#</a></h3>
+<p>We will modify our <code class="docutils literal notranslate"><span class="pre">Hierarchical_Rocket</span></code> model to incorporate the block <code class="docutils literal notranslate"><span class="pre">generated</span> <span class="pre">quantities</span></code> for a predicted probability <code class="docutils literal notranslate"><span class="pre">pi_pred</span></code>. We use the same process described in <a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html"><span class="doc">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</span></a> to obtain predictions. This process considers the <strong>posterior variability in <code class="docutils literal notranslate"><span class="pre">parameters</span></code></strong> and the <strong>sampling variability</strong>. The predictive samples will yield a <strong>posterior predictive distribution</strong> for <code class="docutils literal notranslate"><span class="pre">pi_pred</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">pred_Hierarchical_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;data {                          </span>
+<span class="s">int&lt;lower=1&gt; num_rockets;    // number of rockets </span>
+<span class="s">int&lt;lower=0&gt; X[num_rockets];  // vector with sucesses by rocket</span>
+<span class="s">int&lt;lower=1&gt; n[num_rockets];  // vector with trials by rocket</span>
+<span class="s">}</span>
+<span class="s">parameters {</span>
+<span class="s">vector&lt;lower=0,upper=1&gt;[num_rockets] pi; // vector of 367 probabilities of launch success</span>
+<span class="s">real&lt;lower=0&gt; a; // beta parameter</span>
+<span class="s">real&lt;lower=0&gt; b; // beta parameter</span>
+<span class="s">}</span>
+<span class="s">model {</span>
+<span class="s">a ~ gamma(0.001, 0.001);     // prior for a</span>
+<span class="s">b ~ gamma(0.001, 0.001);     // prior for b</span>
+
+<span class="s">for (i in 1:num_rockets){</span>
+<span class="s">pi[i] ~ beta(a,b);           // modelling the pi_i by rocket</span>
+<span class="s">X[i] ~ binomial(n[i],pi[i]); // modelling the likelihood by rocket</span>
+<span class="s">}</span>
+<span class="s">}</span>
+<span class="s">generated quantities {</span>
+<span class="s">  real&lt;lower=0,upper=1&gt; pi_pred = beta_rng(a, b);</span>
+<span class="s">}&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The MCMC simulation uses the same <code class="docutils literal notranslate"><span class="pre">Hierarchical_Rocket_dictionary</span></code> but the modified <code class="docutils literal notranslate"><span class="pre">pred_Hierarchical_Rocket</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">pred_posterior_Hierarchical_Rocket</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">stan</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred_Hierarchical_Rocket</span><span class="p">,</span>
+<span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Hierarchical_Rocket_dictionary</span><span class="p">,</span>
+<span class="w">  </span><span class="n">chains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">warmup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">thin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">553</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SAMPLING FOR MODEL &#39;anon_model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 8.4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.84 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
+Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
+Chain 1: Iteration: 1001 / 10000 [ 10%]  (Sampling)
+Chain 1: Iteration: 2000 / 10000 [ 20%]  (Sampling)
+Chain 1: Iteration: 3000 / 10000 [ 30%]  (Sampling)
+Chain 1: Iteration: 4000 / 10000 [ 40%]  (Sampling)
+Chain 1: Iteration: 5000 / 10000 [ 50%]  (Sampling)
+Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
+Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
+Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
+Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
+Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.792 seconds (Warm-up)
+Chain 1:                12.019 seconds (Sampling)
+Chain 1:                13.811 seconds (Total)
+Chain 1: 
+</pre></div>
+</div>
+</div>
+</div>
+<p>We only need the posterior metrics for <code class="docutils literal notranslate"><span class="pre">pi_pred</span></code>. <strong>Note the mean is extremely similar to the overall mean of <span class="math notranslate nohighlight">\(\pi\)</span>!</strong> Moreover, the posterior predictive distribution in <code class="docutils literal notranslate"><span class="pre">post_hist_Hierarchical_Rocket_pi_pred</span></code> is similar to <code class="docutils literal notranslate"><span class="pre">average_beta_posterior</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">summary_Hierarchical_Rocket_pi_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">pred_posterior_Hierarchical_Rocket</span><span class="p">)</span><span class="o">$</span><span class="n">summary</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket_pi_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary_Hierarchical_Rocket_pi_pred</span><span class="p">[</span><span class="m">370</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;mean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.5%&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;97.5%&quot;</span><span class="p">)]</span><span class="w"> </span><span class="o">|&gt;</span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">summary_Hierarchical_Rocket_pi_pred</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 1 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>2.5%</th><th scope=col>97.5%</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>pi_pred</th><td>0.876</td><td>0.135</td><td>0.511</td><td>0.999</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_hist_Hierarchical_Rocket_pi_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mcmc_areas</span><span class="p">(</span><span class="n">pred_posterior_Hierarchical_Rocket</span><span class="p">,</span><span class="w"> </span><span class="n">pars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;pi_pred&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">strip.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sans&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Approximate Posterior Distribution of Predicted &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">xlab</span><span class="p">(</span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;Predicted &quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">post_hist_Hierarchical_Rocket_pi_pred</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/e1184385e28d1998d26eca48de8c3d21ed7a4ccf091456f8e6bd1498c0c33bab.png"><img alt="../_images/e1184385e28d1998d26eca48de8c3d21ed7a4ccf091456f8e6bd1498c0c33bab.png" src="../_images/e1184385e28d1998d26eca48de8c3d21ed7a4ccf091456f8e6bd1498c0c33bab.png" style="width: 720px; height: 480px;" /></a>
+</div>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">Why do we have these similarities?</p>
+<p>Our launch success mean posterior prediction for a new rocket is similar to the posterior mean of <span class="math notranslate nohighlight">\(\pi\)</span> because <strong>this is the best Bayesian model we can obtain without further covariates (or features)</strong>! So, this is a mean probability prediction for the rocket population for a launch success.</p>
+</div>
+</section>
+</section>
+<section id="wrapping-up">
+<h2>7. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Even though hierarchical models involve more Bayesian complexity, they are helpful to take the best from non-pooled and pooled models.</p></li>
+<li><p>These hierarchical models are also flexible enough to provide predictions for new observations.</p></li>
+<li><p>We saw a model without covariates. Nevertheless, the hierarchical approach can be extended to Bayesian regression models. These are the counterpart of frequentist mixed-effects models.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="lecture6_binary_logistic_regression.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Lecture 6 - Bayesian Binary Logistic Regression</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lecture8_model_diagnostics.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#previously">Previously…</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-rockets-data">1. The Rockets Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-rocket-model-warmup">2. Single Rocket Model (Warmup!)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-the-model">2.1. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-mcmc-simulation">2.2. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-summary">2.3. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-pooled-rocket-model">3. Complete Pooled Rocket Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.1. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.2. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.3. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#let-us-go-to-space">4. Let Us Go to Space!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-pooled-rocket-model">5.  Non-Pooled Rocket Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">5.1. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">5.2. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">5.3. Output Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-rocket-model">6. Hierarchical Rocket Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-priors">6.1. The Priors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">6.2. Coding the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">6.3. Running the MCMC Simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">6.4. Output Summary</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction-for-a-new-rocket">6.5. Prediction for a New Rocket</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">7. Wrapping Up</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By G. Alexi Rodríguez-Arelis, Hedayat Zarkoob, Michael Gelbart, and Trevor Campbell
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

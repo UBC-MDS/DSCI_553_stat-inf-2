@@ -1,0 +1,1278 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model &#8212; DSCI 553 - Statistical Inference and Computation II</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/lecture3_beta_binomial_Bayesian_modelling';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lecture 4 - Markov Chain Monte Carlo, Stan, and Complex Bayesian Models" href="lecture4_MCMC_Poisson_Gamma_Normal.html" />
+    <link rel="prev" title="Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation" href="lecture2_Bayes_MAP.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/UBC_MDS_logo.png" class="logo__image only-light" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>
+    <script>document.write(`<img src="../_static/UBC_MDS_logo.png" class="logo__image only-dark" alt="DSCI 553 - Statistical Inference and Computation II - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../README.html">
+                    Welcome to DSCI 553: Statistical Inference and Computation II
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Lectures</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../lecture-learning-objectives.html">Lecture Learning Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture1_intro_and_stan.html">Lecture 1 - Frequentist and Bayesian Overview, Probabilistic Generative Models, and <code class="docutils literal notranslate"><span class="pre">Stan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture2_Bayes_MAP.html">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture4_MCMC_Poisson_Gamma_Normal.html">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture5_hypothesis_testing_intro_regression.html">Lecture 5 - Bayesian Normal Linear Regression and Hypothesis Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture6_binary_logistic_regression.html">Lecture 6 - Bayesian Binary Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture7_hierarchical_models.html">Lecture 7 - Bayesian Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lecture8_model_diagnostics.html">Lecture 8 - More Hierarchical Modelling and MCMC Diagnostics</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="MCMC_tutorial.html">Insights of Markov Chain Monte Carlo via the Gamma-Poisson Model</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="appendix-dist-cheatsheet.html">Distribution Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-greek-alphabet.html">Greek Alphabet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix-bayesian-workflow.html">The Bayesian Workflow</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UBC-MDS/DSCI_553_stat-inf-2/issues/new?title=Issue%20on%20page%20%2Fnotes/lecture3_beta_binomial_Bayesian_modelling.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/lecture3_beta_binomial_Bayesian_modelling.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#previously">Previously…</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-modelling">1. The Bayesian Modelling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-big-idea">1.1. The Big Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pose-a-question">1.2. Pose a Question</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-distributional-probability-concepts">2. Basic Distributional Probability Concepts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-binomial-model">3. The Beta-Binomial Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-with-a-bernoulli-distribution">3.1. Starting with a Bernoulli Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-binomial-distribution">3.2. The Binomial Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-distribution">3.3. The Beta Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-beta-prior">3.4. Choosing the Beta Prior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-likelihood">3.5. Setting up the Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayes-rule-in-action">3.6. The Bayes’ Rule in Action</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-analysis">4. Posterior Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">5. Wrapping Up</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lecture-3-bayesian-statistics-in-action-the-beta-binomial-model">
+<h1>Lecture 3 - Bayesian Statistics in Action: The Beta-Binomial Model<a class="headerlink" href="#lecture-3-bayesian-statistics-in-action-the-beta-binomial-model" title="Permalink to this heading">#</a></h1>
+<section id="today-s-learning-objectives">
+<h2>Today’s Learning Objectives<a class="headerlink" href="#today-s-learning-objectives" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Illustrate the elements and process of Bayesian modelling.</p></li>
+<li><p>Recall some distributional probability concepts.</p></li>
+<li><p>Explain the Bayes’ rule on analytical models.</p></li>
+<li><p>Describe the Beta-Binomial model via the Bayes’ rule.</p></li>
+<li><p>Explain key posterior metrics for Bayesian inference.</p></li>
+</ol>
+</section>
+<section id="loading-r-packages">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages<a class="headerlink" href="#loading-r-packages" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.matrix.max.rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">bayesrules</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="previously">
+<h2>Previously…<a class="headerlink" href="#previously" title="Permalink to this heading">#</a></h2>
+<p>We have discussed the difference between frequentist and Bayesian statistics. One of the most critical characteristics of Bayesian thinking is that <strong>population parameters are not fixed anymore but RANDOM</strong>. Furthermore, we demonstrate the Bayes’ rule’s usefulness (via probability theory!).</p>
+<p>Note the Bayes’ rule has solid foundations on conditional probability. However, we have only seen cases with categorical outcomes (e.g., the binary Tinder case).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Bayes’ rule can also be applied to continuous variables combined with discrete ones.</p>
+</div>
+</section>
+<section id="the-bayesian-modelling">
+<h2>1. The Bayesian Modelling<a class="headerlink" href="#the-bayesian-modelling" title="Permalink to this heading">#</a></h2>
+<p>Note the big advantage of Bayesian inference: <strong>it formulates every statistical inference problem in one common framework</strong> (as we will see in <code class="docutils literal notranslate"><span class="pre">lab2</span></code>!). Moreover, the final goal will be to take samples from the posterior distribution.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Besides <a class="reference external" href="https://mc-stan.org/"><code class="docutils literal notranslate"><span class="pre">Stan</span></code></a>, there are some other good simulation tools such as <a class="reference external" href="http://mcmc-jags.sourceforge.net/"><code class="docutils literal notranslate"><span class="pre">JAGS</span></code></a> and <a class="reference external" href="https://www.tensorflow.org/probability">Tensorflow Probability</a>.</p>
+</div>
+<p><strong>No matter what your model is, your computer will do the heavy lifting!</strong> We will get to spend all our mental effort on <strong>good model design</strong> and <strong>critical analysis of results</strong>.</p>
+<p>Bayesian modelling has the following characteristics:</p>
+<ul class="simple">
+<li><p>It is a very intuitive description of <strong>uncertainty before/after seeing data</strong>.</p></li>
+<li><p>It provides <strong>valid inference for any (finite) amount of data</strong>.</p></li>
+<li><p>Furthermore, it allows using <strong>more complex/flexible/realistic models</strong>!</p></li>
+</ul>
+<section id="the-big-idea">
+<h3>1.1. The Big Idea<a class="headerlink" href="#the-big-idea" title="Permalink to this heading">#</a></h3>
+<p>Bayesian modelling involves these steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Question:</strong> Pose a scientific question.</p></li>
+<li><p><strong>Design:</strong> Formulate variables and create a probabilistic model for them. <strong>Prior knowledge</strong> is included here!</p></li>
+<li><p><strong>Infer:</strong> Get <strong>posterior samples</strong> from the conditional distribution of <strong>any variable you want to infer</strong>, given your observed data and prior knowledge.</p></li>
+<li><p><strong>Check:</strong> Make sure the “samples” are <em>actually</em> from your posterior (these are model diagnostics, <strong>to be covered in week 4</strong>!)</p></li>
+<li><p><strong>Analyze:</strong> Use your samples to compute summaries: mean, maximum a posteriori (MAP), variance, posterior credible intervals (<strong>to be explained today</strong>), etc.</p></li>
+</ol>
+</section>
+<section id="pose-a-question">
+<h3>1.2. Pose a Question<a class="headerlink" href="#pose-a-question" title="Permalink to this heading">#</a></h3>
+<p>There are many different models / hypothetical latent parameters for the same data. To design a good model, <strong>your whole design process should revolve around one/more scientific question(s)</strong>.</p>
+<p>Let us recall the two fundamental statistical purposes, which also apply for Bayesian modelling.</p>
+<p><strong>Inferential:</strong> Using observed data <span class="math notranslate nohighlight">\(Y\)</span> to infer latent variable <span class="math notranslate nohighlight">\(\theta\)</span>. For example:</p>
+<ul class="simple">
+<li><p><strong>Bottlecap experiment:</strong> what is the underlying flip probability <span class="math notranslate nohighlight">\(\pi \in [0, 1]\)</span>?</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(\text{CO}_2\)</span> emissions:</strong> in regression analysis, what is the slope <span class="math notranslate nohighlight">\(\beta_1\in\mathbb{R}\)</span> of <span class="math notranslate nohighlight">\(\text{CO}_2\)</span> over time?</p></li>
+</ul>
+<p><strong>Predictive:</strong> Using observed data <span class="math notranslate nohighlight">\(Y\)</span> to predict future data <span class="math notranslate nohighlight">\(Y'\)</span>.</p>
+<ul class="simple">
+<li><p><strong>Bottlecap experiment:</strong> what is probability that the <em>next</em> toss <span class="math notranslate nohighlight">\(Y'\in\{0, 1\}\)</span> will be right side up?</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(\text{CO}_2\)</span> emissions:</strong> what will the <span class="math notranslate nohighlight">\(\text{CO}_2\)</span> concentration <span class="math notranslate nohighlight">\(Y'\in\mathbb{R}\)</span> be in 2030?</p></li>
+</ul>
+<p>Let us check an example, the bikeshare data.</p>
+<ul class="simple">
+<li><p><strong>Description:</strong> Hourly record of the number of bike trips in Washington, DC in 2011/2012.</p></li>
+<li><p><strong>Source:</strong> <a class="reference external" href="https://www.kaggle.com/marklvl/bike-sharing-dataset">2011/12 Capital Bikeshare Data</a>.</p></li>
+<li><p><strong>Variables:</strong>  date, hour, holiday/weekend/workday, weather, temperature, number of trips.</p></li>
+</ul>
+<div class="exercise admonition" id="lecture3-q1">
+
+<p class="admonition-title"><span class="caption-number">Exercise 6 </span></p>
+<section id="exercise-content">
+<p>Assume we only care about what happened in 2011/12 in Washington, DC. Then, using the bikeshare data, suppose we want to check which type of trip is the most popular: <em>holiday</em>, <em>workday</em>, or <em>weekend trips</em>.</p>
+<p>What class of inquiry is this?</p>
+<p><strong>A.</strong> Inferential.</p>
+<p><strong>B.</strong> Predictive.</p>
+<p><strong>C.</strong> Neither.</p>
+</section>
+</div>
+<div class="exercise admonition" id="lecture3-q2">
+
+<p class="admonition-title"><span class="caption-number">Exercise 7 </span></p>
+<section id="exercise-content">
+<p>Using the bikeshare data, suppose we want to determine how temperature/weather is associated with the number of trips.</p>
+<p>What class of inquiry is this?</p>
+<p><strong>A.</strong> Inferential.</p>
+<p><strong>B.</strong> Predictive.</p>
+<p><strong>C.</strong> Neither.</p>
+</section>
+</div>
+<div class="exercise admonition" id="lecture3-q3">
+
+<p class="admonition-title"><span class="caption-number">Exercise 8 </span></p>
+<section id="exercise-content">
+<p>Using the bikeshare data, suppose we want to determine how many trips will be taken on a day that is 25C and misty.</p>
+<p>What class of inquiry is this?</p>
+<p><strong>A.</strong> Inferential.</p>
+<p><strong>B.</strong> Predictive.</p>
+<p><strong>C.</strong> Neither.</p>
+</section>
+</div>
+</section>
+</section>
+<section id="basic-distributional-probability-concepts">
+<span id="basic-distributional-concepts"></span><h2>2. Basic Distributional Probability Concepts<a class="headerlink" href="#basic-distributional-probability-concepts" title="Permalink to this heading">#</a></h2>
+<p>Before checking formal Bayesian inference, it is necessary to review basic distributional probability concepts from <strong>DSCI 551</strong>. Specifically speaking, let <span class="math notranslate nohighlight">\(Z\)</span> be a continuous random variable. Furthermore, <span class="math notranslate nohighlight">\(f_Z(z)\)</span> is its probability density function (PDF). Hence, to consider <span class="math notranslate nohighlight">\(f_Z(z)\)</span> a proper PDF, it needs the following properties:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f_Z(z) \geq 0.\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\int_{z} f_Z(z) \,dz = 1\)</span> (the area under the PDF is equal to 1, i.e., <strong>the total probability</strong>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(u &lt; Z &lt; v) = \int_{u}^v f_Z(z) \,dz\)</span> when <span class="math notranslate nohighlight">\(u \leq v\)</span> (the probability of <span class="math notranslate nohighlight">\(Z\)</span> being between <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> is obtained by integrating the PDF to get the corresponding area under the curve).</p></li>
+</ul>
+</section>
+<section id="the-beta-binomial-model">
+<h2>3. The Beta-Binomial Model<a class="headerlink" href="#the-beta-binomial-model" title="Permalink to this heading">#</a></h2>
+<p>The Beta-Binomial model is one of the foundational Bayesian models.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The Beta-Binomial model in Bayesian statistics can be solved <strong>analytically</strong> to obtain the exact posterior distribution of our parameter of interest, i.e., using Markov Chain Monte Carlo (MCMC) to get an approximate posterior distribution is unnecessary <strong>in practice</strong>. <strong>Nevertheless, we will do it in <code class="docutils literal notranslate"><span class="pre">lab2</span></code> to verify that MCMC actually works.</strong></p>
+<p>The literature also offers other classes of analytical Bayesian models that can be solved via the Bayes’ rules such as Gamma-Poisson (<strong>to be covered in <code class="docutils literal notranslate"><span class="pre">worksheet2</span></code></strong>).</p>
+</div>
+<p>We will use two common distributions: <a class="reference internal" href="appendix-dist-cheatsheet.html#beta-distribution"><span class="std std-ref"><strong>Beta</strong></span></a> and <a class="reference internal" href="appendix-dist-cheatsheet.html#binomial-distribution"><span class="std std-ref"><strong>Binomial</strong></span></a>. Each distribution will play a crucial role in this inferential process (<strong>via the Bayes’ rule!</strong>). Keep this in mind for the Beta-Binomial model:</p>
+<div class="math notranslate nohighlight">
+\[\text{posterior} \propto \text{prior} \times \text{likelihood}.\]</div>
+<p>Thus, in this framework, we need to define the specific <strong>prior</strong> and <strong>likelihood</strong> to get the <strong>posterior</strong> of our population parameter of interest.</p>
+<p>Let us continue with the bottle cap flip example.</p>
+<br>
+<center><img width="400" src="https://img1.cgtrader.com/items/730507/8a23f572f4/plastic-pet-bottle-cap-3d-model-obj-mtl-fbx-stl-blend.png"/></center><div class="admonition-main-statistical-inquiry admonition">
+<p class="admonition-title">Main statistical inquiry</p>
+<p>Recall the inferential problem: <strong>what is the probability <span class="math notranslate nohighlight">\(\pi\)</span> the bottle cap will land right side up?</strong> We already approached this problem using a frequentist approach.</p>
+<p><strong>So, how can we do it the Bayesian way?</strong> Again, <span class="math notranslate nohighlight">\(\pi\)</span> is our population parameter of interest.</p>
+</div>
+<section id="starting-with-a-bernoulli-distribution">
+<h3>3.1. Starting with a Bernoulli Distribution<a class="headerlink" href="#starting-with-a-bernoulli-distribution" title="Permalink to this heading">#</a></h3>
+<p>A <strong>single</strong> bottle cap flip <span class="math notranslate nohighlight">\(X_i\)</span> is assumed as:</p>
+<div class="math notranslate nohighlight">
+\[X_i \sim \mathrm{Bernoulli}(\pi) \quad \text{for} \quad i = 1, \dots, n.\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\pi \in [0, 1]\)</span> is the unknown parameter we want to infer: <strong>the probability the bottle cap will land right side up</strong>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_i\)</span> are the results of each bottle cap toss (<span class="math notranslate nohighlight">\(1 = \text{right side up}\)</span> or <span class="math notranslate nohighlight">\(0 = \text{upside down}\)</span>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(X_i = 1\)</span> is the success with probability <span class="math notranslate nohighlight">\(\pi\)</span>.</p></li>
+</ul>
+<p>Moreover, <strong>what is the role of of the of the number of trials <span class="math notranslate nohighlight">\(n\)</span> in this framework?</strong> This <span class="math notranslate nohighlight">\(n\)</span> will pave the way to the Binomial distribution.</p>
+</section>
+<section id="the-binomial-distribution">
+<h3>3.2. The Binomial Distribution<a class="headerlink" href="#the-binomial-distribution" title="Permalink to this heading">#</a></h3>
+<p>Suppose you run a study and execute <span class="math notranslate nohighlight">\(n\)</span> <strong>independent</strong> flips to make inference on <span class="math notranslate nohighlight">\(\pi\)</span> (i.e., <span class="math notranslate nohighlight">\(n\)</span> Bernoulli trials). At the end of the study, you count the number of successes (i.e., number of times the bottle cap landed right side up). <strong>This a sum of successes within <span class="math notranslate nohighlight">\(n\)</span> Bernoulli trials!</strong> Define this sum as:</p>
+<div class="math notranslate nohighlight">
+\[Y = \sum_{i = 1}^n X_i.\]</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>A sum of random variables will also be a random variable!</p>
+</div>
+<p>We might wonder, <strong>does <span class="math notranslate nohighlight">\(Y\)</span> have a known distribution?</strong> Using <a class="reference external" href="http://www.math.wm.edu/~leemis/chart/UDR/UDR.html">this resource</a>, we encounter the following:</p>
+<figure class="align-default" id="binomial-bernoulli">
+<a class="reference internal image-reference" href="../_images/binomial_bernoulli.png"><img alt="../_images/binomial_bernoulli.png" src="../_images/binomial_bernoulli.png" style="height: 120px;" /></a>
+</figure>
+<p><em>Source: <a class="reference external" href="http://www.math.wm.edu/~leemis/chart/UDR/UDR.html">Univariate Distribution Relationships</a></em></p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>In the above image, term <span class="math notranslate nohighlight">\(p\)</span> refers to our <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+</div>
+<p>It can be proved (<strong>not within the scope of this course</strong>) that:</p>
+<div class="math notranslate nohighlight">
+\[Y \sim \text{Binomial}(n , \pi) \quad \text{where} \quad \pi \in [0, 1].\]</div>
+<p>Hence, the sum of <span class="math notranslate nohighlight">\(n\)</span> <strong>independent and identically distributed (iid) Bernoulli</strong> random variables (with parameter <span class="math notranslate nohighlight">\(\pi\)</span>) is a <strong>Binomial</strong> (with parameters <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(\pi\)</span>).</p>
+</section>
+<section id="the-beta-distribution">
+<h3>3.3. The Beta Distribution<a class="headerlink" href="#the-beta-distribution" title="Permalink to this heading">#</a></h3>
+<p>Moving along with this bottle cap study, note we have the following:</p>
+<div class="math notranslate nohighlight">
+\[Y \mid \pi \sim \text{Binomial}(n, \pi) \quad \text{where} \quad \pi \in [0, 1].\]</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><strong>What is this expression telling us?</strong> This expression is <strong>conditioning</strong> <span class="math notranslate nohighlight">\(Y\)</span> on <span class="math notranslate nohighlight">\(\pi\)</span>. Therefore, here comes the Bayesian twist:</p>
+<blockquote>
+<div><p>One of the most critical characteristics of Bayesian thinking is that <strong>population parameters are not fixed anymore but RANDOM</strong>.</p>
+</div></blockquote>
+</div>
+<p>We will begin with our model design! The first step is to find a <strong>prior</strong> distribution for <span class="math notranslate nohighlight">\(\pi \in [0,1]\)</span> (our parameter of interest). Note that <span class="math notranslate nohighlight">\(\pi\)</span> is a probability, thus we need to find a distribution with the <strong>right support</strong> (i.e., a proper range of plausible values).</p>
+<p><span class="math notranslate nohighlight">\(\pi\)</span> is a probability taking on values between 0 and 1. A suitable choice for the <strong>continuous</strong> prior distribution of <span class="math notranslate nohighlight">\(\pi\)</span> is the <a class="reference internal" href="appendix-dist-cheatsheet.html#beta-distribution"><span class="std std-ref"><strong>Beta distribution</strong></span></a>. Hence, the prior distribution is:</p>
+<div class="math notranslate nohighlight">
+\[\pi \sim \text{Beta}(a, b).\]</div>
+<p>Its PDF is:</p>
+<div class="math notranslate nohighlight">
+\[f(\pi) = \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi^{a - 1} (1 - \pi)^{b - 1} \quad \text{for} \quad 0 \leq \pi \leq 1,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Gamma(\cdot)\)</span> is the so-called Gamma function. Moreover, the <strong>shape</strong> parameters <span class="math notranslate nohighlight">\(a &gt; 0\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are called <strong>hyperparameters</strong>.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The <a class="reference internal" href="appendix-dist-cheatsheet.html#beta-distribution"><span class="std std-ref"><strong>Beta PDF in the cheatsheet</strong></span></a> has <span class="math notranslate nohighlight">\(x\)</span> as a variable instead of <span class="math notranslate nohighlight">\(\pi\)</span>. Moreover, shape parameters <span class="math notranslate nohighlight">\(a &gt; 0\)</span> and <span class="math notranslate nohighlight">\(b &gt; 0\)</span> are renamed as <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> respectively.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>You will not need to do any Calculus-related computation in this Bayesian analysis. Note that this Beta prior is a <strong>probability distribution over probabilities</strong>. This idea can take time to sink in.</p>
+</div>
+<p>Recall that the Beta distribution will be our prior belief on the parameter of interest <span class="math notranslate nohighlight">\(\pi\)</span> (<strong>the probability the bottle cap will land right side up</strong>). The hyperparameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> will tune our Beta prior to picture these beliefs.</p>
+<p>We will use this interactive <a class="reference external" href="https://shiny-apps.stat.ubc.ca/FlexibleLearning/FirstBayes/Beta-Binomial/">Shiny app</a> (attribution to <a class="reference external" href="https://giankdiluvi.github.io/">Gian Carlo Diluvi</a> from the Department of Statistics at UBC). <strong>In this app, parameter <span class="math notranslate nohighlight">\(p\)</span> refers to <span class="math notranslate nohighlight">\(\pi\)</span>.</strong></p>
+<p>Let us focus on the Shiny app’s section <code class="docutils literal notranslate"><span class="pre">Prior</span> <span class="pre">Distribution</span></code>. On the left-hand side bar, you can tune the hyperparameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>. Furthermore, regarding your prior beliefs for <span class="math notranslate nohighlight">\(\pi\)</span>, suppose you are interested in four different scenarios:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\text{Beta}(a = 3, b = 7).\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\text{Beta}(a = 1, b = 1).\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\text{Beta}(a = 10, b = 10).\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\text{Beta}(a = 7, b = 3).\)</span></p></li>
+</ol>
+<p>Let us also plot these four scenarios to compare them altogether:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="c1"># Plotting the four different Beta priors on pi</span>
+
+<span class="n">beta_3_7</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta</span><span class="p">(</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="m">7</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Beta(a = 3, b = 7)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">beta_1_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Beta(a = 1, b = 1)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">beta_10_10</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Beta(a = 10, b = 10)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">beta_7_3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta</span><span class="p">(</span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Beta(a = 7, b = 3)&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">plot_grid</span><span class="p">(</span><span class="n">beta_3_7</span><span class="p">,</span><span class="w"> </span><span class="n">beta_1_1</span><span class="p">,</span><span class="w"> </span><span class="n">beta_10_10</span><span class="p">,</span><span class="w"> </span><span class="n">beta_7_3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/c473e3465083df686f8988228d68a94d46df6e8202a7b117d1618fe4ade6af47.png"><img alt="../_images/c473e3465083df686f8988228d68a94d46df6e8202a7b117d1618fe4ade6af47.png" src="../_images/c473e3465083df686f8988228d68a94d46df6e8202a7b117d1618fe4ade6af47.png" style="width: 720px; height: 720px;" /></a>
+</div>
+</div>
+<div class="exercise admonition" id="lecture3-q4">
+
+<p class="admonition-title"><span class="caption-number">Exercise 9 </span></p>
+<section id="exercise-content">
+<p>How would you graphically describe the prior behaviour of <span class="math notranslate nohighlight">\(\pi\)</span> in the above four scenarios?</p>
+</section>
+</div>
+<p>The <a class="reference external" href="https://shiny-apps.stat.ubc.ca/FlexibleLearning/FirstBayes/Beta-Binomial/">Shiny app</a> also provides the corresponding <strong>mean</strong> and <strong>variance</strong> (<em>bottom left-hand corner</em>) for each specific Beta case (i.e., for specific values of <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>). Theoretically, it can be shown that the mean <span class="math notranslate nohighlight">\(\mathbb{E}(\pi)\)</span> and variance <span class="math notranslate nohighlight">\(\text{Var}(\pi)\)</span> are:</p>
+<div class="math notranslate nohighlight">
+\[\mathbb{E}(\pi) = \frac{a}{a + b} \quad \text{and} \quad \text{Var}(\pi) = \frac{ab}{(a + b)^2(a + b + 1)}.\]</div>
+<p>The standard deviation is merely</p>
+<div class="math notranslate nohighlight">
+\[\text{sd}(\pi) = \sqrt{\text{Var}(\pi)}.\]</div>
+<p>Moreover, the mode is:</p>
+<div class="math notranslate nohighlight">
+\[\text{Mode}(\pi) = \frac{a - 1}{a + b - 2} \quad \text{when} \quad a,b &gt; 1.\]</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Keep in mind these <strong>PRIOR</strong> metrics!</p>
+</div>
+</section>
+<section id="choosing-the-beta-prior">
+<h3>3.4. Choosing the Beta Prior<a class="headerlink" href="#choosing-the-beta-prior" title="Permalink to this heading">#</a></h3>
+<p><strong>How to select a suitable Beta prior for our parameter of interest <span class="math notranslate nohighlight">\(\pi\)</span>?</strong> This is where we have to rely on the subject-matter prior knowledge.</p>
+<p>For example, suppose we collect information from 30 previous studies, similar to ours, in which the <strong>estimated proportions</strong> of successes are contained in <code class="docutils literal notranslate"><span class="pre">prior_pi_studies</span></code> (<strong>this is simulated prior data</strong>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">prior_pi_studies</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="s">&quot;../data/prior_pi_studies.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">show_col_types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+<span class="n">prior_pi_studies</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A spec_tbl_df: 60 × 1</caption>
+<thead>
+	<tr><th scope=col>prior_pi</th></tr>
+	<tr><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>0.6796351</td></tr>
+	<tr><td>0.5198155</td></tr>
+	<tr><td>0.7373692</td></tr>
+	<tr><td>⋮</td></tr>
+	<tr><td>0.5737930</td></tr>
+	<tr><td>0.5391176</td></tr>
+	<tr><td>0.7321295</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>Now, we obtain a histogram of <code class="docutils literal notranslate"><span class="pre">prior_pi_studies</span></code> (with the adjusted <span class="math notranslate nohighlight">\(y\)</span>-axis as <code class="docutils literal notranslate"><span class="pre">after_stat(density)</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">)</span>
+
+<span class="c1"># Plottiong density of prior_pi_studies overlapped with a Beta(a = 7, b = 3)</span>
+<span class="n">beta_7_3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">beta_7_3</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_histogram</span><span class="p">(</span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prior_pi_studies</span><span class="p">,</span>
+<span class="w">    </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prior_pi</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">after_stat</span><span class="p">(</span><span class="n">density</span><span class="p">)),</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;grey&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="s">&quot;f(&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">pi</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="kc">pi</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that <code class="docutils literal notranslate"><span class="pre">prior_pi_studies</span></code> is left-skewed suggesting a possible prior <span class="math notranslate nohighlight">\(\text{Beta}(a = 7, b = 3)\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">beta_7_3</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/39bb2fe84ec54bd3d332a01f19659c9866be1061701771c726ab733fa29ef2e7.png"><img alt="../_images/39bb2fe84ec54bd3d332a01f19659c9866be1061701771c726ab733fa29ef2e7.png" src="../_images/39bb2fe84ec54bd3d332a01f19659c9866be1061701771c726ab733fa29ef2e7.png" style="width: 720px; height: 540px;" /></a>
+</div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>In <a class="reference external" href="https://www.bayesrulesbook.com/chapter-3.html#the-binomial-data-model-likelihood-function"><em>3.1.2 Tuning the Beta prior</em></a>, the textbook suggests tuning the Beta hyperparameters versus our prior data on a <em>trial and error</em> process. Nonetheless, we might <strong>avoid</strong> this <strong>empirical</strong> approach by running a <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/sta4.341"><strong>goodness of fit test</strong></a> in our prior data. This class of test is used to verify whether your data comes from a specific population of interest (such as the Beta under specific hyperparameters of interest).</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><strong>Unless stated otherwise</strong>, most of the exercises in this course will provide the specific hyperparameters to be used in our prior model. <strong>One of the main matters in this block will be choosing the right random variables</strong> (e.g., Normal, Gamma, Beta, etc.).</p>
+</div>
+<p>We can plug in <span class="math notranslate nohighlight">\(a = 7\)</span> and <span class="math notranslate nohighlight">\(b = 3\)</span> into the <strong>theoretical Beta mean, variance, mode, and standard deviation</strong>. The <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code> package has the handy function <code class="docutils literal notranslate"><span class="pre">summarize_beta_binomial()</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">summarize_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Warning message in summarize_beta_binomial(a = 7, b = 3):
+“To summarize the posterior, 
+            specify data y and n”
+</pre></div>
+</div>
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 1 × 7</caption>
+<thead>
+	<tr><th scope=col>model</th><th scope=col>alpha</th><th scope=col>beta</th><th scope=col>mean</th><th scope=col>mode</th><th scope=col>var</th><th scope=col>sd</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>prior</td><td>7</td><td>3</td><td>0.7</td><td>0.75</td><td>0.019</td><td>0.138</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<p>We contrast this theoretical prior metrics with the ones obtained for <code class="docutils literal notranslate"><span class="pre">prior_pi_studies</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">mean</span><span class="p">(</span><span class="n">prior_pi_studies</span><span class="o">$</span><span class="n">prior_pi</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.689</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">var</span><span class="p">(</span><span class="n">prior_pi_studies</span><span class="o">$</span><span class="n">prior_pi</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.019</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">sd</span><span class="p">(</span><span class="n">prior_pi_studies</span><span class="o">$</span><span class="n">prior_pi</span><span class="p">),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">0.137</div></div>
+</div>
+<p>Both sets of prior metrics are <strong>pretty close</strong>. Hence, we can continue our Bayesian modelling with a <strong>theoretical</strong> prior <span class="math notranslate nohighlight">\(\text{Beta}(a = 7, b = 3)\)</span>. Note this modelling choice is not unique, but we need to justify it properly (<strong>a goodness of fit test, for instance!</strong>).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is one of the biggest challenges in Bayesian inference: <em>choosing the most <strong>informative</strong> priors</em>.</p>
+</div>
+</section>
+<section id="setting-up-the-likelihood">
+<h3>3.5. Setting up the Likelihood<a class="headerlink" href="#setting-up-the-likelihood" title="Permalink to this heading">#</a></h3>
+<p>We need to obtain <strong>our evidence</strong>, so we can set up our <strong>likelihood</strong>. In our study, assume we run a total of <span class="math notranslate nohighlight">\(n = 50\)</span> bottle cap tosses and 70% of them land <span class="math notranslate nohighlight">\(\text{right side up}\)</span> (the <span class="math notranslate nohighlight">\(\text{success}\)</span>).</p>
+<p>Using the results from our previous stage, our Bayesian model will be set up as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gather*}
+Y \mid \pi \sim \text{Binomial}(n = 50, \pi) \\
+\pi \sim \text{Beta}(a = 7, b = 3).
+\end{gather*}\end{split}\]</div>
+<p>We already have our <strong>PRIOR</strong> which is a Beta distribution. Thus, our likelihood will come from a Binomial distribution. <strong>How can we plot this likelihood?</strong></p>
+<p>Again, let us check the Shiny app:</p>
+<ol class="arabic simple">
+<li><p>Go to section <a class="reference external" href="https://shiny-apps.stat.ubc.ca/FlexibleLearning/FirstBayes/Beta-Binomial/#section-data-and-likelihood"><strong><code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">and</span> <span class="pre">likelihood</span></code></strong></a>.</p></li>
+<li><p>Then, in <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">you</span> <span class="pre">want</span> <span class="pre">to</span> <span class="pre">analyze</span></code>, select <code class="docutils literal notranslate"><span class="pre">Custom</span> <span class="pre">data</span></code>.</p></li>
+<li><p>To customize the likelihood according to <strong>our evidence</strong>, set <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">=</span> <span class="pre">50</span></code> and <span class="math notranslate nohighlight">\(\hat{\pi}\)</span> <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">0.7</span></code> (i.e., <span class="math notranslate nohighlight">\(\hat{p}\)</span> <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">0.7</span></code> in the app).</p></li>
+</ol>
+<p>Our plotted likelihood function is given by the Binomial PDF:</p>
+<div class="math notranslate nohighlight">
+\[\mathscr{l}(\pi \mid y) = {n \choose y} \pi^y (1 - \pi)^{n - y},\]</div>
+<p>where <span class="math notranslate nohighlight">\(y\)</span> is the <strong>observed</strong> number of successes in our study.</p>
+<p>Note that this function, with <span class="math notranslate nohighlight">\(n = 50\)</span>, is <strong>maximized</strong> at:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\pi} = \frac{\text{Number of Successes}}{n} = 0.7.\]</div>
+</section>
+<section id="the-bayes-rule-in-action">
+<h3>3.6. The Bayes’ Rule in Action<a class="headerlink" href="#the-bayes-rule-in-action" title="Permalink to this heading">#</a></h3>
+<p>We already have our Beta <strong>prior</strong> and Binomial <strong>likelihood</strong>. It is time to apply the Bayes’ rule as follows:</p>
+<div class="math notranslate nohighlight">
+\[\text{posterior} \propto \text{prior} \times \text{likelihood}\]</div>
+<div class="math notranslate nohighlight">
+\[
+\overbrace{f(\pi \mid y)}^{\text{Posterior}} \propto \overbrace{f(\pi)}^{\text{Prior}} \times \overbrace{\mathscr{l}(\pi \mid y)}^{\text{Likelihood}}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\underbrace{f(\pi \mid y)}_{\text{Posterior}} \propto \underbrace{\frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi ^{a - 1} (1 - \pi)^{b - 1}}_{\text{Prior}} \times \underbrace{{n \choose y} \pi^y (1 - \pi)^{n - y}}_{\text{Likelihood}}.
+\]</div>
+<p><strong>The expression above seems too much!</strong> But, recall we have a trick here: <span class="math notranslate nohighlight">\(\propto\)</span>. Hence, we can get rid of all the terms that <strong>DO NOT</strong> depend on <span class="math notranslate nohighlight">\(\pi\)</span> on the right-hand side (under the Bayes’ rule, <strong>they are viewed as part of the normalizing constant!</strong>):</p>
+<div class="math notranslate nohighlight">
+\[
+f(\pi \mid y) \propto \pi ^{a - 1} (1 - \pi)^{b - 1} \pi^y (1 - \pi)^{n - y} = \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}.
+\]</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>We are just grouping exponents by common bases in the above equation.</p>
+</div>
+<p>This result gives us <strong>an interesting insight for the posterior distribution of <span class="math notranslate nohighlight">\(\pi\)</span></strong>:</p>
+<div class="math notranslate nohighlight">
+\[
+f(\pi \mid y) \propto \underbrace{\pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}}_{\text{Kernel of a Beta}(a + y, b + n - y)}.
+\]</div>
+<p>This expression is what we call a <strong>kernel</strong> of a <span class="math notranslate nohighlight">\(\text{Beta}(a + y, b + n - y)\)</span>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>A kernel is the part of a given PDF that <strong>DOES DEPEND</strong> on our parameter of interest! The <span class="math notranslate nohighlight">\(\propto\)</span> symbol allows us to conclude this matter.</p>
+</div>
+<p>Hence, we just obtained the posterior of <span class="math notranslate nohighlight">\(\pi\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[f(\pi \mid y) = \overbrace{\frac{\Gamma(a + b + n)}{\Gamma(a + y) \Gamma(b + n - y)}}^{\text{Does not depend on $\pi$}} \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}.\]</div>
+<p>Keep in mind that <span class="math notranslate nohighlight">\(y\)</span> is <strong>the number of successes</strong> in our study (i.e, <span class="math notranslate nohighlight">\(y = 50 \times 0.7 = 35\)</span>).</p>
+<p>Finally, we can state the posterior probability of <span class="math notranslate nohighlight">\(\pi\)</span> as:</p>
+<div class="math notranslate nohighlight">
+\[\pi \mid Y = y \sim \text{Beta}(a + y, b + n - y).\]</div>
+<p>Moreover, given this distribution, there will be new <strong>POSTERIOR</strong> metrics:</p>
+<div class="math notranslate nohighlight">
+\[E(\pi \mid Y = y) = \frac{a + y}{a + b + n} \quad \text{and} \quad \text{Var}(\pi \mid Y = y) = \frac{(a + y)(b + n - y)}{(a + b + n)^2(a + b + n + 1)}.\]</div>
+<p>The <strong>POSTERIOR</strong> standard deviation is</p>
+<div class="math notranslate nohighlight">
+\[\text{sd}(\pi \mid Y = y) = \sqrt{\text{Var}(\pi \mid Y = y)}.\]</div>
+<p>And the <strong>POSTERIOR</strong> mode is:</p>
+<div class="math notranslate nohighlight">
+\[\text{Mode}(\pi \mid Y = y) = \frac{a + y - 1}{a + b + n - 2}.\]</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The <strong>POSTERIOR</strong> mode has a special relevance, and we will find it out when reviewing the graphical results.</p>
+</div>
+<div class="admonition-optional-material admonition">
+<p class="admonition-title">Optional Material</p>
+<p>You might wonder whether the original Bayes’ rule <a class="reference internal" href="lecture2_Bayes_MAP.html#equation-full-bayes-rule">(4)</a></p>
+<div class="math notranslate nohighlight">
+\[\text{posterior} = \frac{\text{prior} \times \text{likelihood}}{\text{normalizing constant}}\]</div>
+<p>can be used analytically to obtain the extact posterior <span class="math notranslate nohighlight">\(f(\pi \mid y)\)</span>. In fact, it is possible to do so as follows:</p>
+<div class="math notranslate nohighlight">
+\[
+\overbrace{f(\pi \mid y)}^{\text{Posterior}} = \frac{\overbrace{f(\pi)}^{\text{Prior}} \times \overbrace{\mathscr{l}(\pi \mid y)}^{\text{Likelihood}}}{\underbrace{\mathscr{l}(y)}_{\text{Normalizing Constant}}}.
+\]</div>
+<p>We already know that</p>
+<div class="math notranslate nohighlight">
+\[f(\pi) = \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi^{a - 1} (1 - \pi)^{b - 1}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\mathscr{l}(\pi \mid y) = {n \choose y} \pi^y (1 - \pi)^{n - y}.\]</div>
+<p>Thus, we need to obtain the <strong>normalizing constant</strong> that <strong>does not depend on parameter <span class="math notranslate nohighlight">\(\pi\)</span></strong>. It turns out this normalizing constant is known as the <strong>marginal likelihood</strong> (since it marginalizes <span class="math notranslate nohighlight">\(\pi\)</span> from the joint distribution between the observed successes <span class="math notranslate nohighlight">\(y\)</span> and the probability of success <span class="math notranslate nohighlight">\(\pi\)</span>), which is denoted as <span class="math notranslate nohighlight">\(f(y, \pi)\)</span>. Note this joint distribution is probabilistically viewed as an <strong>intersection of events</strong>.</p>
+<p>Having said all this, let us go back to the Bayes’ rule:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+f(\pi \mid y) &amp;= \frac{f(\pi) \times \mathscr{l}(\pi \mid y)}{\mathscr{l}(y)} \\
+&amp;= \frac{f(\pi) \times \mathscr{l}(\pi \mid y)}{\int_{\Pi} f(y, \pi) \text{d}\pi} \\
+&amp;= \frac{f(\pi) \times \mathscr{l}(\pi \mid y)}{\int^1_0 f(y, \pi) \text{d}\pi}.
+\end{align*}\end{split}\]</div>
+<p>Note that solving the above integral for <span class="math notranslate nohighlight">\(\pi\)</span> from <span class="math notranslate nohighlight">\(0\)</span> to <span class="math notranslate nohighlight">\(1\)</span>, <strong>that is marginalizing out <span class="math notranslate nohighlight">\(\pi\)</span></strong>, results in this normalizing constant. Now, the question arises on how to obtain the joint distribution <span class="math notranslate nohighlight">\(f(y, \pi)\)</span>. <strong>Since <span class="math notranslate nohighlight">\(f(y, \pi)\)</span> is probabilistically an intersection of events</strong>, then we can apply the Bayes’ rule in the denominator as follows:</p>
+<div class="math notranslate nohighlight" id="equation-posterior-pi">
+<span class="eqno">(5)<a class="headerlink" href="#equation-posterior-pi" title="Permalink to this equation">#</a></span>\[f(\pi \mid y) = \frac{f(\pi) \times \mathscr{l}(\pi \mid y)}{\int^1_0 \underbrace{f(y \mid \pi) \times f(\pi)}_{f(y, \pi)} \text{d}\pi}.\]</div>
+<p>Given that the PDF <span class="math notranslate nohighlight">\(f(y \mid \pi)\)</span> (which is Binomial) is <strong>mathematically</strong> equal to the likelihood <span class="math notranslate nohighlight">\(\mathscr{l}(\pi \mid y)\)</span>, we have:</p>
+<div class="math notranslate nohighlight">
+\[f(y \mid \pi) = \mathscr{l}(\pi \mid y) = {n \choose y} \pi^y (1 - \pi)^{n - y}.\]</div>
+<p>Moreover, we already know the prior</p>
+<div class="math notranslate nohighlight">
+\[f(\pi) = \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi^{a - 1} (1 - \pi)^{b - 1}.\]</div>
+<p>Going back to Equation <a class="reference internal" href="#equation-posterior-pi">(5)</a>, we have that:</p>
+<div class="math notranslate nohighlight" id="equation-posterior-pi-2">
+<span class="eqno">(6)<a class="headerlink" href="#equation-posterior-pi-2" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align*}
+f(\pi \mid y) &amp;= \frac{\overbrace{\left[ \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi^{a - 1} (1 - \pi)^{b - 1} \right]}^{f(\pi)} \times \overbrace{\left[ {n \choose y} \pi^y (1 - \pi)^{n - y} \right]}^{\mathscr{l}(\pi \mid y)}}{\int^1_0 \underbrace{\left[ {n \choose y} \pi^y (1 - \pi)^{n - y} \right]}_{f(y \mid \pi)} \times \underbrace{\left[ \frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} \pi^{a - 1} (1 - \pi)^{b - 1} \right]}_{f(\pi)} \text{d}\pi} \\
+&amp;= \frac{\frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} {n \choose y} \pi^{a - 1} (1 - \pi)^{b - 1} \pi^y (1 - \pi)^{n - y}}{\frac{\Gamma(a + b)}{\Gamma(a) \Gamma(b)} {n \choose y} \int^1_0 \pi^y (1 - \pi)^{n - y} \pi^{a - 1} (1 - \pi)^{b - 1} \text{d}\pi} \quad \text{rearranging terms that do not depend on } \pi \\
+&amp;= \frac{\pi^{a - 1} (1 - \pi)^{b - 1} \pi^y (1 - \pi)^{n - y}}{\int^1_0 \pi^y (1 - \pi)^{n - y} \pi^{a - 1} (1 - \pi)^{b - 1} \text{d}\pi} \quad \text{cancelling out terms that do not depend on } \pi \\
+&amp;= \frac{\pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}}{\int^1_0 \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1} \text{d}\pi} \quad \text{grouping exponents by common bases.}
+\end{align*}\end{split}\]</div>
+<p><strong>How do we solve the above integral in the denominator?</strong> From the <a class="reference internal" href="appendix-dist-cheatsheet.html#beta-distribution"><span class="std std-ref"><strong>Beta PDF in the cheatsheet</strong></span></a> and the <a class="reference internal" href="#basic-distributional-concepts"><span class="std std-ref"><strong>basic distributional probability concepts</strong></span></a>, we know that that the Beta PDF (on the range of the corresponding random variable) has to integrate to <span class="math notranslate nohighlight">\(1\)</span>. <strong>Therefore, we can use the following workaround:</strong></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gather*}
+\int^1_0 \left\{ \frac{\Gamma\left[ (a + y) + (b + n - y) \right]}{\Gamma(a + y) \Gamma(b + n - y)} \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1} \right\} \text{d}\pi = 1 \\
+\frac{\Gamma\left[ (a + y) + (b + n - y) \right]}{\Gamma(a + y) \Gamma(b + n - y)} \int^1_0 \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1} \text{d}\pi = 1 \\
+\int^1_0 \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1} \text{d}\pi = \frac{\Gamma(a + y) \Gamma(b + n - y)}{\Gamma\left[ (a + y) + (b + n - y) \right]}.
+\end{gather*}\end{split}\]</div>
+<p>Then, we can go back to Equation <a class="reference internal" href="#equation-posterior-pi-2">(6)</a>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+f(\pi \mid y) &amp;= \frac{\pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}}{\frac{\Gamma(a + y) \Gamma(b + n - y)}{\Gamma\left[ (a + y) + (b + n - y) \right]}} \\
+&amp;= \frac{\Gamma\left[ (a + y) + (b + n - y) \right]}{\Gamma(a + y) \Gamma(b + n - y)} \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1} \\
+&amp;= \frac{\Gamma(a + b + n)}{\Gamma(a + y) \Gamma(b + n - y)} \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}.
+\end{align*}\end{split}\]</div>
+<p>We end up with the exact posterior of <span class="math notranslate nohighlight">\(\pi\)</span> which is an updated <span class="math notranslate nohighlight">\(\text{Beta}(a + y, b + n - y)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[f(\pi \mid y) = \frac{\Gamma(a + b + n)}{\Gamma(a + y) \Gamma(b + n - y)} \pi ^{(a + y) - 1} (1 - \pi)^{(b + n - y) - 1}.\]</div>
+<p>Then:</p>
+<div class="math notranslate nohighlight">
+\[\pi \mid Y = y \sim \text{Beta}(a + y, b + n - y).\]</div>
+<p><strong>Note this class of proof is out of the scope of this course.</strong></p>
+</div>
+</section>
+</section>
+<section id="posterior-analysis">
+<h2>4. Posterior Analysis<a class="headerlink" href="#posterior-analysis" title="Permalink to this heading">#</a></h2>
+<p>Now, let us go back to the Shiny app:</p>
+<ol class="arabic simple">
+<li><p>Click on section <a class="reference external" href="https://shiny-apps.stat.ubc.ca/FlexibleLearning/FirstBayes/Beta-Binomial/#section-posterior-analysis"><strong><code class="docutils literal notranslate"><span class="pre">Posterior</span> <span class="pre">analysis</span></code></strong></a>.</p></li>
+<li><p>You will find the corresponding posterior PDF of <span class="math notranslate nohighlight">\(\pi\)</span> (i.e., <span class="math notranslate nohighlight">\(p\)</span> in the app) along with posterior metrics of interest.</p></li>
+</ol>
+<p>We can also obtain posterior metrics via <code class="docutils literal notranslate"><span class="pre">summarize_beta_binomial()</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">summarize_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">35</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2 × 7</caption>
+<thead>
+	<tr><th scope=col>model</th><th scope=col>alpha</th><th scope=col>beta</th><th scope=col>mean</th><th scope=col>mode</th><th scope=col>var</th><th scope=col>sd</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>prior    </td><td> 7</td><td> 3</td><td>0.7</td><td>0.750</td><td>0.019</td><td>0.138</td></tr>
+	<tr><td>posterior</td><td>42</td><td>18</td><td>0.7</td><td>0.707</td><td>0.003</td><td>0.059</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">What happened here?</p>
+<p>We just updated our beliefs on <span class="math notranslate nohighlight">\(\pi\)</span> with our evidence (likelihood) and prior knowledge. These beliefs are reflected in the Beta posterior. Note the prior and posterior means are practically equal, but the posterior spread is smaller! <strong>Our posterior results show a reduced uncertainty on the estimation of <span class="math notranslate nohighlight">\(\pi\)</span>.</strong></p>
+</div>
+<p>Now, let us formally define a new Bayesian concept: the <strong>quantile-based credible interval</strong>.</p>
+<div class="important admonition">
+<p class="admonition-title">Formal Definition of the Posterior Quantile-based Credible Interval</p>
+<p>The quantile-based credible interval (CI) is a range of <strong>posterior plausible values</strong> for our population parameter of interest. Its width will provide an insight into the variability in our Bayesian posterior distribution. Moreover, it is an interval metric of central tendency.</p>
+<p>Let <span class="math notranslate nohighlight">\(\theta\)</span> be your population parameter of interest <strong>IN GENERAL</strong>, along with <span class="math notranslate nohighlight">\(Y\)</span> (your evidence, i.e., likelihood). The <span class="math notranslate nohighlight">\(k\%\)</span> credible interval is any interval <span class="math notranslate nohighlight">\(I = [u, v]\)</span> such that:</p>
+<div class="math notranslate nohighlight">
+\[P(u \leq \theta \leq v | Y) = \frac{k}{100}.\]</div>
+<p><strong>Note the quantile-based credible interval is obtained using the corresponding posterior distribution <span class="math notranslate nohighlight">\(f(\theta \mid y)\)</span>.</strong> For example, the 95% CI will be the 2.5th and 97.5th posterior percentiles (i.e., the bounds <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> respectively). These percentiles are obtained from <span class="math notranslate nohighlight">\(f(\theta \mid y)\)</span>.</p>
+</div>
+<p><strong>For this well-behaved theoretical Bayesian model</strong>, we only need the function <code class="docutils literal notranslate"><span class="pre">qbeta()</span></code> to obtain the 95% CI. We already know our posterior distribution:</p>
+<div class="math notranslate nohighlight">
+\[\pi \mid Y = y \sim \text{Beta}(a + y, b + n - y).\]</div>
+<p>Since <span class="math notranslate nohighlight">\(a = 7\)</span>, <span class="math notranslate nohighlight">\(b = 3\)</span>, <span class="math notranslate nohighlight">\(n = 50\)</span>, and <span class="math notranslate nohighlight">\(y = 35\)</span>; then we have:</p>
+<div class="math notranslate nohighlight">
+\[\pi \mid Y = y \sim \text{Beta}(42, 18).\]</div>
+<p>The 95% CI is given by:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">qbeta</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.025</span><span class="p">,</span><span class="w"> </span><span class="m">0.975</span><span class="p">),</span><span class="w"> </span><span class="n">shape1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">42</span><span class="p">,</span><span class="w"> </span><span class="n">shape2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">),</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class=list-inline><li>0.58</li><li>0.81</li></ol>
+</div></div>
+</div>
+<p>How do we interpret this 95% CI?</p>
+<blockquote>
+<div><p><em>There is a 95% <strong>POSTERIOR</strong> probability that the success probability <span class="math notranslate nohighlight">\(\pi\)</span> is between 0.58 and 0.81.</em></p>
+</div></blockquote>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Recall we already clarified this inferential case is a <strong>probability distribution over probabilities</strong>. For other cases, “the success probability <span class="math notranslate nohighlight">\(\pi\)</span>” is replaced by “a population continuous mean <span class="math notranslate nohighlight">\(\mu\)</span>”, “a population count mean <span class="math notranslate nohighlight">\(\lambda\)</span>”, “a population regression slope <span class="math notranslate nohighlight">\(\beta_1\)</span>”, etc.</p>
+</div>
+<p>Again, let us check the Shiny app in the section <a class="reference external" href="https://shiny-apps.stat.ubc.ca/FlexibleLearning/FirstBayes/Beta-Binomial/#section-summary"><strong><code class="docutils literal notranslate"><span class="pre">Summary</span></code></strong></a>. We will find the three plots associated with our prior, likelihood and posterior. <strong>Note how the posterior distribution has a smaller spread when compared to the prior.</strong></p>
+<p>We can also use the function <code class="docutils literal notranslate"><span class="pre">plot_beta_binomial()</span></code> from <code class="docutils literal notranslate"><span class="pre">bayesrules</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">beta_binomial_plots</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plot_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">35</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="nf">paste</span><span class="p">(</span><span class="kc">pi</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">ggtitle</span><span class="p">(</span><span class="s">&quot;Comparison of Prior, Likelihood, and Posterior&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">theme</span><span class="p">(</span>
+<span class="w">    </span><span class="n">plot.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bold&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">),</span>
+<span class="w">    </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">),</span>
+<span class="w">    </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">element_text</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">21</span><span class="p">,</span><span class="w"> </span><span class="n">margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">margin</span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cm&quot;</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">beta_binomial_plots</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">geom_vline</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">xintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.707</span><span class="p">),</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;darkgreen&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">linewidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../_images/b23503ba216e008b2b3bf8533e9d6cb76b05b2e363f7f7f18943d2b186b853e5.png"><img alt="../_images/b23503ba216e008b2b3bf8533e9d6cb76b05b2e363f7f7f18943d2b186b853e5.png" src="../_images/b23503ba216e008b2b3bf8533e9d6cb76b05b2e363f7f7f18943d2b186b853e5.png" style="width: 720px; height: 540px;" /></a>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">summarize_beta_binomial</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">35</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span>
+<span class="w">  </span><span class="nf">mutate_if</span><span class="p">(</span><span class="n">is.numeric</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="dataframe">
+<caption>A data.frame: 2 × 7</caption>
+<thead>
+	<tr><th scope=col>model</th><th scope=col>alpha</th><th scope=col>beta</th><th scope=col>mean</th><th scope=col>mode</th><th scope=col>var</th><th scope=col>sd</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>prior    </td><td> 7</td><td> 3</td><td>0.7</td><td>0.750</td><td>0.019</td><td>0.138</td></tr>
+	<tr><td>posterior</td><td>42</td><td>18</td><td>0.7</td><td>0.707</td><td>0.003</td><td>0.059</td></tr>
+</tbody>
+</table>
+</div></div>
+</div>
+<div class="exercise admonition" id="lecture3-q5">
+
+<p class="admonition-title"><span class="caption-number">Exercise 10 </span></p>
+<section id="exercise-content">
+<p>Given your results in the plots and summary, what is the big picture regarding the posterior inference on <span class="math notranslate nohighlight">\(\pi\)</span>? What is the intuition behind the <strong>POSTERIOR MODE</strong>?</p>
+</section>
+</div>
+</section>
+<section id="wrapping-up">
+<h2>5. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>The Beta-Binomial model is a foundational Bayesian model to infer a population probability of success <span class="math notranslate nohighlight">\(\pi\)</span>. There are another foundational Bayesian models such as the <a class="reference external" href="https://www.bayesrulesbook.com/chapter-5.html#gamma-poisson-conjugate-family">Gamma-Poisson</a> and <a class="reference external" href="https://www.bayesrulesbook.com/chapter-5.html#normal-normal-conjugate-family">Normal-Normal</a>.</p></li>
+<li><p>The Beta distribution is a suitable prior distribution for a probability.</p></li>
+<li><p>When applying the Bayes’ rule with a Binomial likelihood, we obtain an updated posterior Beta for <span class="math notranslate nohighlight">\(\pi\)</span>. <strong>When the prior is from the same family as the posterior, we call it a CONJUGATE PRIOR.</strong></p></li>
+<li><p>What would happen to the posterior if we change the hyperparameters of our Beta prior? What if we reduce the amount of evidence (i.e., smaller values for <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(y\)</span> in the likelihood)? We will explore these matters in <code class="docutils literal notranslate"><span class="pre">lab2</span></code>.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="lecture2_Bayes_MAP.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Lecture 2 - Conditional Probabilities, Bayes’ Rule, and Maximum a Posteriori Estimation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lecture4_MCMC_Poisson_Gamma_Normal.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Lecture 4 - Markov Chain Monte Carlo, <code class="docutils literal notranslate"><span class="pre">Stan</span></code>, and Complex Bayesian Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#today-s-learning-objectives">Today’s Learning Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-r-packages">Loading <code class="docutils literal notranslate"><span class="pre">R</span></code> Packages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#previously">Previously…</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-modelling">1. The Bayesian Modelling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-big-idea">1.1. The Big Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pose-a-question">1.2. Pose a Question</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-distributional-probability-concepts">2. Basic Distributional Probability Concepts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-binomial-model">3. The Beta-Binomial Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-with-a-bernoulli-distribution">3.1. Starting with a Bernoulli Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-binomial-distribution">3.2. The Binomial Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-distribution">3.3. The Beta Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-beta-prior">3.4. Choosing the Beta Prior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-likelihood">3.5. Setting up the Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayes-rule-in-action">3.6. The Bayes’ Rule in Action</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-analysis">4. Posterior Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-up">5. Wrapping Up</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By G. Alexi Rodríguez-Arelis, Hedayat Zarkoob, Michael Gelbart, and Trevor Campbell
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
